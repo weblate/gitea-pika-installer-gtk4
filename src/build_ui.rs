@@ -139,30 +139,37 @@ pub fn build_ui(app: &adw::Application) {
     window.connect_hide(clone!(@weak window => move |_| save_window_size(&window, &glib_settings)));
     window.connect_hide(clone!(@weak window => move |_| window.destroy()));
     
-    let (sender, receiver) = MainContext::channel(Priority::default());
+    let (sender, receiver) = async_channel::unbounded();
+    // Connect to "clicked" signal of `button`
     window.connect_show(move |_| {
         let sender = sender.clone();
         // The long running operation runs now in a separate thread
-        thread::spawn(move || {
-           sender.send(false).expect("Could not send through channel");
+        gio::spawn_blocking(move || {
+            // Deactivate the button until the operation is done
+            while gtk_loops == true {
+                let ten_seconds = Duration::from_secs(1);
+                thread::sleep(ten_seconds);
+                if content_stack.visible_child_name().expect("gstring to string").as_str() == "welcome_page" {
+                    sender
+                    .send_blocking(false)
+                    .expect("The channel needs to be open.");
+                } else {
+                    sender
+                    .send_blocking(true)
+                    .expect("The channel needs to be open.");
+                }
+            }
         });
     });
         
     window.show();
     
-    receiver.attach(
-        None,
-        clone!(@weak bottom_box => @default-return Continue(false),
-                    move |state| {
-                        bottom_box_loop(&bottom_box, state);
-                        glib::ControlFlow::Continue
-                    }
-        ),
-
-    );
+    let main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    main_context.spawn_local(clone!(@weak bottom_box => async move {
+        while let Ok(state) = receiver.recv().await {
+            bottom_box.set_visible(state);
+        }
+    }));
     
-}
-
-fn bottom_box_loop(bottom_box: &gtk::Box, state: bool) {
-        bottom_box.set_visible(state)
 }
