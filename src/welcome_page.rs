@@ -128,4 +128,10 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
     // / Content stack appends
     //// Add the welcome_main_box as page: welcome_page, Give it nice title
     content_stack.add_titled(&welcome_main_box, Some("welcome_page"), "Welcome");
+
+    let hahaha = gtk::Button::builder()
+        .label("Rot")
+        .build();
+
+    content_stack.add_titled(&hahaha, Some("shit_page"), "SHit");
 }

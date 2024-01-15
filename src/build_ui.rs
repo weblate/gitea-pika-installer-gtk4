@@ -11,6 +11,11 @@ use gtk::subclass::layout_child;
 use crate::save_window_size;
 use crate::welcome_page;
 
+use std::thread;
+use std::time::*;
+use fragile::*;
+
+
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
 
@@ -21,6 +26,9 @@ pub fn build_ui(app: &adw::Application) {
 
 
     // Widget Bank
+
+    let gtk_loops = true;
+
 
     /// Create A box
     let _main_box = gtk::Box::builder()
@@ -93,7 +101,7 @@ pub fn build_ui(app: &adw::Application) {
 
     // Add welcome_page.rs as a page for content_stack
     welcome_page(&content_stack);
-    
+
     // create the main Application window
     let window = adw::ApplicationWindow::builder()
         // The text on the titlebar
@@ -131,6 +139,25 @@ pub fn build_ui(app: &adw::Application) {
     window.connect_hide(clone!(@weak window => move |_| save_window_size(&window, &glib_settings)));
     window.connect_hide(clone!(@weak window => move |_| window.destroy()));
     
-    // show the window
-    window.show()
+    window.show();
+
+    let bottom_box_clone = fragile::Fragile::new(bottom_box.clone());
+    let content_stack_clone = fragile::Fragile::new(content_stack.clone());
+
+    gio::spawn_blocking(move || {
+        while gtk_loops == true {
+            glib::MainContext::default().invoke( move || {
+                bottom_box_loop( &bottom_box_clone, &content_stack_clone)
+            });
+        }
+    });
+    
+}
+
+fn bottom_box_loop(bottom_box: &Fragile<gtk::Box>, content_stack: &Fragile<Stack>) {
+        if content_stack.get().visible_child_name().expect("gstring to string").as_str() == "welcome_page" {
+            bottom_box.get().set_visible(false)
+        } else {
+            bottom_box.get().set_visible(true)
+        }
 }
