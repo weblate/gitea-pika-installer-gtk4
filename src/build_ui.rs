@@ -101,6 +101,11 @@ pub fn build_ui(app: &adw::Application) {
 
     // Add welcome_page.rs as a page for content_stack
     welcome_page(&content_stack);
+    bottom_box.set_visible(false);
+    content_stack.connect_visible_child_notify(clone!(@weak bottom_box => move |content_stack| {
+        let state = content_stack.visible_child_name().as_deref() != Some("welcome_page");
+        bottom_box.set_visible(state);
+      }));
 
     // create the main Application window
     let window = adw::ApplicationWindow::builder()
@@ -138,38 +143,7 @@ pub fn build_ui(app: &adw::Application) {
     // Connect the hiding of window to the save_window_size function and window destruction
     window.connect_hide(clone!(@weak window => move |_| save_window_size(&window, &glib_settings)));
     window.connect_hide(clone!(@weak window => move |_| window.destroy()));
-    
-    let (sender, receiver) = async_channel::unbounded();
-    // Connect to "clicked" signal of `button`
-    window.connect_show(move |_| {
-        let sender = sender.clone();
-        // The long running operation runs now in a separate thread
-        gio::spawn_blocking(move || {
-            // Deactivate the button until the operation is done
-            while gtk_loops == true {
-                let ten_seconds = Duration::from_secs(1);
-                thread::sleep(ten_seconds);
-                if content_stack.visible_child_name().expect("gstring to string").as_str() == "welcome_page" {
-                    sender
-                    .send_blocking(false)
-                    .expect("The channel needs to be open.");
-                } else {
-                    sender
-                    .send_blocking(true)
-                    .expect("The channel needs to be open.");
-                }
-            }
-        });
-    });
         
     window.show();
-    
-    let main_context = MainContext::default();
-    // The main loop executes the asynchronous block
-    main_context.spawn_local(clone!(@weak bottom_box => async move {
-        while let Ok(state) = receiver.recv().await {
-            bottom_box.set_visible(state);
-        }
-    }));
     
 }
