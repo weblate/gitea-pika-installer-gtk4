@@ -9,5 +9,6 @@ edition = "2021"
 adw = { version = "0.5.3", package = "libadwaita" }
 async-channel = "2.1.1"
 fragile = "2.0.0"
+glib = "0.18.5"
 gtk = { version = "0.7.3", package = "gtk4" }
 time = "0.3.31"

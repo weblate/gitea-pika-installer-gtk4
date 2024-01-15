@@ -139,25 +139,30 @@ pub fn build_ui(app: &adw::Application) {
     window.connect_hide(clone!(@weak window => move |_| save_window_size(&window, &glib_settings)));
     window.connect_hide(clone!(@weak window => move |_| window.destroy()));
     
-    window.show();
-
-    let bottom_box_clone = fragile::Fragile::new(bottom_box.clone());
-    let content_stack_clone = fragile::Fragile::new(content_stack.clone());
-
-    gio::spawn_blocking(move || {
-        while gtk_loops == true {
-            glib::MainContext::default().invoke( move || {
-                bottom_box_loop( &bottom_box_clone, &content_stack_clone)
-            });
-        }
+    let (sender, receiver) = MainContext::channel(Priority::default());
+    window.connect_show(move |_| {
+        let sender = sender.clone();
+        // The long running operation runs now in a separate thread
+        thread::spawn(move || {
+           sender.send(false).expect("Could not send through channel");
+        });
     });
+        
+    window.show();
+    
+    receiver.attach(
+        None,
+        clone!(@weak bottom_box => @default-return Continue(false),
+                    move |state| {
+                        bottom_box_loop(&bottom_box, state);
+                        glib::ControlFlow::Continue
+                    }
+        ),
+
+    );
     
 }
 
-fn bottom_box_loop(bottom_box: &Fragile<gtk::Box>, content_stack: &Fragile<Stack>) {
-        if content_stack.get().visible_child_name().expect("gstring to string").as_str() == "welcome_page" {
-            bottom_box.get().set_visible(false)
-        } else {
-            bottom_box.get().set_visible(true)
-        }
+fn bottom_box_loop(bottom_box: &gtk::Box, state: bool) {
+        bottom_box.set_visible(state)
 }

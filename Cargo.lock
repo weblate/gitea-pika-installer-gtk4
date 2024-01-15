@@ -572,6 +572,7 @@ version = "0.1.0"
 dependencies = [
  "async-channel",
  "fragile",
+ "glib",
  "gtk4",
  "libadwaita",
  "time",
