@@ -51,6 +51,7 @@ pub fn build_ui(app: &adw::Application) {
         .margin_bottom(15)
         .margin_start(15)
         .margin_end(15)
+        .sensitive(false)
         .build();
 
     // create the bottom box for next and back buttons
