@@ -11,6 +11,43 @@ use gdk::Display;
 use gtk::subclass::layout_child;
 
 pub fn language_page(content_stack: &gtk::Stack) {
+
+    // create the bottom box for next and back buttons
+    let bottom_box = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .valign(gtk::Align::End)
+        .vexpand(true)
+        .build();
+    
+    // Next and back button
+    let bottom_back_button = gtk::Button::builder()
+        .label("Back")
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .halign(gtk::Align::Start)
+        .hexpand(true)
+        .build();
+    let bottom_next_button = gtk::Button::builder()
+        .label("Next")
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .halign(gtk::Align::End)
+        .hexpand(true)
+        .sensitive(false)
+        .build();
+    
+    // Start Applying css classes
+    bottom_next_button.add_css_class("suggested-action");
+    
+    // / bottom_box appends
+    //// Add the next and back buttons
+    bottom_box.append(&bottom_back_button);
+    bottom_box.append(&bottom_next_button);
+
    // the header box for the language page
    let language_main_box = gtk::Box::builder()
        .orientation(Orientation::Vertical)
@@ -87,14 +124,34 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .build();
     language_selection_expander_row.add_row(&null_checkbutton);
 
+    let null_checkbutton_clone = null_checkbutton.clone();
+    let language_selection_expander_row_clone2 = language_selection_expander_row.clone();
+    let bottom_next_button_clone = bottom_next_button.clone();
+
+
+    null_checkbutton.connect_toggled(move |_| {
+        if null_checkbutton_clone.is_active() == true {
+            language_selection_expander_row_clone2.set_title("No locale selected");
+            bottom_next_button_clone.set_sensitive(false);
+        }
+    });
+
     for locale in locales {
-        let locale_label = gtk::CheckButton::builder()
+        let locale_checkbutton = gtk::CheckButton::builder()
             .label(locale)
             .build();
-        locale_label.set_group(Some(&null_checkbutton));
-        language_selection_expander_row.add_row(&locale_label);
+        locale_checkbutton.set_group(Some(&null_checkbutton));
+        language_selection_expander_row.add_row(&locale_checkbutton); 
+        let language_selection_expander_row_clone = language_selection_expander_row.clone();
+        let locale_checkbutton_clone = locale_checkbutton.clone();
+        let bottom_next_button_clone2 = bottom_next_button.clone();
+        locale_checkbutton.connect_toggled(move |_| {
+            if locale_checkbutton_clone.is_active() == true {
+                language_selection_expander_row_clone.set_title(locale);
+                bottom_next_button_clone2.set_sensitive(true);
+            }
+        });
     }
-
 
 
 
@@ -113,8 +170,20 @@ pub fn language_page(content_stack: &gtk::Stack) {
     language_main_box.append(&language_header_box);
     //// Add the language selection/page content box to language main box
     language_main_box.append(&language_selection_box);
+
+    language_main_box.append(&bottom_box);
     
     // / Content stack appends
     //// Add the language_main_box as page: language_page, Give it nice title
     content_stack.add_titled(&language_main_box, Some("language_page"), "Language");
+
+    let content_stack_clone = content_stack.clone();
+    let content_stack_clone2 = content_stack.clone();
+    bottom_next_button.connect_clicked(move |_| {
+        content_stack_clone.set_visible_child_name("keyboard_page")
+    });
+    bottom_back_button.connect_clicked(move |_| {
+        content_stack_clone2.set_visible_child_name("welcome_page")
+    });
+
 }

@@ -9,7 +9,7 @@ use glib::*;
 use gdk::Display;
 use gtk::subclass::layout_child;
 
-pub fn welcome_page(content_stack: &gtk::Stack) {
+pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
    // the header box for the welcome page
    let welcome_main_box = gtk::Box::builder()
        .orientation(Orientation::Vertical)
@@ -164,6 +164,8 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
     //// Add the welcome_main_box as page: welcome_page, Give it nice title
     content_stack.add_titled(&welcome_main_box, Some("welcome_page"), "Welcome");
     let content_stack_clone = content_stack.clone();
+    let window_clone = window.clone();
     install_media_button.connect_clicked(move |_| content_stack_clone.set_visible_child_name("language_page"));
+    live_media_button.connect_clicked(move |_| window_clone.hide());
 
 }

@@ -53,40 +53,6 @@ pub fn build_ui(app: &adw::Application) {
         .margin_end(15)
         .sensitive(false)
         .build();
-
-    // create the bottom box for next and back buttons
-    let bottom_box = gtk::Box::builder()
-        .orientation(Orientation::Horizontal)
-        .visible(false)
-        .build();
-    
-    // Next and back button
-    let bottom_back_button = gtk::Button::builder()
-        .label("Back")
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
-        .halign(gtk::Align::Start)
-        .hexpand(true)
-        .build();
-    let bottom_next_button = gtk::Button::builder()
-        .label("Next")
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
-        .halign(gtk::Align::End)
-        .hexpand(true)
-        .build();
-    
-    // Start Applying css classes
-    bottom_next_button.add_css_class("suggested-action");
-    
-    // / bottom_box appends
-    //// Add the next and back buttons
-    bottom_box.append(&bottom_back_button);
-    bottom_box.append(&bottom_next_button);
     
     // / _main_box appends
     //// Add the a title bar to the _main_box
@@ -95,19 +61,8 @@ pub fn build_ui(app: &adw::Application) {
     _main_box.append(&content_stack_switcher);
     //// Add the stack pager containing all the steps to _main_box
     _main_box.append(&content_stack);
-    //// Add the the next and back buttons box to _main_box
-    _main_box.append(&bottom_box);
-
-    // Add welcome_page.rs as a page for content_stack
-    welcome_page(&content_stack);
-    // if content_stack visible child becomes NOT content_stack, show the buttom box 
-    content_stack.connect_visible_child_notify(clone!(@weak bottom_box => move |content_stack| {
-        let state = content_stack.visible_child_name().as_deref() != Some("welcome_page");
-        bottom_box.set_visible(state);
-      }));
-
-    // Add language_page.rs as a page for content_stack
-    language_page(&content_stack);
+    //// Add the the next and back buttons box to _main_box (moved)
+    ///_main_box.append(&bottom_box);
 
     // create the main Application window
     let window = adw::ApplicationWindow::builder()
@@ -132,6 +87,19 @@ pub fn build_ui(app: &adw::Application) {
         // build the window
         .build();
     
+    // Add welcome_page.rs as a page for content_stack
+    welcome_page(&window, &content_stack);
+
+    // bottom_box moved per page
+    // if content_stack visible child becomes NOT content_stack, show the buttom box 
+    //content_stack.connect_visible_child_notify(clone!(@weak bottom_box => move |content_stack| {
+    //    let state = content_stack.visible_child_name().as_deref() != Some("welcome_page");
+    //    bottom_box.set_visible(state);
+    //  }));
+
+    // Add language_page.rs as a page for content_stack
+    language_page(&content_stack);
+
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {
         window.maximize()
@@ -145,9 +113,10 @@ pub fn build_ui(app: &adw::Application) {
     // Connect the hiding of window to the save_window_size function and window destruction
     window.connect_hide(clone!(@weak window => move |_| save_window_size(&window, &glib_settings)));
     window.connect_hide(clone!(@weak window => move |_| window.destroy()));
-    let content_stack_clone = content_stack.clone();
-    let content_stack_clone2 = content_stack.clone();
-    bottom_next_button.connect_clicked(move |_| content_stack_clone.set_visible_child(&content_stack_clone.visible_child().expect("null").next_sibling().unwrap()));
-    bottom_back_button.connect_clicked(move |_| content_stack_clone2.set_visible_child(&content_stack_clone2.visible_child().expect("null").prev_sibling().unwrap()));
+    // bottom_box moved per page
+    //let content_stack_clone = content_stack.clone();
+    //let content_stack_clone2 = content_stack.clone();
+    //bottom_next_button.connect_clicked(move |_| content_stack_clone.set_visible_child(&content_stack_clone.visible_child().expect("null").next_sibling().unwrap()));
+    //bottom_back_button.connect_clicked(move |_| content_stack_clone2.set_visible_child(&content_stack_clone2.visible_child().expect("null").prev_sibling().unwrap()));
     window.show();
 }
