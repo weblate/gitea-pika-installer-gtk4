@@ -144,7 +144,9 @@ pub fn build_ui(app: &adw::Application) {
     // Connect the hiding of window to the save_window_size function and window destruction
     window.connect_hide(clone!(@weak window => move |_| save_window_size(&window, &glib_settings)));
     window.connect_hide(clone!(@weak window => move |_| window.destroy()));
-        
+    let content_stack_clone = content_stack.clone();
+    let content_stack_clone2 = content_stack.clone();
+    bottom_next_button.connect_clicked(move |_| content_stack_clone.set_visible_child(&content_stack_clone.visible_child().expect("null").next_sibling().unwrap()));
+    bottom_back_button.connect_clicked(move |_| content_stack_clone2.set_visible_child(&content_stack_clone2.visible_child().expect("null").prev_sibling().unwrap()));
     window.show();
-    
 }
