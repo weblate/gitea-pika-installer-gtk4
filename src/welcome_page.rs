@@ -30,6 +30,7 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
        .margin_start(15)
        .margin_end(5)
        .build();
+    welcome_header_text.add_css_class("header_sized_text");
 
    // the header icon for the welcome icon
    let welcome_header_icon = gtk::Image::builder()
@@ -46,7 +47,7 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
    // make welcome selection box for choosing installation or live media 
    let welcome_selection_box = gtk::Box::builder()
        .orientation(Orientation::Horizontal)
-       .spacing(360)
+       .spacing(200)
        .build();
 
    let live_media_button_content_box = gtk::Box::builder()
@@ -57,10 +58,41 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
        .icon_name("drive-optical")
        .pixel_size(128)
        .margin_top(15)
-       .margin_bottom(0)
+       .margin_bottom(15)
        .margin_start(15)
        .margin_end(15)
        .build();
+
+   let live_media_button_content_text = gtk::Label::builder()
+       .label("Use PikaOS in Live media")
+       .margin_top(0)
+       .margin_bottom(15)
+       .margin_start(15)
+       .margin_end(15)
+       .build();
+    live_media_button_content_text.add_css_class("medium_sized_text");
+
+   let install_media_button_content_box = gtk::Box::builder()
+       .orientation(Orientation::Vertical)
+       .build();
+
+   let install_media_button_content_image = gtk::Image::builder()
+       .icon_name("drive-harddisk")
+       .pixel_size(128)
+       .margin_top(15)
+       .margin_bottom(15)
+       .margin_start(15)
+       .margin_end(15)
+       .build();
+
+   let install_media_button_content_text = gtk::Label::builder()
+       .label("Install Distro to System")
+       .margin_top(0)
+       .margin_bottom(15)
+       .margin_start(15)
+       .margin_end(15)
+       .build();
+    install_media_button_content_text.add_css_class("medium_sized_text");
 
    let live_media_button = gtk::Button::builder()
        .child(&live_media_button_content_box)
@@ -72,17 +104,22 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
 
 
    let install_media_button = gtk::Button::builder()
+       .child(&install_media_button_content_box)
        .vexpand(true)
        .hexpand(true)
        .halign(gtk::Align::Start)
        .valign(gtk::Align::Center)
        .build();
 
-    welcome_header_text.add_css_class("header_sized_text");
-
     // / live_media_button_content_box appends
     //// add image and text to the live_media_button
     live_media_button_content_box.append(&live_media_button_content_image);
+    live_media_button_content_box.append(&live_media_button_content_text);
+
+    // / install_media_button_content_box appends
+    //// add image and text to the install_media_button
+    install_media_button_content_box.append(&install_media_button_content_image);
+    install_media_button_content_box.append(&install_media_button_content_text);
 
     // / welcome_selection_box appends
     //// add live and install media button to welcome page selections
@@ -99,8 +136,6 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
     welcome_main_box.append(&welcome_header_box);
     //// Add the welcome selection/page content box to welcome main box
     welcome_main_box.append(&welcome_selection_box);
-    
-    welcome_header_text.add_css_class("header_sized_text");
     
     // Start Appending widgets to boxes
 
@@ -124,14 +159,11 @@ pub fn welcome_page(content_stack: &gtk::Stack) {
     welcome_main_box.append(&welcome_header_box);
     //// Add the welcome selection/page content box to welcome main box
     welcome_main_box.append(&welcome_selection_box);
-    
+
     // / Content stack appends
     //// Add the welcome_main_box as page: welcome_page, Give it nice title
     content_stack.add_titled(&welcome_main_box, Some("welcome_page"), "Welcome");
+    let content_stack_clone = content_stack.clone();
+    install_media_button.connect_clicked(move |_| content_stack_clone.set_visible_child_name("language_page"));
 
-    let hahaha = gtk::Button::builder()
-        .label("Rot")
-        .build();
-
-    content_stack.add_titled(&hahaha, Some("shit_page"), "SHit");
 }

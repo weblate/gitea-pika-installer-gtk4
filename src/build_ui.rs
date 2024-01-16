@@ -10,11 +10,7 @@ use gdk::Display;
 use gtk::subclass::layout_child;
 use crate::save_window_size;
 use crate::welcome_page;
-
-use std::thread;
-use std::time::*;
-use fragile::*;
-
+use crate::language_page;
 
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
@@ -45,6 +41,7 @@ pub fn build_ui(app: &adw::Application) {
     let content_stack = gtk::Stack::builder()
         .hexpand(true)
         .vexpand(true)
+        .transition_type(StackTransitionType::SlideLeftRight)
         .build();
     
     /// Add a Visual Stack Switcher for content_stack
@@ -59,6 +56,7 @@ pub fn build_ui(app: &adw::Application) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
+        .visible(false)
         .build();
     
     // Next and back button
@@ -101,11 +99,14 @@ pub fn build_ui(app: &adw::Application) {
 
     // Add welcome_page.rs as a page for content_stack
     welcome_page(&content_stack);
-    bottom_box.set_visible(false);
+    // if content_stack visible child becomes NOT content_stack, show the buttom box 
     content_stack.connect_visible_child_notify(clone!(@weak bottom_box => move |content_stack| {
         let state = content_stack.visible_child_name().as_deref() != Some("welcome_page");
         bottom_box.set_visible(state);
       }));
+
+    // Add language_page.rs as a page for content_stack
+    language_page(&content_stack);
 
     // create the main Application window
     let window = adw::ApplicationWindow::builder()

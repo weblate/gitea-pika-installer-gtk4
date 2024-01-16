@@ -13,8 +13,10 @@ mod build_ui;
 use crate::build_ui::build_ui;
 mod save_window_size;
 mod welcome_page;
+mod language_page;
 use crate::save_window_size::save_window_size;
 use crate::welcome_page::welcome_page;
+use crate::language_page::language_page;
 
 
 /// main function
