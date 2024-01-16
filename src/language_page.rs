@@ -10,6 +10,12 @@ use glib::*;
 use gdk::Display;
 use gtk::subclass::layout_child;
 
+use std::io::BufRead;
+use std::io::BufReader;
+use std::process::Command;
+use std::process::Stdio;
+use std::time::Instant;
+
 pub fn language_page(content_stack: &gtk::Stack) {
 
     // create the bottom box for next and back buttons
@@ -118,11 +124,23 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .title("Locale")
         .build();
 
-    let locales = ["en_US", "russian", "en_GB"];
     let null_checkbutton = gtk::CheckButton::builder()
         .label("No locale selected")
         .build();
-    language_selection_expander_row.add_row(&null_checkbutton);
+
+    let language_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
+        .height_request(200)
+        .build();
+
+    let language_selection_expander_row_viewport_box = gtk::Box::builder()
+            .orientation(Orientation::Vertical)
+            .build();
+
+    language_selection_expander_row_viewport.set_child(Some(&language_selection_expander_row_viewport_box));
+
+    language_selection_expander_row.add_row(&language_selection_expander_row_viewport);
+
+    language_selection_expander_row_viewport_box.append(&null_checkbutton);
 
     let null_checkbutton_clone = null_checkbutton.clone();
     let language_selection_expander_row_clone2 = language_selection_expander_row.clone();
@@ -136,24 +154,33 @@ pub fn language_page(content_stack: &gtk::Stack) {
         }
     });
 
-    for locale in locales {
+    let mut output = Command::new("locale")
+        .arg("-a")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap_or_else(|e| panic!("failed {}", e));
+
+    let stdout = output.stdout.as_mut().expect("could not get stdout");
+    let reader = BufReader::new(stdout);
+
+    for locale in reader.lines() {
+        let locale = locale.unwrap();
         let locale_checkbutton = gtk::CheckButton::builder()
-            .label(locale)
+            .label(locale.clone())
             .build();
         locale_checkbutton.set_group(Some(&null_checkbutton));
-        language_selection_expander_row.add_row(&locale_checkbutton); 
+        language_selection_expander_row_viewport_box.append(&locale_checkbutton); 
         let language_selection_expander_row_clone = language_selection_expander_row.clone();
         let locale_checkbutton_clone = locale_checkbutton.clone();
         let bottom_next_button_clone2 = bottom_next_button.clone();
         locale_checkbutton.connect_toggled(move |_| {
             if locale_checkbutton_clone.is_active() == true {
-                language_selection_expander_row_clone.set_title(locale);
+                language_selection_expander_row_clone.set_title(&locale);
                 bottom_next_button_clone2.set_sensitive(true);
             }
         });
     }
-
-
 
     // / language_selection_box appends
     //// add text and and entry to language page selections
