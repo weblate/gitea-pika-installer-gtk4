@@ -14,6 +14,7 @@ use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
 use std::time::Instant;
+use std::str;
 
 pub fn keyboard_page(content_stack: &gtk::Stack) {
 
@@ -159,6 +160,29 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         }
     });
 
+    let mut current_keyboard_cli = Command::new("localectl")
+        .arg("status")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap_or_else(|e| panic!("failed {}", e));
+    let mut current_keyboard_grep = Command::new("grep")
+        .arg("X11 Layout")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+        .stdin(Stdio::from(current_keyboard_cli.stdout.unwrap())) // Pipe through.
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut current_keyboard_cut = Command::new("cut")
+        .arg("-d:")
+        .arg("-f2")
+        .stdin(Stdio::from(current_keyboard_grep.stdout.unwrap()))
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+
+    let current_keyboard_output = current_keyboard_cut.wait_with_output().unwrap();
+    let current_keyboard = str::from_utf8(&current_keyboard_output.stdout).unwrap().trim();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
+
     let mut keyboard_layout_cli = Command::new("localectl")
         .arg("list-x11-keymap-layouts")
         .stdin(Stdio::piped())
@@ -171,6 +195,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     for keyboard_layout in keyboard_layout_reader.lines() {
         let keyboard_layout = keyboard_layout.unwrap();
+        let keyboard_layout_clone = keyboard_layout.clone();
         let keyboard_layout_checkbutton = gtk::CheckButton::builder()
             .label(keyboard_layout.clone())
             .build();
@@ -185,6 +210,9 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
                 bottom_next_button_clone2.set_sensitive(true);
             }
         });
+        if current_keyboard.contains(&(keyboard_layout_clone)) {
+            keyboard_layout_checkbutton.set_active(true);
+        }
     }
 
     // / keyboard_selection_box appends

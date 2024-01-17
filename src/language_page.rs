@@ -14,6 +14,8 @@ use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
 use std::time::Instant;
+use std::env;
+
 
 pub fn language_page(content_stack: &gtk::Stack) {
 
@@ -159,6 +161,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
         }
     });
 
+    let current_locale = match env::var_os("LANG") {
+        Some(v) => v.into_string().unwrap(),
+        None => panic!("$LANG is not set")
+    };
+
     let mut locale_cli = Command::new("locale")
         .arg("-a")
         .stdin(Stdio::piped())
@@ -183,6 +190,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();
+        let locale_clone = locale.clone();
         let locale_checkbutton = gtk::CheckButton::builder()
             .label(locale.clone())
             .build();
@@ -197,6 +205,9 @@ pub fn language_page(content_stack: &gtk::Stack) {
                 bottom_next_button_clone2.set_sensitive(true);
             }
         });
+        if current_locale.contains(&(locale_clone)) {
+            locale_checkbutton.set_active(true);
+        }
     }
 
     // / language_selection_box appends
