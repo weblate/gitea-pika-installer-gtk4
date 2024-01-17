@@ -116,10 +116,6 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     keyboard_selection_text.add_css_class("medium_sized_text");
 
     let keyboard_selection_expander_row = adw::ExpanderRow::builder()
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
         .title("No Keyboard Layout selected")
         .build();
 
@@ -134,6 +130,16 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     let keyboard_selection_expander_row_viewport_box = gtk::Box::builder()
             .orientation(Orientation::Vertical)
             .build();
+
+    let keyboard_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
+            .selection_mode(SelectionMode::None)
+            .margin_top(15)
+            .margin_bottom(15)
+            .margin_start(15)
+            .margin_end(15)
+            .build();
+    keyboard_selection_expander_row_viewport_listbox.add_css_class("boxed-list");
+    keyboard_selection_expander_row_viewport_listbox.append(&keyboard_selection_expander_row);
 
     keyboard_selection_expander_row_viewport.set_child(Some(&keyboard_selection_expander_row_viewport_box));
 
@@ -184,7 +190,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     // / keyboard_selection_box appends
     //// add text and and entry to keyboard page selections
     keyboard_selection_box.append(&keyboard_selection_text);
-    keyboard_selection_box.append(&keyboard_selection_expander_row);
+    keyboard_selection_box.append(&keyboard_selection_expander_row_viewport_listbox);
     
     // / keyboard_header_box appends
     //// Add the keyboard page header text and icon
