@@ -116,43 +116,44 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .build();
     language_selection_text.add_css_class("medium_sized_text");
 
-    let language_selection_expander_row = adw::ExpanderRow::builder()
+    let language_selection_expander_row = gtk::Entry::builder()
         .margin_top(15)
-        .margin_bottom(15)
         .margin_start(15)
         .margin_end(15)
-        .title("Locale")
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label("No locale selected")
+        .valign(Align::Center)
+        .can_focus(false)
         .build();
 
     let language_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
         .height_request(200)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
         .build();
 
-    let language_selection_expander_row_viewport_box = gtk::Box::builder()
-            .orientation(Orientation::Vertical)
+    let language_selection_expander_row_viewport_box = gtk::ListBox::builder()
+            .selection_mode(SelectionMode::None)
             .build();
+    language_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     language_selection_expander_row_viewport.set_child(Some(&language_selection_expander_row_viewport_box));
 
-    language_selection_expander_row.add_row(&language_selection_expander_row_viewport);
+    language_selection_expander_row.set_placeholder_text(Some("No locale selected"));
 
-    language_selection_expander_row_viewport_box.append(&null_checkbutton);
+    let null_action_row = adw::ActionRow::builder()
+        .title("No locale selected")
+        .activatable_widget(&null_checkbutton)
+        .build();
+    null_action_row.add_prefix(&null_checkbutton);
+
+    language_selection_expander_row_viewport_box.append(&null_action_row);
 
     let null_checkbutton_clone = null_checkbutton.clone();
     let language_selection_expander_row_clone2 = language_selection_expander_row.clone();
     let bottom_next_button_clone = bottom_next_button.clone();
-
-
-    null_checkbutton.connect_toggled(move |_| {
-        if null_checkbutton_clone.is_active() == true {
-            language_selection_expander_row_clone2.set_title("No locale selected");
-            bottom_next_button_clone.set_sensitive(false);
-        }
-    });
 
     let mut locale_cli = Command::new("locale")
         .arg("-a")
@@ -160,32 +161,59 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
-
-    let locale_stdout = locale_cli.stdout.as_mut().expect("could not get stdout");
-    let locale_reader = BufReader::new(locale_stdout);
-
+    let mut locale_cli_cut = Command::new("cut")
+        .arg("-d.")
+        .arg("-f1")
+        .stdin(Stdio::from(locale_cli.stdout.unwrap())) // Pipe through.
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    let mut locale_cli_sort = Command::new("sort")
+        .arg("-u")
+        .stdin(Stdio::from(locale_cli_cut.stdout.unwrap()))
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap();
+    
+    let locale_reader = BufReader::new(locale_cli_sort.stdout.as_mut().expect("could not get stdout"));
+    
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();
         let locale_checkbutton = gtk::CheckButton::builder()
-            .label(locale.clone())
+            .valign(Align::Center)
+            .can_focus(false)
             .build();
         locale_checkbutton.set_group(Some(&null_checkbutton));
-        language_selection_expander_row_viewport_box.append(&locale_checkbutton); 
+        let locale_action_row = adw::ActionRow::builder()
+            .title(locale.clone())
+            .activatable_widget(&locale_checkbutton)
+            .build();
+        locale_action_row.add_prefix(&locale_checkbutton);
+        language_selection_expander_row_viewport_box.append(&locale_action_row); 
         let language_selection_expander_row_clone = language_selection_expander_row.clone();
         let locale_checkbutton_clone = locale_checkbutton.clone();
         let bottom_next_button_clone2 = bottom_next_button.clone();
         locale_checkbutton.connect_toggled(move |_| {
             if locale_checkbutton_clone.is_active() == true {
-                language_selection_expander_row_clone.set_title(&locale);
+                language_selection_expander_row_clone.set_text(&locale);
                 bottom_next_button_clone2.set_sensitive(true);
             }
         });
     }
 
+
+    null_checkbutton.connect_toggled(move |_| {
+        if null_checkbutton_clone.is_active() == true {
+            language_selection_expander_row_clone2.set_text(" ");
+            bottom_next_button_clone.set_sensitive(false);
+        }
+    });
+
     // / language_selection_box appends
     //// add text and and entry to language page selections
     language_selection_box.append(&language_selection_text);
     language_selection_box.append(&language_selection_expander_row);
+    language_selection_box.append(&language_selection_expander_row_viewport);
     
     // / language_header_box appends
     //// Add the language page header text and icon

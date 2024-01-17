@@ -11,6 +11,7 @@ use gtk::subclass::layout_child;
 use crate::save_window_size;
 use crate::welcome_page;
 use crate::language_page;
+use crate::keyboard_page;
 
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
@@ -22,9 +23,6 @@ pub fn build_ui(app: &adw::Application) {
 
 
     // Widget Bank
-
-    let gtk_loops = true;
-
 
     /// Create A box
     let _main_box = gtk::Box::builder()
@@ -99,6 +97,9 @@ pub fn build_ui(app: &adw::Application) {
 
     // Add language_page.rs as a page for content_stack
     language_page(&content_stack);
+
+    // Add keyboard_page.rs as a page for content_stack
+    keyboard_page(&content_stack);
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {
