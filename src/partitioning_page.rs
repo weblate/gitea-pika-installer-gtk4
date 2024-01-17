@@ -203,7 +203,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
 
     // the header text for the partitioning page
     let partition_method_automatic_header_text = gtk::Label::builder()
-        .label("Choose an install method")
+        .label("Automatic Partitioning Installer")
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -215,7 +215,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
 
     // the header icon for the partitioning icon
     let partition_method_automatic_header_icon = gtk::Image::builder()
-        .icon_name("media-floppy")
+        .icon_name("media-playlist-shuffle")
         .halign(gtk::Align::Start)
         .hexpand(true)
         .pixel_size(78)
@@ -239,6 +239,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
             .margin_start(15)
             .margin_end(15)
             .build();
+    partition_method_automatic_selection_text.add_css_class("medium_sixed_text");
 
     let partition_method_automatic_luks_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -276,9 +277,101 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
 
     partition_method_automatic_main_box.append(&partition_method_automatic_luks_box);
 
+    // Manual Partitioning Yard
+    let partition_method_manual_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .margin_bottom(15)
+        .margin_top(15)
+        .margin_end(15)
+        .margin_start(15)
+        .build();
+
+    let partition_method_manual_header_box = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .build();
+
+    // the header text for the partitioning page
+    let partition_method_manual_header_text = gtk::Label::builder()
+        .label("Manual Partitioning Installer")
+        .halign(gtk::Align::End)
+        .hexpand(true)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(5)
+        .build();
+    partition_method_manual_header_text.add_css_class("header_sized_text");
+
+    // the header icon for the partitioning icon
+    let partition_method_manual_header_icon = gtk::Image::builder()
+        .icon_name("input-tablet")
+        .halign(gtk::Align::Start)
+        .hexpand(true)
+        .pixel_size(78)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(0)
+        .margin_end(15)
+        .build();
+
+    let partition_method_manual_selection_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    let partition_method_manual_selection_text = gtk::Label::builder()
+            .label(" - Mount your custom root drive somewhere.\n - Mount all your additional mountpoints relative to it.\n - Make sure to have the the following mountpoints:\n    (CUSTOM_ROOT)/boot ~ 1000mb ext4\n    (CUSTOM_ROOT)/boot/efi ~ 512mb vfat/fat32\n- If (CUSTOM_ROOT)/home has LUKS encryption, make sure to enable it here.\n - Note: This doesn't erase any data automatically, format your drives manually.")
+            .halign(gtk::Align::Center)
+            .hexpand(true)
+            .margin_top(15)
+            .margin_bottom(15)
+            .margin_start(15)
+            .margin_end(15)
+            .build();
+        partition_method_manual_selection_text.add_css_class("medium_sized_text");
+
+    let partition_method_manual_luks_box = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .build();
+
+    let partition_method_manual_luks_checkbutton = gtk::CheckButton::builder()
+        .label("(CUSTOM_ROOT)/home has LUKS Encryption?")
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
+
+    let partition_method_manual_luks_listbox = gtk::ListBox::builder()
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(0)
+        .margin_end(15)
+        .build();
+    partition_method_manual_luks_listbox.add_css_class("boxed-list");
+
+    let partition_method_manual_luks_password_entry = adw::PasswordEntryRow::builder()
+        .title("LUKS Password")
+        .hexpand(true)
+        .build();
+
+    partition_method_manual_luks_listbox.append(&partition_method_manual_luks_password_entry);
+    partition_method_manual_luks_box.append(&partition_method_manual_luks_checkbutton);
+    partition_method_manual_luks_box.append(&partition_method_manual_luks_listbox);
+    partition_method_manual_header_box.append(&partition_method_manual_header_text);
+    partition_method_manual_header_box.append(&partition_method_manual_header_icon);
+    partition_method_manual_selection_box.append(&partition_method_manual_selection_text);
+    partition_method_manual_main_box.append(&partition_method_manual_header_box);
+    partition_method_manual_main_box.append(&partition_method_manual_selection_box);
+
+    partition_method_manual_main_box.append(&partition_method_manual_luks_box);
+
+    /// add all pages to partitioning stack
     partitioning_stack.add_titled(&partitioning_method_main_box, Some("partition_method_select_page"), "partition_method_select_page");
     partitioning_stack.add_titled(&partition_method_automatic_main_box, Some("partition_method_automatic_page"), "partition_method_automatic_page");
+    partitioning_stack.add_titled(&partition_method_manual_main_box, Some("partition_method_manual_page"), "partition_method_manual_page");
 
+
+    // add everything to the main box
     partitioning_main_box.append(&partitioning_stack);
     partitioning_main_box.append(&bottom_box);
 
@@ -289,11 +382,12 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     
     let partitioning_stack_clone = partitioning_stack.clone();
     automatic_method_button.connect_clicked(move |_| partitioning_stack_clone.set_visible_child_name("partition_method_automatic_page"));
-    manual_method_button.connect_clicked(move |_| println!("fuck"));
+    let partitioning_stack_clone2 = partitioning_stack.clone();
+    manual_method_button.connect_clicked(move |_| partitioning_stack_clone2.set_visible_child_name("partition_method_manual_page"));
 
     let content_stack_clone = content_stack.clone();
     let content_stack_clone2 = content_stack.clone();
-    let partitioning_stack_clone2 = partitioning_stack.clone();
+    let partitioning_stack_clone3 = partitioning_stack.clone();
     bottom_next_button.connect_clicked(move |_| {
         content_stack_clone.set_visible_child_name("installation_page")
     });
@@ -301,7 +395,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         content_stack_clone2.set_visible_child_name("keyboard_page")
     });
     bottom_back_button.connect_clicked(move |_| {
-        partitioning_stack_clone2.set_visible_child_name("partition_method_select_page")
+        partitioning_stack_clone3.set_visible_child_name("partition_method_select_page")
     });
 
 }
