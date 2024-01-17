@@ -13,6 +13,7 @@ use crate::welcome_page;
 use crate::language_page;
 use crate::keyboard_page;
 use crate::eula_page;
+use crate::partitioning_page;
 
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
@@ -104,6 +105,9 @@ pub fn build_ui(app: &adw::Application) {
 
     // Add keyboard_page.rs as a page for content_stack
     keyboard_page(&content_stack);
+
+    // Add partitioning_page.rs as a page for content_stack
+    partitioning_page(&content_stack);
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {

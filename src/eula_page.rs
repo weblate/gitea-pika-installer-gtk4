@@ -105,7 +105,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
 
     // text above eula selection box
     let eula_selection_text = gtk::Label::builder()
-        .label("Please carefully read and consent to the follwing before installing PikaOS:")
+        .label("Please carefully read and make sure you consent to the following before installing PikaOS:")
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
