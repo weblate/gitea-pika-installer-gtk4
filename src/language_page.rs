@@ -154,17 +154,17 @@ pub fn language_page(content_stack: &gtk::Stack) {
         }
     });
 
-    let mut output = Command::new("locale")
+    let mut locale_cli = Command::new("locale")
         .arg("-a")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
 
-    let stdout = output.stdout.as_mut().expect("could not get stdout");
-    let reader = BufReader::new(stdout);
+    let locale_stdout = locale_cli.stdout.as_mut().expect("could not get stdout");
+    let locale_reader = BufReader::new(locale_stdout);
 
-    for locale in reader.lines() {
+    for locale in locale_reader.lines() {
         let locale = locale.unwrap();
         let locale_checkbutton = gtk::CheckButton::builder()
             .label(locale.clone())
