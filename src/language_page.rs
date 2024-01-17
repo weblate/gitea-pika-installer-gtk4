@@ -1,4 +1,3 @@
-use gtk::pango::Language;
 // Use libraries
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
@@ -225,7 +224,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
     let content_stack_clone = content_stack.clone();
     let content_stack_clone2 = content_stack.clone();
     bottom_next_button.connect_clicked(move |_| {
-        content_stack_clone.set_visible_child_name("keyboard_page")
+        content_stack_clone.set_visible_child_name("eula_page")
     });
     bottom_back_button.connect_clicked(move |_| {
         content_stack_clone2.set_visible_child_name("welcome_page")

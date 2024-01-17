@@ -15,11 +15,12 @@ mod save_window_size;
 mod welcome_page;
 mod language_page;
 mod keyboard_page;
+mod eula_page;
 use crate::save_window_size::save_window_size;
 use crate::welcome_page::welcome_page;
 use crate::language_page::language_page;
 use crate::keyboard_page::keyboard_page;
-
+use crate::eula_page::eula_page;
 
 /// main function
 fn main() {

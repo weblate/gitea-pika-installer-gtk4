@@ -215,7 +215,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         content_stack_clone.set_visible_child_name("partitioning_page")
     });
     bottom_back_button.connect_clicked(move |_| {
-        content_stack_clone2.set_visible_child_name("language_page")
+        content_stack_clone2.set_visible_child_name("eula_page")
     });
 
 }
