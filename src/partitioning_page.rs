@@ -1,3 +1,4 @@
+use adw::subclass::application;
 // Use libraries
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
@@ -437,6 +438,43 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
             .build();
     partition_method_manual_selection_text.add_css_class("medium_sized_text");
 
+    let partition_method_manual_chroot_box = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
+    
+    let partition_method_manual_chroot_listbox = gtk::ListBox::builder()
+        .build();
+    partition_method_manual_chroot_listbox.add_css_class("boxed-list");
+
+    let partition_method_manual_chroot_dir_file_dialog = gtk::FileChooserNative::new(
+        Some("Open File"),
+        gtk::Window::NONE,
+        gtk::FileChooserAction::SelectFolder,
+        Some("Open"),
+        Some("Cancel"),
+    );
+   
+    //partition_method_manual_chroot_dir_file_dialog.set_transient_for(Some(&application_window));
+    
+    let partition_method_manual_chroot_dir_entry = adw::EntryRow::builder()
+        .title("Custom Root Mountpoint")
+        .hexpand(true)
+        .build();
+
+    let partition_method_manual_chroot_dir_button_content = adw::ButtonContent::builder()
+        .label("Open")
+        .icon_name("folder-open")
+        .build();
+
+    let partition_method_manual_chroot_dir_button = gtk::Button::builder()
+        .child(&partition_method_manual_chroot_dir_button_content)
+        .margin_start(10)
+        .build();
+
     let partition_method_manual_luks_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
         .build();
@@ -478,15 +516,32 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     partition_method_manual_selection_box.append(&partition_method_manual_selection_text);
     partition_method_manual_main_box.append(&partition_method_manual_header_box);
     partition_method_manual_main_box.append(&partition_method_manual_selection_box);
-
+    partition_method_manual_chroot_listbox.append(&partition_method_manual_chroot_dir_entry);
+    partition_method_manual_chroot_box.append(&partition_method_manual_chroot_listbox);
+    partition_method_manual_chroot_box.append(&partition_method_manual_chroot_dir_button);
+    partition_method_manual_main_box.append(&partition_method_manual_chroot_box);
     partition_method_manual_main_box.append(&partition_method_manual_luks_box);
     partition_method_manual_main_box.append(&partition_method_manual_status_label);
+
+    let partition_method_manual_chroot_dir_file_dialog_clone = partition_method_manual_chroot_dir_file_dialog.clone();
+    let partition_method_manual_chroot_dir_file_dialog_clone2 = partition_method_manual_chroot_dir_file_dialog.clone();
+    partition_method_manual_chroot_dir_button.connect_clicked(move |_| {
+        partition_method_manual_chroot_dir_file_dialog_clone.show();
+    });
+    let partition_method_manual_chroot_dir_button_clone = partition_method_manual_chroot_dir_button.clone();
+    partition_method_manual_chroot_dir_file_dialog.connect_response(clone!(@weak partition_method_manual_chroot_dir_file_dialog => move |_, response| {
+        if response == gtk::ResponseType::Accept {
+            let file = partition_method_manual_chroot_dir_file_dialog.file().unwrap();
+            let path_buf = file.path().unwrap();
+
+            println!("Opening database file: {}", path_buf.as_path().display());
+        }
+    }));    
 
     /// add all pages to partitioning stack
     partitioning_stack.add_titled(&partitioning_method_main_box, Some("partition_method_select_page"), "partition_method_select_page");
     partitioning_stack.add_titled(&partition_method_automatic_main_box, Some("partition_method_automatic_page"), "partition_method_automatic_page");
     partitioning_stack.add_titled(&partition_method_manual_main_box, Some("partition_method_manual_page"), "partition_method_manual_page");
-
 
     // add everything to the main box
     partitioning_main_box.append(&partitioning_stack);
@@ -499,6 +554,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     
     let partitioning_stack_clone = partitioning_stack.clone();
     automatic_method_button.connect_clicked(move |_| partitioning_stack_clone.set_visible_child_name("partition_method_automatic_page"));
+    //automatic_method_button.connect_clicked(move |_| println!("{}", partition_method_manual_chroot_dir_file_dialog_clone2.file().expect("l").path().expect("REASON").into_os_string().into_string().unwrap()));
     let partitioning_stack_clone2 = partitioning_stack.clone();
     manual_method_button.connect_clicked(move |_| partitioning_stack_clone2.set_visible_child_name("partition_method_manual_page"));
 
