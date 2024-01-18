@@ -360,7 +360,18 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     let partition_method_automatic_luks_password_entry = adw::PasswordEntryRow::builder()
         .title("LUKS Password")
         .hexpand(true)
+        .sensitive(false)
         .build();
+
+    let partition_method_automatic_luks_checkbutton_clone = partition_method_automatic_luks_checkbutton.clone();
+    let partition_method_automatic_luks_password_entry_clone = partition_method_automatic_luks_password_entry.clone();
+    partition_method_automatic_luks_checkbutton.connect_toggled(move |_| {
+        if partition_method_automatic_luks_checkbutton_clone.is_active() == true {
+            partition_method_automatic_luks_password_entry_clone.set_sensitive(true);
+        } else {
+            partition_method_automatic_luks_password_entry_clone.set_sensitive(false);
+        }
+    });
 
     partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_entry);
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_checkbutton);
