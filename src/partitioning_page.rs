@@ -498,6 +498,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     let partition_method_manual_luks_password_entry = adw::PasswordEntryRow::builder()
         .title("LUKS Password")
         .hexpand(true)
+        .sensitive(false)
         .build();
 
     let partition_method_manual_status_label = gtk::Label::builder()
@@ -528,15 +529,22 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     partition_method_manual_chroot_dir_button.connect_clicked(move |_| {
         partition_method_manual_chroot_dir_file_dialog_clone.show();
     });
-    let partition_method_manual_chroot_dir_button_clone = partition_method_manual_chroot_dir_button.clone();
+    let partition_method_manual_chroot_dir_entry_clone = partition_method_manual_chroot_dir_entry.clone();
     partition_method_manual_chroot_dir_file_dialog.connect_response(clone!(@weak partition_method_manual_chroot_dir_file_dialog => move |_, response| {
         if response == gtk::ResponseType::Accept {
-            let file = partition_method_manual_chroot_dir_file_dialog.file().unwrap();
-            let path_buf = file.path().unwrap();
-
-            println!("Opening database file: {}", path_buf.as_path().display());
+            if partition_method_manual_chroot_dir_file_dialog.file().is_some() {
+                partition_method_manual_chroot_dir_entry.set_text(&partition_method_manual_chroot_dir_file_dialog.file().expect("FILE PATHING FAIL").path().expect("PATH STRINGING FAIL").into_os_string().into_string().unwrap());
+            }
         }
     }));    
+
+    partition_method_manual_luks_checkbutton.connect_toggled(clone!(@weak partition_method_manual_luks_checkbutton => move |_| {
+        if partition_method_manual_luks_checkbutton.is_active() {
+            partition_method_manual_luks_password_entry.set_sensitive(true)
+        } else {
+            partition_method_manual_luks_password_entry.set_sensitive(false)
+        }
+    }));
 
     /// add all pages to partitioning stack
     partitioning_stack.add_titled(&partitioning_method_main_box, Some("partition_method_select_page"), "partition_method_select_page");
