@@ -278,7 +278,8 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
 
     devices_selection_expander_row.add_row(&devices_selection_expander_row_viewport);
 
-    let mut partition_method_automatic_get_devices_cli = Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+    let mut partition_method_automatic_get_devices_cli = Command::new("pkexec")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
         .arg("get_block_devices")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
@@ -296,7 +297,8 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
 
     for device in partition_method_automatic_get_devices_reader.lines() {
         let device = device.unwrap();
-        let device_size_cli = Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        let device_size_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("get_block_size")
             .arg(device.clone())
             .output()
