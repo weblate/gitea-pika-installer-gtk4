@@ -146,20 +146,9 @@ pub fn language_page(content_stack: &gtk::Stack) {
     language_selection_expander_row_viewport_listbox.append(&language_selection_expander_row);
 
     language_selection_expander_row.add_row(&language_selection_expander_row_viewport);
-
-    language_selection_expander_row_viewport_box.append(&null_checkbutton);
-
-    let null_checkbutton_clone = null_checkbutton.clone();
+    
     let language_selection_expander_row_clone2 = language_selection_expander_row.clone();
     let bottom_next_button_clone = bottom_next_button.clone();
-
-
-    null_checkbutton.connect_toggled(move |_| {
-        if null_checkbutton_clone.is_active() == true {
-            language_selection_expander_row_clone2.set_title("No locale selected");
-            bottom_next_button_clone.set_sensitive(false);
-        }
-    });
 
     let current_locale = match env::var_os("LANG") {
         Some(v) => v.into_string().unwrap(),

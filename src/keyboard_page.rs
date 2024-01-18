@@ -146,19 +146,8 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     keyboard_selection_expander_row.add_row(&keyboard_selection_expander_row_viewport);
 
-    keyboard_selection_expander_row_viewport_box.append(&null_checkbutton);
-
-    let null_checkbutton_clone = null_checkbutton.clone();
     let keyboard_selection_expander_row_clone2 = keyboard_selection_expander_row.clone();
     let bottom_next_button_clone = bottom_next_button.clone();
-
-
-    null_checkbutton.connect_toggled(move |_| {
-        if null_checkbutton_clone.is_active() == true {
-            keyboard_selection_expander_row_clone2.set_title("No Keyboard Layout selected");
-            bottom_next_button_clone.set_sensitive(false);
-        }
-    });
 
     let mut current_keyboard_cli = Command::new("localectl")
         .arg("status")

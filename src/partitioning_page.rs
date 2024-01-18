@@ -9,6 +9,14 @@ use glib::*;
 use gdk::Display;
 use gtk::subclass::layout_child;
 
+use std::io::BufRead;
+use std::io::BufReader;
+use std::process::Command;
+use std::process::Stdio;
+use std::time::Instant;
+use std::env;
+use pretty_bytes::converter::convert;
+
 pub fn partitioning_page(content_stack: &gtk::Stack) {
    
     // create the bottom box for next and back buttons
@@ -239,7 +247,66 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
             .margin_start(15)
             .margin_end(15)
             .build();
-    partition_method_automatic_selection_text.add_css_class("medium_sixed_text");
+    partition_method_automatic_selection_text.add_css_class("medium_sized_text");
+
+    let devices_selection_expander_row = adw::ExpanderRow::builder()
+        .title("No disk selected for selection")
+        .build();
+
+    let null_checkbutton = gtk::CheckButton::builder()
+        .build();
+
+    let devices_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
+        .height_request(200)
+        .build();
+
+    let devices_selection_expander_row_viewport_box = gtk::Box::builder()
+            .orientation(Orientation::Vertical)
+            .build();
+
+    devices_selection_expander_row_viewport.set_child(Some(&devices_selection_expander_row_viewport_box));
+
+    let devices_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
+            .selection_mode(SelectionMode::None)
+            .margin_top(15)
+            .margin_bottom(15)
+            .margin_start(15)
+            .margin_end(15)
+            .build();
+    devices_selection_expander_row_viewport_listbox.add_css_class("boxed-list");
+    devices_selection_expander_row_viewport_listbox.append(&devices_selection_expander_row);
+
+    devices_selection_expander_row.add_row(&devices_selection_expander_row_viewport);
+
+    let mut partition_method_automatic_get_devices_cli = Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_block_devices")
+        .stdin(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap_or_else(|e| panic!("failed {}", e));
+    let partition_method_automatic_get_devices_reader = BufReader::new(partition_method_automatic_get_devices_cli.stdout.as_mut().expect("could not get stdout"));
+
+    for device in partition_method_automatic_get_devices_reader.lines() {
+        let device = device.unwrap();
+        let device_size_cli = Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("get_block_size")
+            .arg(device.clone())
+            .output()
+            .expect("failed to execute process");
+        let device_size = String::from_utf8(device_size_cli.stdout).expect("Failed to create float").trim().parse::<f64>().unwrap();
+        let device_button = gtk::CheckButton::builder()
+            .valign(Align::Center)
+            .can_focus(false)
+            .build();
+        device_button.set_group(Some(&null_checkbutton));
+        let device_row = adw::ActionRow::builder()
+            .activatable_widget(&device_button)
+            .title(device)
+            .subtitle(pretty_bytes::converter::convert(device_size))
+            .build();
+        device_row.add_prefix(&device_button);
+        devices_selection_expander_row_viewport_box.append(&device_row);
+    }
 
     let partition_method_automatic_luks_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -266,6 +333,14 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .build();
 
+    let partition_method_automatic_status_label = gtk::Label::builder()
+        .label("No Disk specified")
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .build();
+    partition_method_automatic_status_label.add_css_class("small_error_text");
+
     partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_entry);
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_checkbutton);
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_listbox);
@@ -274,8 +349,9 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     partition_method_automatic_selection_box.append(&partition_method_automatic_selection_text);
     partition_method_automatic_main_box.append(&partition_method_automatic_header_box);
     partition_method_automatic_main_box.append(&partition_method_automatic_selection_box);
-
+    partition_method_automatic_main_box.append(&devices_selection_expander_row_viewport_listbox);
     partition_method_automatic_main_box.append(&partition_method_automatic_luks_box);
+    partition_method_automatic_main_box.append(&partition_method_automatic_status_label);
 
     // Manual Partitioning Yard
     let partition_method_manual_main_box = gtk::Box::builder()
@@ -327,7 +403,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
             .margin_start(15)
             .margin_end(15)
             .build();
-        partition_method_manual_selection_text.add_css_class("medium_sized_text");
+    partition_method_manual_selection_text.add_css_class("medium_sized_text");
 
     let partition_method_manual_luks_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -354,6 +430,14 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .build();
 
+    let partition_method_manual_status_label = gtk::Label::builder()
+        .label("No mountpoint specified")
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .build();
+    partition_method_manual_status_label.add_css_class("small_error_text");
+
     partition_method_manual_luks_listbox.append(&partition_method_manual_luks_password_entry);
     partition_method_manual_luks_box.append(&partition_method_manual_luks_checkbutton);
     partition_method_manual_luks_box.append(&partition_method_manual_luks_listbox);
@@ -364,6 +448,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     partition_method_manual_main_box.append(&partition_method_manual_selection_box);
 
     partition_method_manual_main_box.append(&partition_method_manual_luks_box);
+    partition_method_manual_main_box.append(&partition_method_manual_status_label);
 
     /// add all pages to partitioning stack
     partitioning_stack.add_titled(&partitioning_method_main_box, Some("partition_method_select_page"), "partition_method_select_page");
