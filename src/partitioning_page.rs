@@ -286,6 +286,14 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         .unwrap_or_else(|e| panic!("failed {}", e));
     let partition_method_automatic_get_devices_reader = BufReader::new(partition_method_automatic_get_devices_cli.stdout.as_mut().expect("could not get stdout"));
 
+    let partition_method_automatic_status_label = gtk::Label::builder()
+        .label("No Disk specified")
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .build();
+    partition_method_automatic_status_label.add_css_class("small_error_text");
+
     for device in partition_method_automatic_get_devices_reader.lines() {
         let device = device.unwrap();
         let device_size_cli = Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
@@ -301,11 +309,30 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         device_button.set_group(Some(&null_checkbutton));
         let device_row = adw::ActionRow::builder()
             .activatable_widget(&device_button)
-            .title(device)
+            .title(device.clone())
             .subtitle(pretty_bytes::converter::convert(device_size))
             .build();
         device_row.add_prefix(&device_button);
         devices_selection_expander_row_viewport_box.append(&device_row);
+        // button connect clones
+        let device_button_clone = device_button.clone();
+        let devices_selection_expander_row_clone = devices_selection_expander_row.clone();
+        let bottom_next_button_clone = bottom_next_button.clone();
+        let partition_method_automatic_status_label_clone = partition_method_automatic_status_label.clone();
+        //
+        device_button.connect_toggled(move |_| {
+            if device_button_clone.is_active() == true {
+                devices_selection_expander_row_clone.set_title(&device);
+                if device_size > 39000000000.0 {
+                    partition_method_automatic_status_label_clone.hide();
+                    bottom_next_button_clone.set_sensitive(true);
+                } else {
+                    partition_method_automatic_status_label_clone.show();
+                    partition_method_automatic_status_label_clone.set_label("Disk Size too small, PikaOS needs 40GB Disk");
+                    bottom_next_button_clone.set_sensitive(false);
+                }
+            }
+        });
     }
 
     let partition_method_automatic_luks_box = gtk::Box::builder()
@@ -332,14 +359,6 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         .title("LUKS Password")
         .hexpand(true)
         .build();
-
-    let partition_method_automatic_status_label = gtk::Label::builder()
-        .label("No Disk specified")
-        .halign(Align::Start)
-        .valign(Align::End)
-        .vexpand(true)
-        .build();
-    partition_method_automatic_status_label.add_css_class("small_error_text");
 
     partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_entry);
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_checkbutton);
