@@ -1,4 +1,3 @@
-use adw::subclass::application;
 // Use libraries
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
@@ -18,7 +17,7 @@ use std::time::Instant;
 use std::env;
 use pretty_bytes::converter::convert;
 
-pub fn partitioning_page(content_stack: &gtk::Stack) {
+pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
    
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -317,25 +316,19 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
             .build();
         device_row.add_prefix(&device_button);
         devices_selection_expander_row_viewport_box.append(&device_row);
-        // button connect clones
-        let device_button_clone = device_button.clone();
-        let devices_selection_expander_row_clone = devices_selection_expander_row.clone();
-        let bottom_next_button_clone = bottom_next_button.clone();
-        let partition_method_automatic_status_label_clone = partition_method_automatic_status_label.clone();
-        //
-        device_button.connect_toggled(move |_| {
-            if device_button_clone.is_active() == true {
-                devices_selection_expander_row_clone.set_title(&device);
+        device_button.connect_toggled(clone!(@weak device_button, @weak devices_selection_expander_row, @weak bottom_next_button, @weak partition_method_automatic_status_label => move |_| {
+            if device_button.is_active() == true {
+                devices_selection_expander_row.set_title(&device);
                 if device_size > 39000000000.0 {
-                    partition_method_automatic_status_label_clone.hide();
-                    bottom_next_button_clone.set_sensitive(true);
+                    partition_method_automatic_status_label.hide();
+                    bottom_next_button.set_sensitive(true);
                 } else {
-                    partition_method_automatic_status_label_clone.show();
-                    partition_method_automatic_status_label_clone.set_label("Disk Size too small, PikaOS needs 40GB Disk");
-                    bottom_next_button_clone.set_sensitive(false);
+                    partition_method_automatic_status_label.show();
+                    partition_method_automatic_status_label.set_label("Disk Size too small, PikaOS needs 40GB Disk");
+                    bottom_next_button.set_sensitive(false);
                 }
             }
-        });
+        }));
     }
 
     let partition_method_automatic_luks_box = gtk::Box::builder()
@@ -364,15 +357,13 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         .sensitive(false)
         .build();
 
-    let partition_method_automatic_luks_checkbutton_clone = partition_method_automatic_luks_checkbutton.clone();
-    let partition_method_automatic_luks_password_entry_clone = partition_method_automatic_luks_password_entry.clone();
-    partition_method_automatic_luks_checkbutton.connect_toggled(move |_| {
-        if partition_method_automatic_luks_checkbutton_clone.is_active() == true {
-            partition_method_automatic_luks_password_entry_clone.set_sensitive(true);
+    partition_method_automatic_luks_checkbutton.connect_toggled(clone!(@weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_luks_password_entry => move |_| {
+        if partition_method_automatic_luks_checkbutton.is_active() == true {
+            partition_method_automatic_luks_password_entry.set_sensitive(true);
         } else {
-            partition_method_automatic_luks_password_entry_clone.set_sensitive(false);
+            partition_method_automatic_luks_password_entry.set_sensitive(false);
         }
-    });
+    }));
 
     partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_entry);
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_checkbutton);
@@ -458,7 +449,7 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
         Some("Cancel"),
     );
    
-    //partition_method_manual_chroot_dir_file_dialog.set_transient_for(Some(&application_window));
+    partition_method_manual_chroot_dir_file_dialog.set_transient_for(Some(window));
     
     let partition_method_manual_chroot_dir_entry = adw::EntryRow::builder()
         .title("Custom Root Mountpoint")
@@ -524,12 +515,13 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     partition_method_manual_main_box.append(&partition_method_manual_luks_box);
     partition_method_manual_main_box.append(&partition_method_manual_status_label);
 
+
+    // clone partition_method_manual_chroot_dir_file_dialog as rust becuase glib breaks it show function for some reason
     let partition_method_manual_chroot_dir_file_dialog_clone = partition_method_manual_chroot_dir_file_dialog.clone();
-    let partition_method_manual_chroot_dir_file_dialog_clone2 = partition_method_manual_chroot_dir_file_dialog.clone();
     partition_method_manual_chroot_dir_button.connect_clicked(move |_| {
         partition_method_manual_chroot_dir_file_dialog_clone.show();
     });
-    let partition_method_manual_chroot_dir_entry_clone = partition_method_manual_chroot_dir_entry.clone();
+
     partition_method_manual_chroot_dir_file_dialog.connect_response(clone!(@weak partition_method_manual_chroot_dir_file_dialog => move |_, response| {
         if response == gtk::ResponseType::Accept {
             if partition_method_manual_chroot_dir_file_dialog.file().is_some() {
@@ -559,24 +551,15 @@ pub fn partitioning_page(content_stack: &gtk::Stack) {
     //// Add the partitioning_main_box as page: partitioning_page, Give it nice title
     content_stack.add_titled(&partitioning_main_box, Some("partitioning_page"), "Partitioning");
     
-    
-    let partitioning_stack_clone = partitioning_stack.clone();
-    automatic_method_button.connect_clicked(move |_| partitioning_stack_clone.set_visible_child_name("partition_method_automatic_page"));
-    //automatic_method_button.connect_clicked(move |_| println!("{}", partition_method_manual_chroot_dir_file_dialog_clone2.file().expect("l").path().expect("REASON").into_os_string().into_string().unwrap()));
-    let partitioning_stack_clone2 = partitioning_stack.clone();
-    manual_method_button.connect_clicked(move |_| partitioning_stack_clone2.set_visible_child_name("partition_method_manual_page"));
+    automatic_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_automatic_page")));
+    manual_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_manual_page")));
 
-    let content_stack_clone = content_stack.clone();
-    let content_stack_clone2 = content_stack.clone();
-    let partitioning_stack_clone3 = partitioning_stack.clone();
-    bottom_next_button.connect_clicked(move |_| {
-        content_stack_clone.set_visible_child_name("installation_page")
-    });
-    bottom_back_button.connect_clicked(move |_| {
-        content_stack_clone2.set_visible_child_name("keyboard_page")
-    });
-    bottom_back_button.connect_clicked(move |_| {
-        partitioning_stack_clone3.set_visible_child_name("partition_method_select_page")
-    });
+    bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
+        content_stack.set_visible_child_name("installation_page")
+    }));
+    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack => move |_| {
+        content_stack.set_visible_child_name("keyboard_page");
+        partitioning_stack.set_visible_child_name("partition_method_select_page");
+    }));
 
 }

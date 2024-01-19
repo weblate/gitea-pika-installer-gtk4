@@ -163,9 +163,8 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
     // / Content stack appends
     //// Add the welcome_main_box as page: welcome_page, Give it nice title
     content_stack.add_titled(&welcome_main_box, Some("welcome_page"), "Welcome");
-    let content_stack_clone = content_stack.clone();
-    let window_clone = window.clone();
-    install_media_button.connect_clicked(move |_| content_stack_clone.set_visible_child_name("language_page"));
-    live_media_button.connect_clicked(move |_| window_clone.hide());
+
+    install_media_button.connect_clicked(clone!(@weak content_stack => move |_| content_stack.set_visible_child_name("language_page")));
+    live_media_button.connect_clicked(clone!(@weak window => move |_| window.hide()));
 
 }

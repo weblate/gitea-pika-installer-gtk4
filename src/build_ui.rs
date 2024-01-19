@@ -107,7 +107,7 @@ pub fn build_ui(app: &adw::Application) {
     keyboard_page(&content_stack);
 
     // Add partitioning_page.rs as a page for content_stack
-    partitioning_page(&content_stack);
+    partitioning_page(&window, &content_stack);
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {

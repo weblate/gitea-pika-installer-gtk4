@@ -161,23 +161,19 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     //// Add the eula_main_box as page: eula_page, Give it nice title
     content_stack.add_titled(&eula_main_box, Some("eula_page"), "EULA");
 
-    let eula_accept_checkbutton_clone = eula_accept_checkbutton.clone();
-    let bottom_next_button_clone = bottom_next_button.clone();
-    eula_accept_checkbutton.connect_toggled(move |_| {
-        if eula_accept_checkbutton_clone.is_active() == true {
-            bottom_next_button_clone.set_sensitive(true);
+    eula_accept_checkbutton.connect_toggled(clone!(@weak eula_accept_checkbutton, @weak bottom_next_button => move |_| {
+        if eula_accept_checkbutton.is_active() == true {
+            bottom_next_button.set_sensitive(true);
         } else {
-            bottom_next_button_clone.set_sensitive(false)
+            bottom_next_button.set_sensitive(false)
         }
-    });
+    }));
 
-    let content_stack_clone = content_stack.clone();
-    let content_stack_clone2 = content_stack.clone();
-    bottom_next_button.connect_clicked(move |_| {
-        content_stack_clone.set_visible_child_name("keyboard_page")
-    });
-    bottom_back_button.connect_clicked(move |_| {
-        content_stack_clone2.set_visible_child_name("language_page")
-    });
+    bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
+        content_stack.set_visible_child_name("keyboard_page")
+    }));
+    bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
+        content_stack.set_visible_child_name("language_page")
+    }));
 
 }

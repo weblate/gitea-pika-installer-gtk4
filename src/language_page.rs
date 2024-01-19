@@ -146,9 +146,6 @@ pub fn language_page(content_stack: &gtk::Stack) {
     language_selection_expander_row_viewport_listbox.append(&language_selection_expander_row);
 
     language_selection_expander_row.add_row(&language_selection_expander_row_viewport);
-    
-    let language_selection_expander_row_clone2 = language_selection_expander_row.clone();
-    let bottom_next_button_clone = bottom_next_button.clone();
 
     let current_locale = match env::var_os("LANG") {
         Some(v) => v.into_string().unwrap(),
@@ -185,15 +182,12 @@ pub fn language_page(content_stack: &gtk::Stack) {
             .build();
         locale_checkbutton.set_group(Some(&null_checkbutton));
         language_selection_expander_row_viewport_box.append(&locale_checkbutton); 
-        let language_selection_expander_row_clone = language_selection_expander_row.clone();
-        let locale_checkbutton_clone = locale_checkbutton.clone();
-        let bottom_next_button_clone2 = bottom_next_button.clone();
-        locale_checkbutton.connect_toggled(move |_| {
-            if locale_checkbutton_clone.is_active() == true {
-                language_selection_expander_row_clone.set_title(&locale);
-                bottom_next_button_clone2.set_sensitive(true);
+        locale_checkbutton.connect_toggled(clone!(@weak locale_checkbutton, @weak language_selection_expander_row, @weak bottom_next_button => move |_| {
+            if locale_checkbutton.is_active() == true {
+                language_selection_expander_row.set_title(&locale);
+                bottom_next_button.set_sensitive(true);
             }
-        });
+        }));
         if current_locale.contains(&(locale_clone)) {
             locale_checkbutton.set_active(true);
         }
@@ -221,13 +215,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
     //// Add the language_main_box as page: language_page, Give it nice title
     content_stack.add_titled(&language_main_box, Some("language_page"), "Language");
 
-    let content_stack_clone = content_stack.clone();
-    let content_stack_clone2 = content_stack.clone();
-    bottom_next_button.connect_clicked(move |_| {
-        content_stack_clone.set_visible_child_name("eula_page")
-    });
-    bottom_back_button.connect_clicked(move |_| {
-        content_stack_clone2.set_visible_child_name("welcome_page")
-    });
+    bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
+        content_stack.set_visible_child_name("eula_page")
+    }));
+    bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
+        content_stack.set_visible_child_name("welcome_page")
+    }));
 
 }

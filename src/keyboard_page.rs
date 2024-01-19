@@ -146,9 +146,6 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     keyboard_selection_expander_row.add_row(&keyboard_selection_expander_row_viewport);
 
-    let keyboard_selection_expander_row_clone2 = keyboard_selection_expander_row.clone();
-    let bottom_next_button_clone = bottom_next_button.clone();
-
     let mut current_keyboard_cli = Command::new("localectl")
         .arg("status")
         .stdin(Stdio::piped())
@@ -190,15 +187,12 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
             .build();
         keyboard_layout_checkbutton.set_group(Some(&null_checkbutton));
         keyboard_selection_expander_row_viewport_box.append(&keyboard_layout_checkbutton); 
-        let keyboard_selection_expander_row_clone = keyboard_selection_expander_row.clone();
-        let keyboard_layout_checkbutton_clone = keyboard_layout_checkbutton.clone();
-        let bottom_next_button_clone2 = bottom_next_button.clone();
-        keyboard_layout_checkbutton.connect_toggled(move |_| {
-            if keyboard_layout_checkbutton_clone.is_active() == true {
-                keyboard_selection_expander_row_clone.set_title(&keyboard_layout);
-                bottom_next_button_clone2.set_sensitive(true);
+        keyboard_layout_checkbutton.connect_toggled(clone!(@weak keyboard_layout_checkbutton, @weak keyboard_selection_expander_row, @weak bottom_next_button => move |_| {
+            if keyboard_layout_checkbutton.is_active() == true {
+                keyboard_selection_expander_row.set_title(&keyboard_layout);
+                bottom_next_button.set_sensitive(true);
             }
-        });
+        }));
         if current_keyboard.contains(&(keyboard_layout_clone)) {
             keyboard_layout_checkbutton.set_active(true);
         }
@@ -226,13 +220,11 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     //// Add the keyboard_main_box as page: keyboard_page, Give it nice title
     content_stack.add_titled(&keyboard_main_box, Some("keyboard_page"), "Keyboard");
 
-    let content_stack_clone = content_stack.clone();
-    let content_stack_clone2 = content_stack.clone();
-    bottom_next_button.connect_clicked(move |_| {
-        content_stack_clone.set_visible_child_name("partitioning_page")
-    });
-    bottom_back_button.connect_clicked(move |_| {
-        content_stack_clone2.set_visible_child_name("eula_page")
-    });
+    bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
+        content_stack.set_visible_child_name("partitioning_page")
+    }));
+    bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
+        content_stack.set_visible_child_name("eula_page")
+    }));
 
 }
