@@ -287,49 +287,22 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         .unwrap_or_else(|e| panic!("failed {}", e));
     let partition_method_automatic_get_devices_reader = BufReader::new(partition_method_automatic_get_devices_cli.stdout.expect("could not get stdout"));
 
-    let partition_method_automatic_status_label = gtk::Label::builder()
-        .label("No Disk specified")
+    let partition_method_automatic_disk_error_label = gtk::Label::builder()
+        .label("No Disk specified.")
         .halign(Align::Start)
         .valign(Align::End)
         .vexpand(true)
         .build();
-    partition_method_automatic_status_label.add_css_class("small_error_text");
+    partition_method_automatic_disk_error_label.add_css_class("small_error_text");
 
-    for device in partition_method_automatic_get_devices_reader.lines() {
-        let device = device.unwrap();
-        let device_size_cli = Command::new("pkexec")
-            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
-            .arg("get_block_size")
-            .arg(device.clone())
-            .output()
-            .expect("failed to execute process");
-        let device_size = String::from_utf8(device_size_cli.stdout).expect("Failed to create float").trim().parse::<f64>().unwrap();
-        let device_button = gtk::CheckButton::builder()
-            .valign(Align::Center)
-            .can_focus(false)
-            .build();
-        device_button.set_group(Some(&null_checkbutton));
-        let device_row = adw::ActionRow::builder()
-            .activatable_widget(&device_button)
-            .title(device.clone())
-            .subtitle(pretty_bytes::converter::convert(device_size))
-            .build();
-        device_row.add_prefix(&device_button);
-        devices_selection_expander_row_viewport_box.append(&device_row);
-        device_button.connect_toggled(clone!(@weak device_button, @weak devices_selection_expander_row, @weak bottom_next_button, @weak partition_method_automatic_status_label => move |_| {
-            if device_button.is_active() == true {
-                devices_selection_expander_row.set_title(&device);
-                if device_size > 39000000000.0 {
-                    partition_method_automatic_status_label.set_visible(false);
-                    bottom_next_button.set_sensitive(true);
-                } else {
-                    partition_method_automatic_status_label.set_visible(true);
-                    partition_method_automatic_status_label.set_label("Disk Size too small, PikaOS needs 40GB Disk");
-                    bottom_next_button.set_sensitive(false);
-                }
-            }
-        }));
-    }
+    let partition_method_automatic_luks_error_label = gtk::Label::builder()
+        .label("LUKS Encryption Enabled but no password provided.")
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .visible(false)
+        .build();
+    partition_method_automatic_luks_error_label.add_css_class("small_error_text");
 
     let partition_method_automatic_luks_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -357,13 +330,74 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         .sensitive(false)
         .build();
 
-    partition_method_automatic_luks_checkbutton.connect_toggled(clone!(@weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_luks_password_entry => move |_| {
-        if partition_method_automatic_luks_checkbutton.is_active() == true {
-            partition_method_automatic_luks_password_entry.set_sensitive(true);
-        } else {
-            partition_method_automatic_luks_password_entry.set_sensitive(false);
-        }
-    }));
+    for device in partition_method_automatic_get_devices_reader.lines() {
+        let device = device.unwrap();
+        let device_size_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("get_block_size")
+            .arg(device.clone())
+            .output()
+            .expect("failed to execute process");
+        let device_size = String::from_utf8(device_size_cli.stdout).expect("Failed to create float").trim().parse::<f64>().unwrap();
+        let device_button = gtk::CheckButton::builder()
+            .valign(Align::Center)
+            .can_focus(false)
+            .build();
+        device_button.set_group(Some(&null_checkbutton));
+        let device_row = adw::ActionRow::builder()
+            .activatable_widget(&device_button)
+            .title(device.clone())
+            .subtitle(pretty_bytes::converter::convert(device_size))
+            .build();
+        device_row.add_prefix(&device_button);
+        devices_selection_expander_row_viewport_box.append(&device_row);
+        device_button.connect_toggled(clone!(@weak device_button, @weak devices_selection_expander_row, @weak bottom_next_button, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak partition_method_automatic_luks_checkbutton => move |_| {
+            if device_button.is_active() == true {
+                devices_selection_expander_row.set_title(&device);
+                if device_size > 39000000000.0 {
+                    partition_method_automatic_disk_error_label.set_visible(false);
+                    if partition_method_automatic_luks_checkbutton.is_active() == true {
+                        if partition_method_automatic_luks_error_label.get_visible() {
+                            //
+                        } else {
+                            bottom_next_button.set_sensitive(true);
+                        }
+                    }  else {
+                        bottom_next_button.set_sensitive(true);
+                    } 
+                } else {
+                    partition_method_automatic_disk_error_label.set_visible(true);
+                    partition_method_automatic_disk_error_label.set_label("Disk Size too small, PikaOS needs 40GB Disk");
+                    bottom_next_button.set_sensitive(false);
+                }
+            }
+        }));
+    }
+
+        partition_method_automatic_luks_checkbutton.connect_toggled(clone!(@weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_luks_password_entry, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak bottom_next_button => move |_| {
+            if partition_method_automatic_luks_checkbutton.is_active() == true {
+                partition_method_automatic_luks_password_entry.set_sensitive(true);
+                if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
+                    partition_method_automatic_luks_error_label.set_visible(true);
+                    bottom_next_button.set_sensitive(false);
+                } else {
+                    partition_method_automatic_luks_error_label.set_visible(false);
+                    if partition_method_automatic_disk_error_label.get_visible() {
+                        //
+                    } else {
+                        bottom_next_button.set_sensitive(true);
+                    }
+                }
+            } else {
+                partition_method_automatic_luks_password_entry.set_sensitive(false);
+                partition_method_automatic_luks_error_label.set_visible(false);
+                if partition_method_automatic_disk_error_label.get_visible() {
+                    //
+                } else {
+                    bottom_next_button.set_sensitive(true);
+                }
+            }
+        }));
 
     partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_entry);
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_checkbutton);
@@ -375,7 +409,8 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
     partition_method_automatic_main_box.append(&partition_method_automatic_selection_box);
     partition_method_automatic_main_box.append(&devices_selection_expander_row_viewport_listbox);
     partition_method_automatic_main_box.append(&partition_method_automatic_luks_box);
-    partition_method_automatic_main_box.append(&partition_method_automatic_status_label);
+    partition_method_automatic_main_box.append(&partition_method_automatic_luks_error_label);
+    partition_method_automatic_main_box.append(&partition_method_automatic_disk_error_label);
 
     // Manual Partitioning Yard
     let partition_method_manual_main_box = gtk::Box::builder()
