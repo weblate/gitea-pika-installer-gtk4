@@ -170,7 +170,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     }));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("keyboard_page")
+        content_stack.set_visible_child_name("timezone_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("language_page")

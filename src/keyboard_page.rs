@@ -224,7 +224,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         content_stack.set_visible_child_name("partitioning_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("eula_page")
+        content_stack.set_visible_child_name("timezone_page")
     }));
 
 }

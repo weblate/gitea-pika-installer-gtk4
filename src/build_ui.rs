@@ -11,8 +11,9 @@ use gtk::subclass::layout_child;
 use crate::save_window_size;
 use crate::welcome_page;
 use crate::language_page;
-use crate::keyboard_page;
 use crate::eula_page;
+use crate::timezone_page;
+use crate::keyboard_page;
 use crate::partitioning_page;
 
 // build ui function linked to app startup above
@@ -102,6 +103,9 @@ pub fn build_ui(app: &adw::Application) {
 
     // Add eula_page.rs as a page for content_stack
     eula_page(&content_stack);
+
+    // Add timezone_page.rs as a page for content_stack
+    timezone_page(&content_stack);
 
     // Add keyboard_page.rs as a page for content_stack
     keyboard_page(&content_stack);

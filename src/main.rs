@@ -14,14 +14,16 @@ use crate::build_ui::build_ui;
 mod save_window_size;
 mod welcome_page;
 mod language_page;
-mod keyboard_page;
 mod eula_page;
+mod timezone_page;
+mod keyboard_page;
 mod partitioning_page;
 use crate::save_window_size::save_window_size;
 use crate::welcome_page::welcome_page;
 use crate::language_page::language_page;
-use crate::keyboard_page::keyboard_page;
 use crate::eula_page::eula_page;
+use crate::timezone_page::timezone_page;
+use crate::keyboard_page::keyboard_page;
 use crate::partitioning_page::partitioning_page;
 
 /// main function
