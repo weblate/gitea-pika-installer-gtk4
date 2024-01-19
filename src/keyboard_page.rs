@@ -146,19 +146,19 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     keyboard_selection_expander_row.add_row(&keyboard_selection_expander_row_viewport);
 
-    let mut current_keyboard_cli = Command::new("localectl")
+    let current_keyboard_cli = Command::new("localectl")
         .arg("status")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
-    let mut current_keyboard_grep = Command::new("grep")
+    let current_keyboard_grep = Command::new("grep")
         .arg("X11 Layout")                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
         .stdin(Stdio::from(current_keyboard_cli.stdout.unwrap())) // Pipe through.
         .stdout(Stdio::piped())
         .spawn()
         .unwrap();
-    let mut current_keyboard_cut = Command::new("cut")
+    let current_keyboard_cut = Command::new("cut")
         .arg("-d:")
         .arg("-f2")
         .stdin(Stdio::from(current_keyboard_grep.stdout.unwrap()))
@@ -169,14 +169,14 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     let current_keyboard_output = current_keyboard_cut.wait_with_output().unwrap();
     let current_keyboard = str::from_utf8(&current_keyboard_output.stdout).unwrap().trim();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
 
-    let mut keyboard_layout_cli = Command::new("localectl")
+    let keyboard_layout_cli = Command::new("localectl")
         .arg("list-x11-keymap-layouts")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
 
-    let keyboard_layout_stdout = keyboard_layout_cli.stdout.as_mut().expect("could not get stdout");
+    let keyboard_layout_stdout = keyboard_layout_cli.stdout.expect("could not get stdout");
     let keyboard_layout_reader = BufReader::new(keyboard_layout_stdout);
 
     for keyboard_layout in keyboard_layout_reader.lines() {

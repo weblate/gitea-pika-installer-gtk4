@@ -278,14 +278,14 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
 
     devices_selection_expander_row.add_row(&devices_selection_expander_row_viewport);
 
-    let mut partition_method_automatic_get_devices_cli = Command::new("pkexec")
+    let partition_method_automatic_get_devices_cli = Command::new("pkexec")
         .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
         .arg("get_block_devices")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
-    let partition_method_automatic_get_devices_reader = BufReader::new(partition_method_automatic_get_devices_cli.stdout.as_mut().expect("could not get stdout"));
+    let partition_method_automatic_get_devices_reader = BufReader::new(partition_method_automatic_get_devices_cli.stdout.expect("could not get stdout"));
 
     let partition_method_automatic_status_label = gtk::Label::builder()
         .label("No Disk specified")
@@ -320,10 +320,10 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             if device_button.is_active() == true {
                 devices_selection_expander_row.set_title(&device);
                 if device_size > 39000000000.0 {
-                    partition_method_automatic_status_label.hide();
+                    partition_method_automatic_status_label.set_visible(false);
                     bottom_next_button.set_sensitive(true);
                 } else {
-                    partition_method_automatic_status_label.show();
+                    partition_method_automatic_status_label.set_visible(true);
                     partition_method_automatic_status_label.set_label("Disk Size too small, PikaOS needs 40GB Disk");
                     bottom_next_button.set_sensitive(false);
                 }
@@ -519,7 +519,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
     // clone partition_method_manual_chroot_dir_file_dialog as rust becuase glib breaks it show function for some reason
     let partition_method_manual_chroot_dir_file_dialog_clone = partition_method_manual_chroot_dir_file_dialog.clone();
     partition_method_manual_chroot_dir_button.connect_clicked(move |_| {
-        partition_method_manual_chroot_dir_file_dialog_clone.show();
+        partition_method_manual_chroot_dir_file_dialog_clone.set_visible(true);
     });
 
     partition_method_manual_chroot_dir_file_dialog.connect_response(clone!(@weak partition_method_manual_chroot_dir_file_dialog => move |_, response| {

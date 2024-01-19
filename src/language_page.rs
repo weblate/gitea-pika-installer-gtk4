@@ -152,27 +152,27 @@ pub fn language_page(content_stack: &gtk::Stack) {
         None => panic!("$LANG is not set")
     };
 
-    let mut locale_cli = Command::new("locale")
+    let locale_cli = Command::new("locale")
         .arg("-a")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
-    let mut locale_cli_cut = Command::new("cut")
+    let locale_cli_cut = Command::new("cut")
         .arg("-d.")
         .arg("-f1")
         .stdin(Stdio::from(locale_cli.stdout.unwrap())) // Pipe through.
         .stdout(Stdio::piped())
         .spawn()
         .unwrap();
-    let mut locale_cli_sort = Command::new("sort")
+    let locale_cli_sort = Command::new("sort")
         .arg("-u")
         .stdin(Stdio::from(locale_cli_cut.stdout.unwrap()))
         .stdout(Stdio::piped())
         .spawn()
         .unwrap();
 
-    let locale_reader = BufReader::new(locale_cli_sort.stdout.as_mut().expect("could not get stdout"));
+    let locale_reader = BufReader::new(locale_cli_sort.stdout.expect("could not get stdout"));
 
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();

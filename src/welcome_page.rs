@@ -165,6 +165,5 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
     content_stack.add_titled(&welcome_main_box, Some("welcome_page"), "Welcome");
 
     install_media_button.connect_clicked(clone!(@weak content_stack => move |_| content_stack.set_visible_child_name("language_page")));
-    live_media_button.connect_clicked(clone!(@weak window => move |_| window.hide()));
-
+    live_media_button.connect_clicked(clone!(@weak window => move |_| window.close()));
 }
