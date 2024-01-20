@@ -13,3 +13,4 @@ glib = "0.18.5"
 gtk = { version = "0.7.3", package = "gtk4", features = ["v4_12"] }
 pretty-bytes = "0.2.2"
 time = "0.3.31"
+vte = { version = "0.0.2", package = "zoha-vte4", features = ["v0_72"] }

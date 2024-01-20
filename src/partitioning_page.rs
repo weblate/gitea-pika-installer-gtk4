@@ -938,7 +938,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
     manual_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_manual_page")));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("installation_page")
+        content_stack.set_visible_child_name("install_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack => move |_| {
         content_stack.set_visible_child_name("keyboard_page");
