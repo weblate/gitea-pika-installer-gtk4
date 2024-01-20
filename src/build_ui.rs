@@ -10,11 +10,14 @@ use gdk::Display;
 use gtk::subclass::layout_child;
 use crate::save_window_size;
 use crate::welcome_page;
+use crate::efi_error_page;
 use crate::language_page;
 use crate::eula_page;
 use crate::timezone_page;
 use crate::keyboard_page;
 use crate::partitioning_page;
+
+use std::path::Path;
 
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
@@ -89,8 +92,12 @@ pub fn build_ui(app: &adw::Application) {
         .build();
     
     // Add welcome_page.rs as a page for content_stack
-    welcome_page(&window, &content_stack);
-
+    if Path::new("/sys/firmware/efi/efivars").exists() {
+        welcome_page(&window, &content_stack);
+    } else {
+        efi_error_page(&window, &content_stack);
+    }
+    
     // bottom_box moved per page
     // if content_stack visible child becomes NOT content_stack, show the buttom box 
     //content_stack.connect_visible_child_notify(clone!(@weak bottom_box => move |content_stack| {
