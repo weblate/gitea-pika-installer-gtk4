@@ -582,6 +582,14 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         .build();
     partition_method_manual_luks_error_label.add_css_class("small_error_text");
 
+    let partition_method_manual_gparted_button_content_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    let partition_method_manual_gparted_button_content_text = gtk::Label::builder()
+        .label("Use this utility to partition/mount/format your drives.")
+        .build();
+
     partition_method_manual_luks_listbox.append(&partition_method_manual_luks_password_entry);
     partition_method_manual_luks_box.append(&partition_method_manual_luks_listbox);
     partition_method_manual_header_box.append(&partition_method_manual_header_text);
@@ -618,7 +626,11 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         let custom_root_mountpoint = partition_method_manual_chroot_dir_entry.text().to_string();
         // Mountpoint Check
         if custom_root_mountpoint.is_empty() {
-            //
+            partition_method_manual_chroot_error_label.set_label("No mountpoint specified.");
+            partition_method_manual_chroot_error_label.set_visible(true);
+        } else if custom_root_mountpoint.contains("/dev") {
+            partition_method_manual_chroot_error_label.set_label("This Installer Takes mountpoints not devices.");
+            partition_method_manual_chroot_error_label.set_visible(true);
         } else {
             partition_method_manual_chroot_error_label.set_visible(false);
         }
@@ -729,7 +741,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             if root_not_boot_cli.status.success() {
                 //
             } else {
-                partition_method_manual_boot_error_label.set_label("/boot is not mounted.");
+                partition_method_manual_boot_error_label.set_label("No boot partition found in chroot, mount (CUSTOM_ROOT)/boot.");
                 partition_method_manual_boot_error_label.set_visible(true);
             }
         }
@@ -741,7 +753,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             .output()
             .expect("failed to execute process");
         if root_not_efi_cli.status.success() {
-            partition_method_manual_efi_error_label.set_label("/boot/efi is not mounted.");
+            partition_method_manual_efi_error_label.set_label("No EFI partition found in chroot, mount (CUSTOM_ROOT)/boot/efi.");
             partition_method_manual_efi_error_label.set_visible(true);
         }
         if partition_method_manual_chroot_error_label.get_visible() == false && partition_method_manual_luks_error_label.get_visible() == false && partition_method_manual_boot_error_label.get_visible() == false && partition_method_manual_efi_error_label.get_visible() == false {
@@ -754,7 +766,11 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         let custom_root_mountpoint = partition_method_manual_chroot_dir_entry.text().to_string();
         // Mountpoint Check
         if custom_root_mountpoint.is_empty() {
-            //
+            partition_method_manual_chroot_error_label.set_label("No mountpoint specified.");
+            partition_method_manual_chroot_error_label.set_visible(true);
+        } else if custom_root_mountpoint.contains("/dev") {
+            partition_method_manual_chroot_error_label.set_label("This Installer Takes mountpoints not devices.");
+            partition_method_manual_chroot_error_label.set_visible(true);
         } else {
             partition_method_manual_chroot_error_label.set_visible(false);
         }
@@ -865,7 +881,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             if root_not_boot_cli.status.success() {
                 //
             } else {
-                partition_method_manual_boot_error_label.set_label("/boot is not mounted.");
+                partition_method_manual_boot_error_label.set_label("No boot partition found in chroot, mount (CUSTOM_ROOT)/boot.");
                 partition_method_manual_boot_error_label.set_visible(true);
             }
         }
@@ -877,9 +893,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             .output()
             .expect("failed to execute process");
         if root_not_efi_cli.status.success() {
-            //
-        } else {
-            partition_method_manual_efi_error_label.set_label("/boot/efi is not mounted.");
+            partition_method_manual_efi_error_label.set_label("No EFI partition found in chroot, mount (CUSTOM_ROOT)/boot/efi.");
             partition_method_manual_efi_error_label.set_visible(true);
         }
         if partition_method_manual_chroot_error_label.get_visible() == false && partition_method_manual_luks_error_label.get_visible() == false && partition_method_manual_boot_error_label.get_visible() == false && partition_method_manual_efi_error_label.get_visible() == false {
