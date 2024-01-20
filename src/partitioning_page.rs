@@ -590,6 +590,17 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         .label("Use this utility to partition/mount/format your drives.")
         .build();
 
+    let partition_method_manual_gparted_button_content = adw::ButtonContent::builder()
+        .label("Open GPARTED")
+        .icon_name("gparted")
+        .build();
+
+    let partition_method_manual_gparted_button = gtk::Button::builder()
+        .child(&partition_method_manual_gparted_button_content_box)
+        .halign(Align::Center)
+        .valign(Align::End)
+        .build();
+
     partition_method_manual_luks_listbox.append(&partition_method_manual_luks_password_entry);
     partition_method_manual_luks_box.append(&partition_method_manual_luks_listbox);
     partition_method_manual_header_box.append(&partition_method_manual_header_text);
@@ -600,12 +611,15 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
     partition_method_manual_chroot_listbox.append(&partition_method_manual_chroot_dir_entry);
     partition_method_manual_chroot_box.append(&partition_method_manual_chroot_listbox);
     partition_method_manual_chroot_box.append(&partition_method_manual_chroot_dir_button);
+    partition_method_manual_gparted_button_content_box.append(&partition_method_manual_gparted_button_content);
+    partition_method_manual_gparted_button_content_box.append(&partition_method_manual_gparted_button_content_text);
     partition_method_manual_main_box.append(&partition_method_manual_chroot_box);
     partition_method_manual_main_box.append(&partition_method_manual_luks_box);
     partition_method_manual_main_box.append(&partition_method_manual_luks_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_chroot_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_boot_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_efi_error_label);
+    partition_method_manual_main_box.append(&partition_method_manual_gparted_button);
 
     // clone partition_method_manual_chroot_dir_file_dialog as rust becuase glib breaks it show function for some reason
     let partition_method_manual_chroot_dir_file_dialog_clone = partition_method_manual_chroot_dir_file_dialog.clone();
@@ -900,6 +914,12 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             bottom_next_button.set_sensitive(true);
         } 
     }));
+
+    partition_method_manual_gparted_button.connect_clicked(move |_| {
+        Command::new("gparted")
+            .spawn()
+            .expect("gparted failed to start");
+    });
 
     /// add all pages to partitioning stack
     partitioning_stack.add_titled(&partitioning_method_main_box, Some("partition_method_select_page"), "partition_method_select_page");
