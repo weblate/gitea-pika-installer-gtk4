@@ -17,6 +17,9 @@ use std::time::Instant;
 use std::env;
 use pretty_bytes::converter::convert;
 
+use std::thread;
+use std::time::*;
+
 pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
    
     // create the bottom box for next and back buttons
@@ -530,14 +533,6 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         .orientation(Orientation::Horizontal)
         .build();
 
-    let partition_method_manual_luks_checkbutton = gtk::CheckButton::builder()
-        .label("(CUSTOM_ROOT)/home has LUKS Encryption?")
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
-        .build();
-
     let partition_method_manual_luks_listbox = gtk::ListBox::builder()
         .margin_top(15)
         .margin_bottom(15)
@@ -552,16 +547,42 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         .sensitive(false)
         .build();
 
-    let partition_method_manual_status_label = gtk::Label::builder()
-        .label("No mountpoint specified")
+    let partition_method_manual_chroot_error_label = gtk::Label::builder()
+        .label("No mountpoint specified.")
         .halign(Align::Start)
         .valign(Align::End)
         .vexpand(true)
         .build();
-    partition_method_manual_status_label.add_css_class("small_error_text");
+    partition_method_manual_chroot_error_label.add_css_class("small_error_text");
+
+    let partition_method_manual_boot_error_label = gtk::Label::builder()
+        .label("No boot partition found in chroot, mount (CUSTOM_ROOT)/boot.")
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .visible(false)
+        .build();
+    partition_method_manual_boot_error_label.add_css_class("small_error_text");
+
+    let partition_method_manual_efi_error_label = gtk::Label::builder()
+        .label("No EFI partition found in chroot, mount (CUSTOM_ROOT)/boot/efi.")
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .visible(false)
+        .build();
+    partition_method_manual_efi_error_label.add_css_class("small_error_text");
+
+    let partition_method_manual_luks_error_label = gtk::Label::builder()
+        .label("Home partition encrypted, but no LUKS password provided.")
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .visible(false)
+        .build();
+    partition_method_manual_luks_error_label.add_css_class("small_error_text");
 
     partition_method_manual_luks_listbox.append(&partition_method_manual_luks_password_entry);
-    partition_method_manual_luks_box.append(&partition_method_manual_luks_checkbutton);
     partition_method_manual_luks_box.append(&partition_method_manual_luks_listbox);
     partition_method_manual_header_box.append(&partition_method_manual_header_text);
     partition_method_manual_header_box.append(&partition_method_manual_header_icon);
@@ -573,8 +594,10 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
     partition_method_manual_chroot_box.append(&partition_method_manual_chroot_dir_button);
     partition_method_manual_main_box.append(&partition_method_manual_chroot_box);
     partition_method_manual_main_box.append(&partition_method_manual_luks_box);
-    partition_method_manual_main_box.append(&partition_method_manual_status_label);
-
+    partition_method_manual_main_box.append(&partition_method_manual_luks_error_label);
+    partition_method_manual_main_box.append(&partition_method_manual_chroot_error_label);
+    partition_method_manual_main_box.append(&partition_method_manual_boot_error_label);
+    partition_method_manual_main_box.append(&partition_method_manual_efi_error_label);
 
     // clone partition_method_manual_chroot_dir_file_dialog as rust becuase glib breaks it show function for some reason
     let partition_method_manual_chroot_dir_file_dialog_clone = partition_method_manual_chroot_dir_file_dialog.clone();
@@ -582,7 +605,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         partition_method_manual_chroot_dir_file_dialog_clone.set_visible(true);
     });
 
-    partition_method_manual_chroot_dir_file_dialog.connect_response(clone!(@weak partition_method_manual_chroot_dir_file_dialog => move |_, response| {
+    partition_method_manual_chroot_dir_file_dialog.connect_response(clone!(@weak partition_method_manual_chroot_dir_file_dialog, @weak partition_method_manual_chroot_dir_entry => move |_, response| {
         if response == gtk::ResponseType::Accept {
             if partition_method_manual_chroot_dir_file_dialog.file().is_some() {
                 partition_method_manual_chroot_dir_entry.set_text(&partition_method_manual_chroot_dir_file_dialog.file().expect("FILE PATHING FAIL").path().expect("PATH STRINGING FAIL").into_os_string().into_string().unwrap());
@@ -590,12 +613,278 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         }
     }));    
 
-    partition_method_manual_luks_checkbutton.connect_toggled(clone!(@weak partition_method_manual_luks_checkbutton => move |_| {
-        if partition_method_manual_luks_checkbutton.is_active() {
-            partition_method_manual_luks_password_entry.set_sensitive(true)
+    partition_method_manual_chroot_dir_entry.connect_changed(clone!(@weak bottom_next_button, @weak partition_method_manual_chroot_dir_entry, @weak partition_method_manual_luks_password_entry, @weak partition_method_manual_luks_error_label, @weak partition_method_manual_chroot_error_label, @weak partition_method_manual_boot_error_label, @weak partition_method_manual_efi_error_label  => move |_| {
+        bottom_next_button.set_sensitive(false);
+        let custom_root_mountpoint = partition_method_manual_chroot_dir_entry.text().to_string();
+        // Mountpoint Check
+        if custom_root_mountpoint.is_empty() {
+            //
         } else {
-            partition_method_manual_luks_password_entry.set_sensitive(false)
+            partition_method_manual_chroot_error_label.set_visible(false);
         }
+        // Home partition Check
+        let home_not_root_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("home_not_root")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        if home_not_root_cli.status.success() {
+            // Home encryption Checking
+            let (luks_manual_is_encrypt_sender, luks_manual_is_encrypt_receiver) = async_channel::unbounded();
+            let luks_manual_is_encrypt_sender = luks_manual_is_encrypt_sender.clone();
+            // The long running operation runs now in a separate thread
+            gio::spawn_blocking(clone!(@strong custom_root_mountpoint => move || {
+                    let check_home_encryption_cli = Command::new("pkexec")
+                        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+                        .arg("check_home_encryption")
+                        .arg(custom_root_mountpoint)
+                        .output()
+                        .expect("failed to execute process");
+                    if check_home_encryption_cli.status.success() {
+                        luks_manual_is_encrypt_sender
+                        .send_blocking(true)
+                        .expect("The channel needs to be open.");
+                    } else {
+                        luks_manual_is_encrypt_sender
+                        .send_blocking(false)
+                        .expect("The channel needs to be open.");
+                    }
+            }));
+            let partition_method_manual_luks_password_entry_clone = partition_method_manual_luks_password_entry.clone();
+            let luks_manual_is_encrypt_main_context = MainContext::default();
+            // The main loop executes the asynchronous block
+            luks_manual_is_encrypt_main_context.spawn_local(clone!(@weak partition_method_manual_luks_password_entry_clone => async move {
+                while let Ok(state) = luks_manual_is_encrypt_receiver.recv().await {
+                    partition_method_manual_luks_password_entry_clone.set_sensitive(state);
+                }
+            }));
+            // Luks Password Checking
+            let luks_passwd = partition_method_manual_luks_password_entry.text().to_string();
+            let (luks_manual_password_sender, luks_manual_password_receiver) = async_channel::unbounded();
+            let luks_manual_password_sender = luks_manual_password_sender.clone();
+            // The long running operation runs now in a separate thread
+            gio::spawn_blocking(clone!(@strong custom_root_mountpoint, @strong luks_passwd => move || {
+                    let luks_check_cli = Command::new("pkexec")
+                        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+                        .arg("check_home_luks_passwd")
+                        .arg(custom_root_mountpoint)
+                        .arg(luks_passwd)
+                        .output()
+                        .expect("failed to execute process");
+                    if luks_check_cli.status.success() {
+                        luks_manual_password_sender
+                        .send_blocking(false)
+                        .expect("The channel needs to be open.");
+                    } else {
+                        luks_manual_password_sender
+                        .send_blocking(true)
+                        .expect("The channel needs to be open.");
+                    }
+            }));
+            let partition_method_manual_luks_error_label_clone = partition_method_manual_luks_error_label.clone();
+            let luks_manual_password_main_context = MainContext::default();
+            // The main loop executes the asynchronous block
+            luks_manual_password_main_context.spawn_local(clone!(@weak partition_method_manual_luks_error_label_clone => async move {
+                while let Ok(state) = luks_manual_password_receiver.recv().await {
+                    partition_method_manual_luks_error_label_clone.set_visible(state);
+                }
+            }));
+        }
+        // Boot partition Checks
+        let home_not_boot_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("home_not_boot")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        let root_not_boot_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("root_not_boot")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        let boot_not_efi_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("boot_not_efi")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+
+        if home_not_boot_cli.status.success() && root_not_boot_cli.status.success() && boot_not_efi_cli.status.success() {
+            partition_method_manual_boot_error_label.set_visible(false)
+        } else {
+            if home_not_boot_cli.status.success() {
+                //
+            } else {
+                partition_method_manual_boot_error_label.set_label("the /home and /boot partitions are the same.");
+                partition_method_manual_boot_error_label.set_visible(true);
+            }
+            if boot_not_efi_cli.status.success() {
+                //
+            } else {
+                partition_method_manual_boot_error_label.set_label("the /boot/efi and /boot partitions are the same.");
+                partition_method_manual_boot_error_label.set_visible(true);
+            }
+            if root_not_boot_cli.status.success() {
+                //
+            } else {
+                partition_method_manual_boot_error_label.set_label("/boot is not mounted.");
+                partition_method_manual_boot_error_label.set_visible(true);
+            }
+        }
+        // EFI partition Checks
+        let root_not_efi_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("root_not_efi")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        if root_not_efi_cli.status.success() {
+            partition_method_manual_efi_error_label.set_label("/boot/efi is not mounted.");
+            partition_method_manual_efi_error_label.set_visible(true);
+        }
+        if partition_method_manual_chroot_error_label.get_visible() == false && partition_method_manual_luks_error_label.get_visible() == false && partition_method_manual_boot_error_label.get_visible() == false && partition_method_manual_efi_error_label.get_visible() == false {
+            bottom_next_button.set_sensitive(true);
+        } 
+    }));
+
+    partition_method_manual_luks_password_entry.connect_changed(clone!(@weak bottom_next_button, @weak partition_method_manual_chroot_dir_entry, @weak partition_method_manual_luks_password_entry, @weak partition_method_manual_luks_error_label, @weak partition_method_manual_chroot_error_label, @weak partition_method_manual_boot_error_label, @weak partition_method_manual_efi_error_label  => move |_| {
+        bottom_next_button.set_sensitive(false);
+        let custom_root_mountpoint = partition_method_manual_chroot_dir_entry.text().to_string();
+        // Mountpoint Check
+        if custom_root_mountpoint.is_empty() {
+            //
+        } else {
+            partition_method_manual_chroot_error_label.set_visible(false);
+        }
+        // Home partition Check
+        let home_not_root_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("home_not_root")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        if home_not_root_cli.status.success() {
+            // Home encryption Checking
+            let (luks_manual_is_encrypt_sender, luks_manual_is_encrypt_receiver) = async_channel::unbounded();
+            let luks_manual_is_encrypt_sender = luks_manual_is_encrypt_sender.clone();
+            // The long running operation runs now in a separate thread
+            gio::spawn_blocking(clone!(@strong custom_root_mountpoint => move || {
+                    let check_home_encryption_cli = Command::new("pkexec")
+                        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+                        .arg("check_home_encryption")
+                        .arg(custom_root_mountpoint)
+                        .output()
+                        .expect("failed to execute process");
+                    if check_home_encryption_cli.status.success() {
+                        luks_manual_is_encrypt_sender
+                        .send_blocking(true)
+                        .expect("The channel needs to be open.");
+                    } else {
+                        luks_manual_is_encrypt_sender
+                        .send_blocking(false)
+                        .expect("The channel needs to be open.");
+                    }
+            }));
+            let partition_method_manual_luks_password_entry_clone = partition_method_manual_luks_password_entry.clone();
+            let luks_manual_is_encrypt_main_context = MainContext::default();
+            // The main loop executes the asynchronous block
+            luks_manual_is_encrypt_main_context.spawn_local(clone!(@weak partition_method_manual_luks_password_entry_clone => async move {
+                while let Ok(state) = luks_manual_is_encrypt_receiver.recv().await {
+                    partition_method_manual_luks_password_entry_clone.set_sensitive(state);
+                }
+            }));
+            // Luks Password Checking
+            let luks_passwd = partition_method_manual_luks_password_entry.text().to_string();
+            let (luks_manual_password_sender, luks_manual_password_receiver) = async_channel::unbounded();
+            let luks_manual_password_sender = luks_manual_password_sender.clone();
+            // The long running operation runs now in a separate thread
+            gio::spawn_blocking(clone!(@strong custom_root_mountpoint, @strong luks_passwd => move || {
+                    let luks_check_cli = Command::new("pkexec")
+                        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+                        .arg("check_home_luks_passwd")
+                        .arg(custom_root_mountpoint)
+                        .arg(luks_passwd)
+                        .output()
+                        .expect("failed to execute process");
+                    if luks_check_cli.status.success() {
+                        luks_manual_password_sender
+                        .send_blocking(false)
+                        .expect("The channel needs to be open.");
+                    } else {
+                        luks_manual_password_sender
+                        .send_blocking(true)
+                        .expect("The channel needs to be open.");
+                    }
+            }));
+            let partition_method_manual_luks_error_label_clone = partition_method_manual_luks_error_label.clone();
+            let luks_manual_password_main_context = MainContext::default();
+            // The main loop executes the asynchronous block
+            luks_manual_password_main_context.spawn_local(clone!(@weak partition_method_manual_luks_error_label_clone => async move {
+                while let Ok(state) = luks_manual_password_receiver.recv().await {
+                    partition_method_manual_luks_error_label_clone.set_visible(state);
+                }
+            }));
+        }
+        // Boot partition Checks
+        let home_not_boot_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("home_not_boot")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        let root_not_boot_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("root_not_boot")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        let boot_not_efi_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("boot_not_efi")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+
+        if home_not_boot_cli.status.success() && root_not_boot_cli.status.success() && boot_not_efi_cli.status.success() {
+            partition_method_manual_boot_error_label.set_visible(false)
+        } else {
+            if home_not_boot_cli.status.success() {
+                //
+            } else {
+                partition_method_manual_boot_error_label.set_label("the /home and /boot partitions are the same.");
+                partition_method_manual_boot_error_label.set_visible(true);
+            }
+            if boot_not_efi_cli.status.success() {
+                //
+            } else {
+                partition_method_manual_boot_error_label.set_label("the /boot/efi and /boot partitions are the same.");
+                partition_method_manual_boot_error_label.set_visible(true);
+            }
+            if root_not_boot_cli.status.success() {
+                //
+            } else {
+                partition_method_manual_boot_error_label.set_label("/boot is not mounted.");
+                partition_method_manual_boot_error_label.set_visible(true);
+            }
+        }
+        // EFI partition Checks
+        let root_not_efi_cli = Command::new("pkexec")
+            .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+            .arg("root_not_efi")
+            .arg(custom_root_mountpoint.clone())
+            .output()
+            .expect("failed to execute process");
+        if root_not_efi_cli.status.success() {
+            //
+        } else {
+            partition_method_manual_efi_error_label.set_label("/boot/efi is not mounted.");
+            partition_method_manual_efi_error_label.set_visible(true);
+        }
+        if partition_method_manual_chroot_error_label.get_visible() == false && partition_method_manual_luks_error_label.get_visible() == false && partition_method_manual_boot_error_label.get_visible() == false && partition_method_manual_efi_error_label.get_visible() == false {
+            bottom_next_button.set_sensitive(true);
+        } 
     }));
 
     /// add all pages to partitioning stack
