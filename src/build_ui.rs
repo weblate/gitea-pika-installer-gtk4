@@ -117,8 +117,17 @@ pub fn build_ui(app: &adw::Application) {
     // Add keyboard_page.rs as a page for content_stack
     keyboard_page(&content_stack);
 
+    // Add install_page.rs as a page for content_stack
+    let install_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
     // Add partitioning_page.rs as a page for content_stack
-    partitioning_page(&window, &content_stack);
+    partitioning_page(&install_main_box , &window, &content_stack);
+
+    // / Content stack appends
+    //// Add the install_main_box as page: install_page, Give it nice title
+    content_stack.add_titled(&install_main_box, Some("install_page"), "Installation");
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {

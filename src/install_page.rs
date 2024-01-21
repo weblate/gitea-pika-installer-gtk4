@@ -14,7 +14,7 @@ use vte::*;
 use std::fs;
 use std::path::Path;
 
-pub fn install_page(content_stack: &gtk::Stack) {
+pub fn install_page(install_main_box: &gtk::Box ,content_stack: &gtk::Stack) {
     
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -37,10 +37,6 @@ pub fn install_page(content_stack: &gtk::Stack) {
     // / bottom_box appends
     //// Add the next and back buttons
     bottom_box.append(&bottom_back_button);
-
-    let install_main_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
-        .build();
 
     let install_nested_stack = gtk::Stack::builder()
         .transition_type(StackTransitionType::SlideLeftRight)
@@ -178,7 +174,11 @@ pub fn install_page(content_stack: &gtk::Stack) {
         .orientation(Orientation::Vertical)
         .build();
 
-    let the_terminal = vte::Terminal::builder()
+    let install_progress_log_stack = gtk::Stack::builder()
+        .transition_type(StackTransitionType::SlideUpDown)
+        .build();
+
+    let install_progress_log_terminal = vte::Terminal::builder()
         .vexpand(true)
         .hexpand(true)
         .margin_top(15)
@@ -188,7 +188,7 @@ pub fn install_page(content_stack: &gtk::Stack) {
         .sensitive(false)
         .build();
 
-    the_terminal.spawn_async(
+    install_progress_log_terminal.spawn_async(
             PtyFlags::DEFAULT,
             Some(""),
             &["bash"],
@@ -207,19 +207,70 @@ pub fn install_page(content_stack: &gtk::Stack) {
             },
         );    
 
-    install_progress_box.append(&the_terminal);
+    let placeholder_icon = gtk::Image::builder()
+        .icon_name("debian-swirl")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .hexpand(true)
+        .vexpand(true)
+        .pixel_size(512)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
+
+    let progress_bar_box = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
+
+    let install_progress_bar = gtk::ProgressBar::builder()
+        .hexpand(true)
+        .margin_start(15)
+        .margin_end(15)
+        .margin_top(15)
+        .margin_bottom(15)
+        .build();
+
+    let progress_log_button_content = adw::ButtonContent::builder()
+        .label("View Logs")
+        .icon_name("terminal")
+        .build();
+
+    let progress_log_button = gtk::Button::builder()
+        .child(&progress_log_button_content)
+        .margin_start(15)
+        .margin_end(15)
+        .margin_top(15)
+        .margin_bottom(15)
+        .build();
+
+    progress_bar_box.append(&install_progress_bar);
+    progress_bar_box.append(&progress_log_button);
+
+    install_progress_log_stack.add_titled(&placeholder_icon, Some("slideshow_page"), "slideshow_page");
+    install_progress_log_stack.add_titled(&install_progress_log_terminal, Some("terminal_log_page"), "terminal_log_page");
+
+    install_progress_box.append(&install_progress_log_stack);
+    install_progress_box.append(&progress_bar_box);
 
     install_nested_stack.add_titled(&install_confirm_box, Some("confirm_page"), "confirm_page");
     install_nested_stack.add_titled(&install_progress_box, Some("progress_page"), "progress_page");
 
-    // / Content stack appends
-    //// Add the install_main_box as page: install_page, Give it nice title
-    content_stack.add_titled(&install_main_box, Some("install_page"), "Installation");
-
     install_confirm_button.connect_clicked(clone!(@weak install_nested_stack => move |_| install_nested_stack.set_visible_child_name("progress_page")));
 
+    progress_log_button.connect_clicked(clone!(@weak install_progress_log_stack => move |_| {
+        if install_progress_log_stack.visible_child_name() == Some(GString::from_string_unchecked("slideshow_page".into())) {
+            install_progress_log_stack.set_visible_child_name("terminal_log_page");
+        } else {
+            install_progress_log_stack.set_visible_child_name("slideshow_page");
+        }
+    }));
+    
     bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak install_main_box => move |_| {
-        content_stack.remove(&install_main_box);
         content_stack.set_visible_child_name("partitioning_page");
+        content_stack.remove(&install_main_box);
     }));
 }
