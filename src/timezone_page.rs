@@ -16,6 +16,9 @@ use std::process::Stdio;
 use std::time::Instant;
 use std::str;
 
+use std::fs;
+use std::path::Path;
+
 pub fn timezone_page(content_stack: &gtk::Stack) {
 
     // create the bottom box for next and back buttons
@@ -169,6 +172,9 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     let timezone_layout_stdout = timezone_layout_cli.stdout.expect("could not get stdout");
     let timezone_layout_reader = BufReader::new(timezone_layout_stdout);
 
+    let timezone_data_buffer = gtk::TextBuffer::builder()
+        .build();
+
     for timezone_layout in timezone_layout_reader.lines() {
         let timezone_layout = timezone_layout.unwrap();
         let timezone_layout_clone = timezone_layout.clone();
@@ -177,10 +183,11 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
             .build();
         timezone_layout_checkbutton.set_group(Some(&null_checkbutton));
         timezone_selection_expander_row_viewport_box.append(&timezone_layout_checkbutton); 
-        timezone_layout_checkbutton.connect_toggled(clone!(@weak timezone_layout_checkbutton, @weak timezone_selection_expander_row, @weak bottom_next_button => move |_| {
+        timezone_layout_checkbutton.connect_toggled(clone!(@weak timezone_layout_checkbutton, @weak timezone_selection_expander_row, @weak bottom_next_button, @weak timezone_data_buffer => move |_| {
             if timezone_layout_checkbutton.is_active() == true {
                 timezone_selection_expander_row.set_title(&timezone_layout);
                 bottom_next_button.set_sensitive(true);
+                timezone_data_buffer.set_text(&timezone_layout);
             }
         }));
         if current_timezone.contains(&(timezone_layout_clone)) {
@@ -210,8 +217,14 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     //// Add the timezone_main_box as page: timezone_page, Give it nice title
     content_stack.add_titled(&timezone_main_box, Some("timezone_page"), "Time Zone");
 
+    let timezone_data_buffer_clone = timezone_data_buffer.clone();
+
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("keyboard_page")
+        content_stack.set_visible_child_name("keyboard_page");
+        if Path::new("/tmp/pika-installer-gtk4-timezone.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-timezone.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-timezone.txt");
+        }
+        fs::write("/tmp/pika-installer-gtk4-timezone.txt", timezone_data_buffer_clone.text(&timezone_data_buffer_clone.bounds().0, &timezone_data_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("eula_page")

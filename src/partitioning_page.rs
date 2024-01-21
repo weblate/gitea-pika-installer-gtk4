@@ -20,6 +20,9 @@ use pretty_bytes::converter::convert;
 use std::thread;
 use std::time::*;
 
+use std::fs;
+use std::path::Path;
+
 pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
    
     // create the bottom box for next and back buttons
@@ -333,6 +336,12 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         .sensitive(false)
         .build();
 
+    let partition_method_automatic_target_buffer = gtk::TextBuffer::builder()
+        .build();
+
+    let partition_method_automatic_luks_buffer = gtk::TextBuffer::builder()
+        .build();
+
     for device in partition_method_automatic_get_devices_reader.lines() {
         let device = device.unwrap();
         let device_size_cli = Command::new("pkexec")
@@ -354,7 +363,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             .build();
         device_row.add_prefix(&device_button);
         devices_selection_expander_row_viewport_box.append(&device_row);
-        device_button.connect_toggled(clone!(@weak device_button, @weak devices_selection_expander_row, @weak bottom_next_button, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak partition_method_automatic_luks_checkbutton => move |_| {
+        device_button.connect_toggled(clone!(@weak device_button,@weak partition_method_automatic_luks_password_entry, @weak devices_selection_expander_row, @weak bottom_next_button, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_target_buffer, @weak partition_method_automatic_luks_buffer => move |_| {
             if device_button.is_active() == true {
                 devices_selection_expander_row.set_title(&device);
                 if device_size > 39000000000.0 {
@@ -366,6 +375,8 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
                             bottom_next_button.set_sensitive(true);
                         }
                     }  else {
+                        partition_method_automatic_target_buffer.set_text(&device);
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                         bottom_next_button.set_sensitive(true);
                     } 
                 } else {
@@ -377,7 +388,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         }));
     }
 
-        partition_method_automatic_luks_checkbutton.connect_toggled(clone!(@weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_luks_password_entry, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak bottom_next_button => move |_| {
+        partition_method_automatic_luks_checkbutton.connect_toggled(clone!(@weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_luks_password_entry, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak bottom_next_button, @weak partition_method_automatic_target_buffer, @weak partition_method_automatic_luks_buffer => move |_| {
             if partition_method_automatic_luks_checkbutton.is_active() == true {
                 partition_method_automatic_luks_password_entry.set_sensitive(true);
                 if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
@@ -402,7 +413,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             }
         }));
 
-    partition_method_automatic_luks_password_entry.connect_changed(clone!(@weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_luks_password_entry, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak bottom_next_button => move |_| {
+    partition_method_automatic_luks_password_entry.connect_changed(clone!(@weak partition_method_automatic_luks_checkbutton, @weak partition_method_automatic_luks_password_entry, @weak partition_method_automatic_disk_error_label, @weak partition_method_automatic_luks_error_label, @weak bottom_next_button, @weak partition_method_automatic_luks_buffer => move |_| {
         if partition_method_automatic_luks_checkbutton.is_active() == true {
             partition_method_automatic_luks_password_entry.set_sensitive(true);
             if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
@@ -413,6 +424,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
                 if partition_method_automatic_disk_error_label.get_visible() {
                     //
                 } else {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(true);
                 }
             }
@@ -422,6 +434,7 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             if partition_method_automatic_disk_error_label.get_visible() {
                 //
             } else {
+                partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                 bottom_next_button.set_sensitive(true);
             }
         }
@@ -635,7 +648,13 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
         }
     }));    
 
-    partition_method_manual_chroot_dir_entry.connect_changed(clone!(@weak bottom_next_button, @weak partition_method_manual_chroot_dir_entry, @weak partition_method_manual_luks_password_entry, @weak partition_method_manual_luks_error_label, @weak partition_method_manual_chroot_error_label, @weak partition_method_manual_boot_error_label, @weak partition_method_manual_efi_error_label  => move |_| {
+    let partition_method_manual_target_buffer = gtk::TextBuffer::builder()
+        .build();
+
+    let partition_method_manual_luks_buffer = gtk::TextBuffer::builder()
+        .build(); 
+
+    partition_method_manual_chroot_dir_entry.connect_changed(clone!(@weak bottom_next_button, @weak partition_method_manual_chroot_dir_entry, @weak partition_method_manual_luks_password_entry, @weak partition_method_manual_luks_error_label, @weak partition_method_manual_chroot_error_label, @weak partition_method_manual_boot_error_label, @weak partition_method_automatic_target_buffer, @weak partition_method_automatic_luks_buffer, @weak partition_method_manual_efi_error_label, @weak partition_method_manual_target_buffer, @weak partition_method_manual_luks_buffer  => move |_| {
         bottom_next_button.set_sensitive(false);
         let custom_root_mountpoint = partition_method_manual_chroot_dir_entry.text().to_string();
         // Mountpoint Check
@@ -677,12 +696,11 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
                         .expect("The channel needs to be open.");
                     }
             }));
-            let partition_method_manual_luks_password_entry_clone = partition_method_manual_luks_password_entry.clone();
             let luks_manual_is_encrypt_main_context = MainContext::default();
             // The main loop executes the asynchronous block
-            luks_manual_is_encrypt_main_context.spawn_local(clone!(@weak partition_method_manual_luks_password_entry_clone => async move {
+            luks_manual_is_encrypt_main_context.spawn_local(clone!(@weak partition_method_manual_luks_password_entry => async move {
                 while let Ok(state) = luks_manual_is_encrypt_receiver.recv().await {
-                    partition_method_manual_luks_password_entry_clone.set_sensitive(state);
+                    partition_method_manual_luks_password_entry.set_sensitive(state);
                 }
             }));
             // Luks Password Checking
@@ -708,12 +726,12 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
                         .expect("The channel needs to be open.");
                     }
             }));
-            let partition_method_manual_luks_error_label_clone = partition_method_manual_luks_error_label.clone();
             let luks_manual_password_main_context = MainContext::default();
             // The main loop executes the asynchronous block
-            luks_manual_password_main_context.spawn_local(clone!(@weak partition_method_manual_luks_error_label_clone => async move {
+            luks_manual_password_main_context.spawn_local(clone!(@weak partition_method_manual_luks_error_label, @weak bottom_next_button => async move {
                 while let Ok(state) = luks_manual_password_receiver.recv().await {
-                    partition_method_manual_luks_error_label_clone.set_visible(state);
+                    partition_method_manual_luks_error_label.set_visible(state);
+                    bottom_next_button.set_sensitive(!state);
                 }
             }));
         }
@@ -741,19 +759,19 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             partition_method_manual_boot_error_label.set_visible(false)
         } else {
             if home_not_boot_cli.status.success() {
-                //
+                partition_method_manual_boot_error_label.set_visible(false);
             } else {
                 partition_method_manual_boot_error_label.set_label("the /home and /boot partitions are the same.");
                 partition_method_manual_boot_error_label.set_visible(true);
             }
             if boot_not_efi_cli.status.success() {
-                //
+                partition_method_manual_boot_error_label.set_visible(false);
             } else {
                 partition_method_manual_boot_error_label.set_label("the /boot/efi and /boot partitions are the same.");
                 partition_method_manual_boot_error_label.set_visible(true);
             }
             if root_not_boot_cli.status.success() {
-                //
+                partition_method_manual_boot_error_label.set_visible(false);
             } else {
                 partition_method_manual_boot_error_label.set_label("No boot partition found in chroot, mount (CUSTOM_ROOT)/boot.");
                 partition_method_manual_boot_error_label.set_visible(true);
@@ -767,15 +785,18 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             .output()
             .expect("failed to execute process");
         if root_not_efi_cli.status.success() {
+            partition_method_manual_efi_error_label.set_visible(false);
+        } else {
             partition_method_manual_efi_error_label.set_label("No EFI partition found in chroot, mount (CUSTOM_ROOT)/boot/efi.");
             partition_method_manual_efi_error_label.set_visible(true);
         }
         if partition_method_manual_chroot_error_label.get_visible() == false && partition_method_manual_luks_error_label.get_visible() == false && partition_method_manual_boot_error_label.get_visible() == false && partition_method_manual_efi_error_label.get_visible() == false {
+            partition_method_manual_target_buffer.set_text(&custom_root_mountpoint);
             bottom_next_button.set_sensitive(true);
         } 
     }));
 
-    partition_method_manual_luks_password_entry.connect_changed(clone!(@weak bottom_next_button, @weak partition_method_manual_chroot_dir_entry, @weak partition_method_manual_luks_password_entry, @weak partition_method_manual_luks_error_label, @weak partition_method_manual_chroot_error_label, @weak partition_method_manual_boot_error_label, @weak partition_method_manual_efi_error_label  => move |_| {
+    partition_method_manual_luks_password_entry.connect_changed(clone!(@weak bottom_next_button, @weak partition_method_manual_chroot_dir_entry, @weak partition_method_manual_luks_password_entry, @weak partition_method_manual_luks_error_label, @weak partition_method_manual_chroot_error_label, @weak partition_method_manual_boot_error_label, @weak partition_method_automatic_target_buffer, @weak partition_method_automatic_luks_buffer, @weak partition_method_manual_efi_error_label, @weak partition_method_manual_target_buffer, @weak partition_method_manual_luks_buffer  => move |_| {
         bottom_next_button.set_sensitive(false);
         let custom_root_mountpoint = partition_method_manual_chroot_dir_entry.text().to_string();
         // Mountpoint Check
@@ -817,12 +838,11 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
                         .expect("The channel needs to be open.");
                     }
             }));
-            let partition_method_manual_luks_password_entry_clone = partition_method_manual_luks_password_entry.clone();
             let luks_manual_is_encrypt_main_context = MainContext::default();
             // The main loop executes the asynchronous block
-            luks_manual_is_encrypt_main_context.spawn_local(clone!(@weak partition_method_manual_luks_password_entry_clone => async move {
+            luks_manual_is_encrypt_main_context.spawn_local(clone!(@weak partition_method_manual_luks_password_entry => async move {
                 while let Ok(state) = luks_manual_is_encrypt_receiver.recv().await {
-                    partition_method_manual_luks_password_entry_clone.set_sensitive(state);
+                    partition_method_manual_luks_password_entry.set_sensitive(state);
                 }
             }));
             // Luks Password Checking
@@ -848,12 +868,12 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
                         .expect("The channel needs to be open.");
                     }
             }));
-            let partition_method_manual_luks_error_label_clone = partition_method_manual_luks_error_label.clone();
             let luks_manual_password_main_context = MainContext::default();
             // The main loop executes the asynchronous block
-            luks_manual_password_main_context.spawn_local(clone!(@weak partition_method_manual_luks_error_label_clone => async move {
+            luks_manual_password_main_context.spawn_local(clone!(@weak partition_method_manual_luks_error_label, @weak bottom_next_button => async move {
                 while let Ok(state) = luks_manual_password_receiver.recv().await {
-                    partition_method_manual_luks_error_label_clone.set_visible(state);
+                    partition_method_manual_luks_error_label.set_visible(state);
+                    bottom_next_button.set_sensitive(!state);
                 }
             }));
         }
@@ -881,19 +901,19 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             partition_method_manual_boot_error_label.set_visible(false)
         } else {
             if home_not_boot_cli.status.success() {
-                //
+                partition_method_manual_boot_error_label.set_visible(false);
             } else {
                 partition_method_manual_boot_error_label.set_label("the /home and /boot partitions are the same.");
                 partition_method_manual_boot_error_label.set_visible(true);
             }
             if boot_not_efi_cli.status.success() {
-                //
+                partition_method_manual_boot_error_label.set_visible(false);
             } else {
                 partition_method_manual_boot_error_label.set_label("the /boot/efi and /boot partitions are the same.");
                 partition_method_manual_boot_error_label.set_visible(true);
             }
             if root_not_boot_cli.status.success() {
-                //
+                partition_method_manual_boot_error_label.set_visible(false);
             } else {
                 partition_method_manual_boot_error_label.set_label("No boot partition found in chroot, mount (CUSTOM_ROOT)/boot.");
                 partition_method_manual_boot_error_label.set_visible(true);
@@ -907,10 +927,13 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             .output()
             .expect("failed to execute process");
         if root_not_efi_cli.status.success() {
+            partition_method_manual_efi_error_label.set_visible(false);
+        } else {
             partition_method_manual_efi_error_label.set_label("No EFI partition found in chroot, mount (CUSTOM_ROOT)/boot/efi.");
             partition_method_manual_efi_error_label.set_visible(true);
         }
         if partition_method_manual_chroot_error_label.get_visible() == false && partition_method_manual_luks_error_label.get_visible() == false && partition_method_manual_boot_error_label.get_visible() == false && partition_method_manual_efi_error_label.get_visible() == false {
+            partition_method_manual_target_buffer.set_text(&custom_root_mountpoint);
             bottom_next_button.set_sensitive(true);
         } 
     }));
@@ -937,12 +960,54 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
     automatic_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_automatic_page")));
     manual_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_manual_page")));
 
+    let partition_method_automatic_target_buffer_clone = partition_method_automatic_target_buffer.clone();
+
+    let partition_method_automatic_luks_buffer_clone = partition_method_automatic_luks_buffer.clone();
+
+    let partition_method_manual_target_buffer_clone = partition_method_manual_target_buffer.clone();
+
+    let partition_method_manual_luks_buffer_clone = partition_method_manual_luks_buffer.clone(); 
+
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("install_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack => move |_| {
         content_stack.set_visible_child_name("keyboard_page");
         partitioning_stack.set_visible_child_name("partition_method_select_page");
+    }));
+
+    bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack => move |_| {
+        content_stack.set_visible_child_name("install_page");
+        if Path::new("/tmp/pika-installer-gtk4-target-auto.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-target-auto.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-auto.txt");
+        }
+        if Path::new("/tmp/pika-installer-gtk4-target-manual.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-target-manual.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-manual.txt");
+        }
+        if Path::new("/tmp/pika-installer-gtk4-target-automatic-luks.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-target-automatic-luks.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-manual.txt");
+        }
+        if Path::new("/tmp/pika-installer-gtk4-target-manual-luks.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-target-manual-luks.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-manual.txt");
+        }
+        if partitioning_stack.visible_child_name() == Some(GString::from_string_unchecked("partition_method_automatic_page".into())) {
+            fs::write("/tmp/pika-installer-gtk4-target-auto.txt", partition_method_automatic_target_buffer_clone.text(&partition_method_automatic_target_buffer_clone.bounds().0, &partition_method_automatic_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+            let automatic_luks_result = partition_method_automatic_luks_buffer_clone.text(&partition_method_automatic_luks_buffer_clone.bounds().0, &partition_method_automatic_luks_buffer_clone.bounds().1, true).to_string();
+            if automatic_luks_result.is_empty() {
+                //
+            } else {
+                fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
+            }
+        } else {
+            fs::write("/tmp/pika-installer-gtk4-target-manual.txt", partition_method_manual_target_buffer_clone.text(&partition_method_manual_target_buffer_clone.bounds().0, &partition_method_manual_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+            partition_method_manual_luks_buffer_clone.set_text(&partition_method_manual_luks_password_entry.text().to_string());
+            let manual_luks_result = partition_method_manual_luks_buffer_clone.text(&partition_method_manual_luks_buffer_clone.bounds().0, &partition_method_manual_luks_buffer_clone.bounds().1, true).to_string();
+            if manual_luks_result.is_empty() {
+                //
+            } else {
+                fs::write("/tmp/pika-installer-gtk4-target-manual-luks.txt", manual_luks_result);
+            }
+        }
     }));
 
 }

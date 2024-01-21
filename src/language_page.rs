@@ -16,6 +16,9 @@ use std::process::Stdio;
 use std::time::Instant;
 use std::env;
 
+use std::fs;
+use std::path::Path;
+
 
 pub fn language_page(content_stack: &gtk::Stack) {
 
@@ -174,6 +177,9 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     let locale_reader = BufReader::new(locale_cli_sort.stdout.expect("could not get stdout"));
 
+    let lang_data_buffer = gtk::TextBuffer::builder()
+        .build();
+
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();
         let locale_clone = locale.clone();
@@ -182,10 +188,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
             .build();
         locale_checkbutton.set_group(Some(&null_checkbutton));
         language_selection_expander_row_viewport_box.append(&locale_checkbutton); 
-        locale_checkbutton.connect_toggled(clone!(@weak locale_checkbutton, @weak language_selection_expander_row, @weak bottom_next_button => move |_| {
+        locale_checkbutton.connect_toggled(clone!(@weak locale_checkbutton, @weak language_selection_expander_row, @weak bottom_next_button, @weak lang_data_buffer => move |_| {
             if locale_checkbutton.is_active() == true {
                 language_selection_expander_row.set_title(&locale);
                 bottom_next_button.set_sensitive(true);
+                lang_data_buffer.set_text(&locale);
             }
         }));
         if current_locale.contains(&(locale_clone)) {
@@ -215,11 +222,16 @@ pub fn language_page(content_stack: &gtk::Stack) {
     //// Add the language_main_box as page: language_page, Give it nice title
     content_stack.add_titled(&language_main_box, Some("language_page"), "Language");
 
+    let lang_data_buffer_clone = lang_data_buffer.clone();
+
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("eula_page")
+        content_stack.set_visible_child_name("eula_page");
+        if Path::new("/tmp/pika-installer-gtk4-lang.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-lang.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-lang.txt");
+        }
+        fs::write("/tmp/pika-installer-gtk4-lang.txt", lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("welcome_page")
     }));
-
 }
