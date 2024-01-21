@@ -269,8 +269,8 @@ pub fn install_page(install_main_box: &gtk::Box ,content_stack: &gtk::Stack) {
         }
     }));
     
-    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak install_main_box => move |_| {
+    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak install_main_box, @weak install_nested_stack => move |_| {
         content_stack.set_visible_child_name("partitioning_page");
-        content_stack.remove(&install_main_box);
+        install_main_box.remove(&install_nested_stack)
     }));
 }
