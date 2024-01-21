@@ -23,6 +23,8 @@ use std::time::*;
 use std::fs;
 use std::path::Path;
 
+use crate::install_page;
+
 pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
    
     // create the bottom box for next and back buttons
@@ -971,13 +973,12 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("install_page")
     }));
-    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack => move |_| {
+    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak partitioning_main_box => move |_| {
         content_stack.set_visible_child_name("keyboard_page");
         partitioning_stack.set_visible_child_name("partition_method_select_page");
     }));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack => move |_| {
-        content_stack.set_visible_child_name("install_page");
         if Path::new("/tmp/pika-installer-gtk4-target-auto.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-target-auto.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-auto.txt");
         }
@@ -998,6 +999,8 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             } else {
                 fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
             }
+            install_page(&content_stack);
+            content_stack.set_visible_child_name("install_page");
         } else {
             fs::write("/tmp/pika-installer-gtk4-target-manual.txt", partition_method_manual_target_buffer_clone.text(&partition_method_manual_target_buffer_clone.bounds().0, &partition_method_manual_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
             partition_method_manual_luks_buffer_clone.set_text(&partition_method_manual_luks_password_entry.text().to_string());
@@ -1007,6 +1010,8 @@ pub fn partitioning_page(window: &adw::ApplicationWindow, content_stack: &gtk::S
             } else {
                 fs::write("/tmp/pika-installer-gtk4-target-manual-luks.txt", manual_luks_result);
             }
+            install_page(&content_stack);
+            content_stack.set_visible_child_name("install_page");
         }
     }));
 

@@ -16,7 +16,6 @@ use crate::eula_page;
 use crate::timezone_page;
 use crate::keyboard_page;
 use crate::partitioning_page;
-use crate::install_page;
 
 use std::path::Path;
 
@@ -120,9 +119,6 @@ pub fn build_ui(app: &adw::Application) {
 
     // Add partitioning_page.rs as a page for content_stack
     partitioning_page(&window, &content_stack);
-
-    // Add install_page.rs as a page for content_stack
-    install_page(&content_stack);
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {

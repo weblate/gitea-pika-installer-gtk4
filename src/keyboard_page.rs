@@ -230,11 +230,11 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     let keyboard_data_buffer_clone = keyboard_data_buffer.clone();
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("partitioning_page");
         if Path::new("/tmp/pika-installer-gtk4-keyboard.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-keyboard.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard.txt");
         }
         fs::write("/tmp/pika-installer-gtk4-keyboard.txt", keyboard_data_buffer_clone.text(&keyboard_data_buffer_clone.bounds().0, &keyboard_data_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+        content_stack.set_visible_child_name("partitioning_page")
     }));
 
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {

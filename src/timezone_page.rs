@@ -220,11 +220,11 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     let timezone_data_buffer_clone = timezone_data_buffer.clone();
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("keyboard_page");
         if Path::new("/tmp/pika-installer-gtk4-timezone.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-timezone.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-timezone.txt");
         }
         fs::write("/tmp/pika-installer-gtk4-timezone.txt", timezone_data_buffer_clone.text(&timezone_data_buffer_clone.bounds().0, &timezone_data_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+        content_stack.set_visible_child_name("keyboard_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("eula_page")

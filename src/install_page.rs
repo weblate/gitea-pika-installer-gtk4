@@ -11,6 +11,9 @@ use gtk::subclass::layout_child;
 use vte::prelude::*;
 use vte::*;
 
+use std::fs;
+use std::path::Path;
+
 pub fn install_page(content_stack: &gtk::Stack) {
     
     // create the bottom box for next and back buttons
@@ -97,26 +100,31 @@ pub fn install_page(content_stack: &gtk::Stack) {
 
     let install_confirm_detail_language = adw::ActionRow::builder()
         .title("Language:")
-        .subtitle("en_us")
+        .subtitle(fs::read_to_string("/tmp/pika-installer-gtk4-lang.txt").expect("Unable to read file"))
         .build();
     install_confirm_detail_language.add_css_class("property");
 
     let install_confirm_detail_timezone = adw::ActionRow::builder()
         .title("Time zone:")
-        .subtitle("Europe/Moscow")
+        .subtitle(fs::read_to_string("/tmp/pika-installer-gtk4-timezone.txt").expect("Unable to read file"))
         .build();
     install_confirm_detail_timezone.add_css_class("property");
 
     let install_confirm_detail_keyboard = adw::ActionRow::builder()
         .title("Keyboard layout:")
-        .subtitle("us")
+        .subtitle(fs::read_to_string("/tmp/pika-installer-gtk4-keyboard.txt").expect("Unable to read file"))
         .build();
     install_confirm_detail_keyboard.add_css_class("property");
 
     let install_confirm_detail_target = adw::ActionRow::builder()
         .title("Install Target:")
-        .subtitle("/dev/sda1")
         .build();
+
+    if Path::new("/tmp/pika-installer-gtk4-target-manual.txt").exists() { 
+        install_confirm_detail_target.set_subtitle(&fs::read_to_string("/tmp/pika-installer-gtk4-target-manual.txt").expect("Unable to read file"));
+    } else {
+        install_confirm_detail_target.set_subtitle(&fs::read_to_string("/tmp/pika-installer-gtk4-target-auto.txt").expect("Unable to read file"));
+    }
     install_confirm_detail_target.add_css_class("property");
    
    let install_confirm_button = gtk::Button::builder()
@@ -206,11 +214,12 @@ pub fn install_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the install_main_box as page: install_page, Give it nice title
-    content_stack.add_titled(&install_main_box, Some("install_page"), "Welcome");
+    content_stack.add_titled(&install_main_box, Some("install_page"), "Installation");
 
     install_confirm_button.connect_clicked(clone!(@weak install_nested_stack => move |_| install_nested_stack.set_visible_child_name("progress_page")));
 
-    bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
+    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak install_main_box => move |_| {
+        content_stack.remove(&install_main_box);
         content_stack.set_visible_child_name("partitioning_page");
     }));
 }
