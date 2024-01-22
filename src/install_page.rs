@@ -14,7 +14,9 @@ use vte::*;
 use std::fs;
 use std::path::Path;
 
-pub fn install_page(install_main_box: &gtk::Box ,content_stack: &gtk::Stack) {
+use crate::done_page;
+
+pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
     
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -258,6 +260,12 @@ pub fn install_page(install_main_box: &gtk::Box ,content_stack: &gtk::Stack) {
 
     install_nested_stack.add_titled(&install_confirm_box, Some("confirm_page"), "confirm_page");
     install_nested_stack.add_titled(&install_progress_box, Some("progress_page"), "progress_page");
+
+    //
+
+    done_page(&done_main_box ,&content_stack, &window);
+
+    //
 
     install_confirm_button.connect_clicked(clone!(@weak install_nested_stack => move |_| install_nested_stack.set_visible_child_name("progress_page")));
 

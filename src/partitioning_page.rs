@@ -25,7 +25,7 @@ use std::path::Path;
 
 use crate::install_page;
 
-pub fn partitioning_page(install_main_box: &gtk::Box, window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
+pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
     
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -973,12 +973,13 @@ pub fn partitioning_page(install_main_box: &gtk::Box, window: &adw::ApplicationW
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("install_page")
     }));
-    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak partitioning_main_box => move |_| {
+    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak partitioning_main_box, @weak bottom_next_button => move |_| {
         content_stack.set_visible_child_name("keyboard_page");
         partitioning_stack.set_visible_child_name("partition_method_select_page");
+        bottom_next_button.set_sensitive(false);
     }));
 
-    bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak install_main_box => move |_| {
+    bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak install_main_box, @weak window, @weak done_main_box => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-target-auto.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-target-auto.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-auto.txt");
         }
@@ -999,7 +1000,7 @@ pub fn partitioning_page(install_main_box: &gtk::Box, window: &adw::ApplicationW
             } else {
                 fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
             }
-            install_page(&install_main_box, &content_stack);
+            install_page(&done_main_box, &install_main_box, &content_stack, &window);
             content_stack.set_visible_child_name("install_page");
         } else {
             fs::write("/tmp/pika-installer-gtk4-target-manual.txt", partition_method_manual_target_buffer_clone.text(&partition_method_manual_target_buffer_clone.bounds().0, &partition_method_manual_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
@@ -1010,7 +1011,7 @@ pub fn partitioning_page(install_main_box: &gtk::Box, window: &adw::ApplicationW
             } else {
                 fs::write("/tmp/pika-installer-gtk4-target-manual-luks.txt", manual_luks_result);
             }
-            install_page(&install_main_box, &content_stack);
+            install_page(&done_main_box, &install_main_box, &content_stack, &window);
             content_stack.set_visible_child_name("install_page");
         }
     }));

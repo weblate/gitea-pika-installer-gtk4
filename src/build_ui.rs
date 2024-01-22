@@ -55,7 +55,7 @@ pub fn build_ui(app: &adw::Application) {
         .margin_bottom(15)
         .margin_start(15)
         .margin_end(15)
-        .sensitive(false)
+        //.sensitive(false)
         .build();
     
     // / _main_box appends
@@ -122,12 +122,18 @@ pub fn build_ui(app: &adw::Application) {
         .orientation(Orientation::Vertical)
         .build();
 
-    // Add partitioning_page.rs as a page for content_stack
-    partitioning_page(&install_main_box , &window, &content_stack);
+    let done_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
 
-    // / Content stack appends
+    // Add partitioning_page.rs as a page for content_stack
+    partitioning_page(&done_main_box, &install_main_box,  &content_stack, &window);
+
     //// Add the install_main_box as page: install_page, Give it nice title
     content_stack.add_titled(&install_main_box, Some("install_page"), "Installation");
+
+    // Add done_page.rs as a page for content_stack
+    content_stack.add_titled(&done_main_box, Some("installation_successful_page"), "Done");
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {

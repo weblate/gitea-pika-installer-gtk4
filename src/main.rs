@@ -20,6 +20,7 @@ mod timezone_page;
 mod keyboard_page;
 mod partitioning_page;
 mod install_page;
+mod done_page;
 use crate::save_window_size::save_window_size;
 use crate::welcome_page::welcome_page;
 use crate::efi_error_page::efi_error_page;
@@ -29,6 +30,7 @@ use crate::timezone_page::timezone_page;
 use crate::keyboard_page::keyboard_page;
 use crate::partitioning_page::partitioning_page;
 use crate::install_page::install_page;
+use crate::done_page::done_page;
 
 /// main function
 fn main() {
