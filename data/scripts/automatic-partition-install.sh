@@ -2,8 +2,8 @@
 
 DISK="$(cat "/tmp/pika-installer-gtk4-target-auto.txt")"
 LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
-KEYBOARD="$(cat /tmp/pika-installer-gtk4-target-auto.txt")"
-TIMEZONE="$(cat /tmp/pika-installer-gtk4-timezone.txt")"
+KEYBOARD="$(cat "/tmp/pika-installer-gtk4-target-auto.txt")"
+TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
 
 if [[ ! -f "/tmp/pika-installer-gtk4-target-automatic-luks.txt" ]]
