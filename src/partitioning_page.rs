@@ -286,7 +286,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
 
     devices_selection_expander_row.add_row(&devices_selection_expander_row_viewport);
 
-    let partition_method_automatic_get_devices_cli = Command::new("pkexec")
+    let partition_method_automatic_get_devices_cli = Command::new("sudo")
         .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
         .arg("get_block_devices")
         .stdin(Stdio::piped())
@@ -346,7 +346,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
 
     for device in partition_method_automatic_get_devices_reader.lines() {
         let device = device.unwrap();
-        let device_size_cli = Command::new("pkexec")
+        let device_size_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("get_block_size")
             .arg(device.clone())
@@ -670,7 +670,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             partition_method_manual_chroot_error_label.set_visible(false);
         }
         // Home partition Check
-        let home_not_root_cli = Command::new("pkexec")
+        let home_not_root_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("home_not_root")
             .arg(custom_root_mountpoint.clone())
@@ -682,7 +682,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             let luks_manual_is_encrypt_sender = luks_manual_is_encrypt_sender.clone();
             // The long running operation runs now in a separate thread
             gio::spawn_blocking(clone!(@strong custom_root_mountpoint => move || {
-                    let check_home_encryption_cli = Command::new("pkexec")
+                    let check_home_encryption_cli = Command::new("sudo")
                         .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
                         .arg("check_home_encryption")
                         .arg(custom_root_mountpoint)
@@ -711,7 +711,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             let luks_manual_password_sender = luks_manual_password_sender.clone();
             // The long running operation runs now in a separate thread
             gio::spawn_blocking(clone!(@strong custom_root_mountpoint, @strong luks_passwd => move || {
-                    let luks_check_cli = Command::new("pkexec")
+                    let luks_check_cli = Command::new("sudo")
                         .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
                         .arg("check_home_luks_passwd")
                         .arg(custom_root_mountpoint)
@@ -738,19 +738,19 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             }));
         }
         // Boot partition Checks
-        let home_not_boot_cli = Command::new("pkexec")
+        let home_not_boot_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("home_not_boot")
             .arg(custom_root_mountpoint.clone())
             .output()
             .expect("failed to execute process");
-        let root_not_boot_cli = Command::new("pkexec")
+        let root_not_boot_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("root_not_boot")
             .arg(custom_root_mountpoint.clone())
             .output()
             .expect("failed to execute process");
-        let boot_not_efi_cli = Command::new("pkexec")
+        let boot_not_efi_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("boot_not_efi")
             .arg(custom_root_mountpoint.clone())
@@ -780,7 +780,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             }
         }
         // EFI partition Checks
-        let root_not_efi_cli = Command::new("pkexec")
+        let root_not_efi_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("root_not_efi")
             .arg(custom_root_mountpoint.clone())
@@ -812,7 +812,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             partition_method_manual_chroot_error_label.set_visible(false);
         }
         // Home partition Check
-        let home_not_root_cli = Command::new("pkexec")
+        let home_not_root_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("home_not_root")
             .arg(custom_root_mountpoint.clone())
@@ -824,7 +824,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             let luks_manual_is_encrypt_sender = luks_manual_is_encrypt_sender.clone();
             // The long running operation runs now in a separate thread
             gio::spawn_blocking(clone!(@strong custom_root_mountpoint => move || {
-                    let check_home_encryption_cli = Command::new("pkexec")
+                    let check_home_encryption_cli = Command::new("sudo")
                         .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
                         .arg("check_home_encryption")
                         .arg(custom_root_mountpoint)
@@ -853,7 +853,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             let luks_manual_password_sender = luks_manual_password_sender.clone();
             // The long running operation runs now in a separate thread
             gio::spawn_blocking(clone!(@strong custom_root_mountpoint, @strong luks_passwd => move || {
-                    let luks_check_cli = Command::new("pkexec")
+                    let luks_check_cli = Command::new("sudo")
                         .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
                         .arg("check_home_luks_passwd")
                         .arg(custom_root_mountpoint)
@@ -880,19 +880,19 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             }));
         }
         // Boot partition Checks
-        let home_not_boot_cli = Command::new("pkexec")
+        let home_not_boot_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("home_not_boot")
             .arg(custom_root_mountpoint.clone())
             .output()
             .expect("failed to execute process");
-        let root_not_boot_cli = Command::new("pkexec")
+        let root_not_boot_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("root_not_boot")
             .arg(custom_root_mountpoint.clone())
             .output()
             .expect("failed to execute process");
-        let boot_not_efi_cli = Command::new("pkexec")
+        let boot_not_efi_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("boot_not_efi")
             .arg(custom_root_mountpoint.clone())
@@ -922,7 +922,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             }
         }
         // EFI partition Checks
-        let root_not_efi_cli = Command::new("pkexec")
+        let root_not_efi_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("root_not_efi")
             .arg(custom_root_mountpoint.clone())
