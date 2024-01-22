@@ -19,7 +19,7 @@ then
     if echo ${DISK} | grep -i "nvme"
     then
         # Add filesystems
-        mkfs -t vfat -F32 /dev/${DISK}p1
+        mkfs.fat -F 32 /dev/${DISK}p1
         mkfs -t ext4 /dev/${DISK}p2
         mkfs -t btrfs /dev/${DISK}p3
         mkfs -t btrfs /dev/${DISK}p4
@@ -35,7 +35,7 @@ then
         pikainstall -r /media/pika-install-mount/ -b /media/pika-install-mount/boot -e /media/pika-install-mount/boot/efi -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt
     else
         # Add filesystems
-        mkfs -t vfat -F32 /dev/${DISK}1
+        mkfs.fat -F 32 /dev/${DISK}1
         mkfs -t ext4 /dev/${DISK}2
         mkfs -t btrfs /dev/${DISK}3
         mkfs -t btrfs /dev/${DISK}4
