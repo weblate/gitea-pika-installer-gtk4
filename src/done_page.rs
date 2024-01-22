@@ -11,6 +11,7 @@ use gtk::subclass::layout_child;
 
 use std::fs;
 use std::path::Path;
+use std::process::Command;
 
 pub fn done_page(done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
    // the header box for the installation_successful page
@@ -42,6 +43,8 @@ pub fn done_page(done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &
        .margin_end(15)
        .build();
    
+
+   // Successful install yard
    // the header box for the installation_successful page
    let installation_successful_main_box = gtk::Box::builder()
        .orientation(Orientation::Vertical)
@@ -56,60 +59,184 @@ pub fn done_page(done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &
        .margin_end(15)
        .build();
 
+    let installation_successful_big_icon = gtk::Image::builder()
+        .icon_name("emblem-default")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .pixel_size(256)
+        .margin_top(0)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
    
    let installation_successful_text = gtk::Label::builder()
-        .vexpand(true)
-        .hexpand(true)
         .label("The installation of PikaOS has been completed sucessfully.")
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
     installation_successful_text.add_css_class("header_sized_text");
    
-   let installation_successful_exit_button = gtk::Button::builder()
-        .label("Exit")
-        .vexpand(true)
-        .hexpand(true)
+   let installation_successful_buttons_line = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .margin_bottom(15)
+        .margin_top(15)
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
+        .vexpand(true)
+        .hexpand(true)
+        .build();
+   
+   let installation_successful_exit_button = gtk::Button::builder()
+        .label("Exit")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .margin_start(5)
+        .margin_end(5)
+        .build();
+
+    let installation_successful_reboot_button = gtk::Button::builder()
+        .label("Reboot")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .margin_start(5)
+        .margin_end(5)
         .build();
 
     // / installation_successful_selection_box appends
-    
-    // / done_header_box appends
-    //// Add the installation_successful page header text and icon
-    done_header_box.append(&done_header_text);
-    done_header_box.append(&done_header_icon);
     
     // / installation_successful_main_box appends
     //// Add the installation_successful header to installation_successful main box
     installation_successful_main_box.append(&done_header_box);
     //// Add the installation_successful selection/page content box to installation_successful main box
     installation_successful_main_box.append(&installation_successful_selection_box);
+
+    installation_successful_buttons_line.append(&installation_successful_reboot_button);
+    installation_successful_buttons_line.append(&installation_successful_exit_button);
     
     // Start Appending widgets to boxes
 
     // / installation_successful_selection_box appends
     //// add live and install media button to installation_successful page selections
+    installation_successful_selection_box.append(&installation_successful_big_icon);
     installation_successful_selection_box.append(&installation_successful_text);
-    installation_successful_selection_box.append(&installation_successful_exit_button);
-    
-    // / done_header_box appends
-    //// Add the installation_successful page header text and icon
-    done_header_box.append(&done_header_text);
-    done_header_box.append(&done_header_icon);
+    installation_successful_selection_box.append(&installation_successful_buttons_line);
     
     // / installation_successful_main_box appends
     //// Add the installation_successful selection/page content box to installation_successful main box
     installation_successful_main_box.append(&installation_successful_selection_box);
 
+    installation_successful_exit_button.connect_clicked(clone!(@weak window => move |_| window.close()));
+    installation_successful_reboot_button.connect_clicked(move |_| {
+        Command::new("reboot")
+        .spawn()
+        .expect("reboot failed to start");
+    });
+
+   // Failed install yard
+   // the header box for the installation_failed page
+   let installation_failed_main_box = gtk::Box::builder()
+       .orientation(Orientation::Vertical)
+       .build();
+
+   // make installation_failed selection box for choosing installation or live media 
+   let installation_failed_selection_box = gtk::Box::builder()
+       .orientation(Orientation::Vertical)
+       .margin_bottom(15)
+       .margin_top(15)
+       .margin_start(15)
+       .margin_end(15)
+       .build();
+
+    let installation_failed_big_icon = gtk::Image::builder()
+        .icon_name("emblem-default")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .pixel_size(256)
+        .margin_top(0)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
+   
+   let installation_failed_text = gtk::Label::builder()
+        .label("PikaOS has Failed!\nCheck logs for further info.")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .build();
+    installation_failed_text.add_css_class("header_sized_text");
+   
+   let installation_failed_buttons_line = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .margin_bottom(15)
+        .margin_top(15)
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .vexpand(true)
+        .hexpand(true)
+        .build();
+   
+   let installation_failed_exit_button = gtk::Button::builder()
+        .label("Exit")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .margin_start(5)
+        .margin_end(5)
+        .build();
+
+    let installation_failed_logs_button = gtk::Button::builder()
+        .label("Logs")
+        .halign(gtk::Align::Center)
+        .valign(gtk::Align::Center)
+        .margin_start(5)
+        .margin_end(5)
+        .build();
+
+    // / installation_failed_selection_box appends
+    
+    // / installation_failed_main_box appends
+    //// Add the installation_failed header to installation_failed main box
+    installation_failed_main_box.append(&done_header_box);
+    //// Add the installation_failed selection/page content box to installation_failed main box
+    installation_failed_main_box.append(&installation_failed_selection_box);
+
+    installation_failed_buttons_line.append(&installation_failed_logs_button);
+    installation_failed_buttons_line.append(&installation_failed_exit_button);
+    
+    // Start Appending widgets to boxes
+
+    // / installation_failed_selection_box appends
+    //// add live and install media button to installation_failed page selections
+    installation_failed_selection_box.append(&installation_failed_big_icon);
+    installation_failed_selection_box.append(&installation_failed_text);
+    installation_failed_selection_box.append(&installation_failed_buttons_line);
+    
+    // / installation_failed_main_box appends
+    //// Add the installation_failed selection/page content box to installation_failed main box
+    installation_failed_main_box.append(&installation_failed_selection_box);
+
+    installation_failed_exit_button.connect_clicked(clone!(@weak window => move |_| window.close()));
+    installation_failed_logs_button.connect_clicked(move |_| {
+        Command::new("xdg-open")
+        .arg("/tmp/pika-installer-gtk4-log")
+        .spawn()
+        .expect("xdg-open failed to start");
+    });
+
+    // / done_header_box appends
+    //// Add the installation_successful page header text and icon
+    done_header_box.append(&done_header_text);
+    done_header_box.append(&done_header_icon);
+
+    // / done_header_box appends
+    //// Add the installation_successful page header text and icon
+    done_header_box.append(&done_header_text);
+    done_header_box.append(&done_header_icon);
+
     done_main_box.append(&done_header_box);
     if Path::new("/tmp/pika-installer-gtk4-successful.txt").exists() {
         done_main_box.append(&installation_successful_main_box)
+    } else {
+        done_main_box.append(&installation_failed_main_box)
     }
-
-    // / Content stack appends
-    //// Add the installation_successful_main_box as page: installation_successful_page, Give it nice title
-
-    installation_successful_exit_button.connect_clicked(clone!(@weak window => move |_| window.close()));
 }
