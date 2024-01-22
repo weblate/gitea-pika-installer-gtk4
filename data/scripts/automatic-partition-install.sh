@@ -1,5 +1,7 @@
 #! /bin/bash
 
+set -e
+
 DISK="$(cat "/tmp/pika-installer-gtk4-target-auto.txt")"
 LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
 KEYBOARD="$(cat "/tmp/pika-installer-gtk4-target-auto.txt")"
@@ -8,7 +10,7 @@ TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
 if [[ ! -f "/tmp/pika-installer-gtk4-target-automatic-luks.txt" ]]
 then
-    sfdisk --delete /dev/${DISK}
+    wipefs -a /dev/${DISK}
     # Partition the drives
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
@@ -20,10 +22,10 @@ then
     if echo ${DISK} | grep -i "nvme"
     then
         # Add filesystems
-        mkfs.fat -F 32 /dev/${DISK}p1
-        mkfs -t ext4 /dev/${DISK}p2
-        mkfs -t btrfs /dev/${DISK}p3
-        mkfs -t btrfs /dev/${DISK}p4
+        yes | mkfs -t vfat -F 32 /dev/${DISK}p1
+        yes | mkfs -t ext4 /dev/${DISK}p2
+        yes | mkfs.btrfs -f /dev/${DISK}p3
+        yes | mkfs.btrfs -f /dev/${DISK}p4
         # Begin Mounting
         mkdir -p /media/pika-install-mount
         mount /dev/${DISK}p3 /media/pika-install-mount/
@@ -36,10 +38,10 @@ then
         pikainstall -r /media/pika-install-mount/ -b /media/pika-install-mount/boot -e /media/pika-install-mount/boot/efi -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt
     else
         # Add filesystems
-        mkfs.fat -F 32 /dev/${DISK}1
-        mkfs -t ext4 /dev/${DISK}2
-        mkfs -t btrfs /dev/${DISK}3
-        mkfs -t btrfs /dev/${DISK}4
+        yes | mkfs -t vfat -F 32 /dev/${DISK}1
+        yes | mkfs -t ext4 /dev/${DISK}2
+        yes | mkfs.btrfs -f /dev/${DISK}3
+        yes | mkfs.btrfs -f /dev/${DISK}4
         # Begin Mounting
         mkdir -p /media/pika-install-mount
         mount /dev/${DISK}3 /media/pika-install-mount/
