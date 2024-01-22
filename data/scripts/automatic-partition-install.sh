@@ -8,6 +8,7 @@ TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
 if [[ ! -f "/tmp/pika-installer-gtk4-target-automatic-luks.txt" ]]
 then
+    sfdisk --delete /dev/${DISK}
     # Partition the drives
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
