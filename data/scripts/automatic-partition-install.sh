@@ -7,6 +7,7 @@ LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
 KEYBOARD="$(cat "/tmp/pika-installer-gtk4-target-auto.txt")"
 TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
+touch "/tmp/pika-installer-gtk4-status-parting.txt"
 
 if [[ ! -f "/tmp/pika-installer-gtk4-target-automatic-luks.txt" ]]
 then
@@ -21,11 +22,17 @@ then
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
     then
+        #
+        while [[ ! -d /dev/${DISK}p1 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}p2 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}p3 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}p4 ]]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}p1
         yes | mkfs -t ext4 /dev/${DISK}p2
         yes | mkfs.btrfs -f /dev/${DISK}p3
         yes | mkfs.btrfs -f /dev/${DISK}p4
+        sleep 2
         # Begin Mounting
         mkdir -p /media/pika-install-mount
         mount /dev/${DISK}p3 /media/pika-install-mount/
@@ -37,11 +44,16 @@ then
         mount /dev/${DISK}p1 /media/pika-install-mount/boot/efi
         pikainstall -r /media/pika-install-mount/ -b /media/pika-install-mount/boot -e /media/pika-install-mount/boot/efi -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt
     else
+        while [[ ! -d /dev/${DISK}1 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}2 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}3 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}4 ]]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}1
         yes | mkfs -t ext4 /dev/${DISK}2
         yes | mkfs.btrfs -f /dev/${DISK}3
         yes | mkfs.btrfs -f /dev/${DISK}4
+        sleep 2
         # Begin Mounting
         mkdir -p /media/pika-install-mount
         mount /dev/${DISK}3 /media/pika-install-mount/
@@ -66,6 +78,10 @@ else
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
     then
+        while [[ ! -d /dev/${DISK}p1 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}p2 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}p3 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}p4 ]]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}p1
         yes | mkfs -t ext4 /dev/${DISK}p2
@@ -75,6 +91,7 @@ else
         printf ${LUKS_KEY} | cryptsetup -q -v luksOpen /dev/${DISK}p4 crypt_home
         yes | mkfs.btrfs -f /dev/mapper/crypt_root
         yes | mkfs.btrfs -f /dev/mapper/crypt_home
+        sleep 2
         # Begin Mounting
         mkdir -p /media/pika-install-mount
         mount /dev/mapper/crypt_root /media/pika-install-mount/
@@ -86,6 +103,10 @@ else
         mount /dev/${DISK}p1 /media/pika-install-mount/boot/efi
         pikainstall -r /media/pika-install-mount/ -b /media/pika-install-mount/boot -e /media/pika-install-mount/boot/efi -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt
     else
+        while [[ ! -d /dev/${DISK}1 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}2 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}3 ]]; do sleep 2; done
+        while [[ ! -d /dev/${DISK}4 ]]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}1
         yes | mkfs -t ext4 /dev/${DISK}2
@@ -95,6 +116,7 @@ else
         printf ${LUKS_KEY} | cryptsetup -q -v luksOpen /dev/${DISK}4 crypt_home
         yes | mkfs.btrfs -f /dev/mapper/crypt_root
         yes | mkfs.btrfs -f /dev/mapper/crypt_home
+        sleep 2
         # Begin Mounting
         mkdir -p /media/pika-install-mount
         mount /dev/mapper/crypt_root /media/pika-install-mount/
