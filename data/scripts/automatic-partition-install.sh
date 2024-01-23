@@ -23,10 +23,10 @@ then
     if echo ${DISK} | grep -i "nvme"
     then
         #
-        while [[ ! -f /dev/${DISK}p1 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}p2 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}p3 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}p4 ]]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p1 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p2 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p3 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p4 ]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}p1
         yes | mkfs -t ext4 /dev/${DISK}p2
@@ -44,10 +44,10 @@ then
         mount /dev/${DISK}p1 /media/pika-install-mount/boot/efi
         pikainstall -r /media/pika-install-mount/ -b /media/pika-install-mount/boot -e /media/pika-install-mount/boot/efi -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt
     else
-        while [[ ! -f /dev/${DISK}1 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}2 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}3 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}4 ]]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}1 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}2 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}3 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}4 ]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}1
         yes | mkfs -t ext4 /dev/${DISK}2
@@ -78,10 +78,10 @@ else
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
     then
-        while [[ ! -f /dev/${DISK}p1 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}p2 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}p3 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}p4 ]]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p1 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p2 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p3 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}p4 ]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}p1
         yes | mkfs -t ext4 /dev/${DISK}p2
@@ -103,10 +103,10 @@ else
         mount /dev/${DISK}p1 /media/pika-install-mount/boot/efi
         pikainstall -r /media/pika-install-mount/ -b /media/pika-install-mount/boot -e /media/pika-install-mount/boot/efi -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt
     else
-        while [[ ! -f /dev/${DISK}1 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}2 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}3 ]]; do sleep 2; done
-        while [[ ! -f /dev/${DISK}4 ]]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}1 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}2 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}3 ]; do sleep 2; done
+        while ! [ -f ! -f /dev/${DISK}4 ]; do sleep 2; done
         # Add filesystems
         yes | mkfs -t vfat -F 32 /dev/${DISK}1
         yes | mkfs -t ext4 /dev/${DISK}2
