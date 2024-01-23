@@ -188,26 +188,7 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
         .margin_start(15)
         .margin_end(15)
         .sensitive(false)
-        .build();
-
-    install_progress_log_terminal.spawn_async(
-            PtyFlags::DEFAULT,
-            Some(""),
-            &["bash"],
-            &[],
-            SpawnFlags::DEFAULT,
-            || {},
-            -1,
-            None::<&gio::Cancellable>,
-            move |result| {
-                match result {
-                    Ok(_) => { eprintln!("could not spawn terminal")}
-                    Err(err) => {
-                        eprintln!("could not spawn terminal: {}", err);
-                    }
-                }
-            },
-        );    
+        .build();    
 
     let placeholder_icon = gtk::Image::builder()
         .icon_name("debian-swirl")
@@ -263,11 +244,12 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
 
     //
 
-    done_page(&done_main_box ,&content_stack, &window);
-
     //
 
-    install_confirm_button.connect_clicked(clone!(@weak install_nested_stack => move |_| install_nested_stack.set_visible_child_name("progress_page")));
+    install_confirm_button.connect_clicked(clone!(@weak install_nested_stack, @weak install_progress_log_terminal, @weak install_progress_bar, @weak done_main_box, @weak content_stack, @weak window => move |_| {
+        install_nested_stack.set_visible_child_name("progress_page");
+        begin_install(&install_progress_log_terminal, &install_progress_bar, &done_main_box, &content_stack, &window);
+    }));
 
     progress_log_button.connect_clicked(clone!(@weak install_progress_log_stack => move |_| {
         if install_progress_log_stack.visible_child_name() == Some(GString::from_string_unchecked("slideshow_page".into())) {
@@ -280,5 +262,253 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
     bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak install_main_box, @weak install_nested_stack => move |_| {
         content_stack.set_visible_child_name("partitioning_page");
         install_main_box.remove(&install_nested_stack)
+    }));
+}
+
+fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress_bar: &gtk::ProgressBar, done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
+    // SPAWN TERMINAL WITH PIKAINSTALL PROCESS
+    install_progress_log_terminal.spawn_async(
+        PtyFlags::DEFAULT,
+        Some(""),
+        &["/usr/lib/pika/pika-installer-gtk4/scripts/begin-install.sh"],
+        &[],
+        SpawnFlags::DEFAULT,
+        || {},
+        -1,
+        None::<&gio::Cancellable>,
+        move |result| {
+            match result {
+                Ok(_) => { eprintln!("could not spawn terminal")}
+                Err(err) => {
+                    eprintln!("could not spawn terminal: {}", err);
+                }
+            }
+        },
+    );
+    // wait till /tmp/pika-installer-gtk4-status-image.txt to change progressbar
+    let (image_status_sender, image_status_receiver) = async_channel::unbounded();
+    let image_status_sender = image_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let image_status = true;
+            while image_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-image.txt").exists() == false {
+                    image_status_sender
+                    .send_blocking("Writing image to target")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let image_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    image_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(image_status_state) = image_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(image_status_state));
+            if install_progress_bar.text().as_deref() == Some(image_status_state) {
+                install_progress_bar.set_pulse_step(0.60)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-status-flag1.txt to change progressbar
+    let (flag1_status_sender, flag1_status_receiver) = async_channel::unbounded();
+    let flag1_status_sender = flag1_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let flag1_status = true;
+            while flag1_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-flag1.txt").exists() == false {
+                    flag1_status_sender
+                    .send_blocking("Enabling bls_boot flag on /boot")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let flag1_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    flag1_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(flag1_status_state) = flag1_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(flag1_status_state));
+            if install_progress_bar.text().as_deref() == Some(flag1_status_state) {
+                install_progress_bar.set_pulse_step(0.65)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-status-flag2.txt to change progressbar
+    let (flag2_status_sender, flag2_status_receiver) = async_channel::unbounded();
+    let flag2_status_sender = flag2_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let flag2_status = true;
+            while flag2_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-flag2.txt").exists() == false {
+                    flag2_status_sender
+                    .send_blocking("Enabling efi flag on /boot/efi")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let flag2_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    flag2_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(flag2_status_state) = flag2_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(flag2_status_state));
+            if install_progress_bar.text().as_deref() == Some(flag2_status_state) {
+                install_progress_bar.set_pulse_step(0.70)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-status-crypt.txt to change progressbar
+    let (crypt_status_sender, crypt_status_receiver) = async_channel::unbounded();
+    let crypt_status_sender = crypt_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let crypt_status = true;
+            while crypt_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-crypt.txt").exists() == false {
+                    crypt_status_sender
+                    .send_blocking("Setting up encryption crypttab")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let crypt_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    crypt_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(crypt_status_state) = crypt_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(crypt_status_state));
+            if install_progress_bar.text().as_deref() == Some(crypt_status_state) {
+                install_progress_bar.set_pulse_step(0.75)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-status-lang.txt to change progressbar
+    let (lang_status_sender, lang_status_receiver) = async_channel::unbounded();
+    let lang_status_sender = lang_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let lang_status = true;
+            while lang_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-lang.txt").exists() == false {
+                    lang_status_sender
+                    .send_blocking("Setting Up Language and Keyboard")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let lang_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    lang_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(lang_status_state) = lang_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(lang_status_state));
+            if install_progress_bar.text().as_deref() == Some(lang_status_state) {
+                install_progress_bar.set_pulse_step(0.80)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-status-boot.txt to change progressbar
+    let (boot_status_sender, boot_status_receiver) = async_channel::unbounded();
+    let boot_status_sender = boot_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let boot_status = true;
+            while boot_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-boot.txt").exists() == false {
+                    boot_status_sender
+                    .send_blocking("Configuring bootloader")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let boot_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    boot_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(boot_status_state) = boot_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(boot_status_state));
+            if install_progress_bar.text().as_deref() == Some(boot_status_state) {
+                install_progress_bar.set_pulse_step(0.85)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-status-post.txt to change progressbar
+    let (post_status_sender, post_status_receiver) = async_channel::unbounded();
+    let post_status_sender = post_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let post_status = true;
+            while post_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-post.txt").exists() == false {
+                    post_status_sender
+                    .send_blocking("Running post install script")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let post_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    post_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(post_status_state) = post_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(post_status_state));
+            if install_progress_bar.text().as_deref() == Some(post_status_state) {
+                install_progress_bar.set_pulse_step(0.90)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-status-boot.txt to change progressbar
+    let (done_status_sender, done_status_receiver) = async_channel::unbounded();
+    let done_status_sender = done_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let done_status = true;
+            while done_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-status-boot.txt").exists() == false {
+                    done_status_sender
+                    .send_blocking("Enabling bls_boot flag on /boot")
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    // keep looping till there's 
+    let done_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    done_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
+        while let Ok(done_status_state) = done_status_receiver.recv().await {
+            install_progress_bar.set_text(Some(done_status_state));
+            if install_progress_bar.text().as_deref() == Some(done_status_state) {
+                install_progress_bar.set_pulse_step(0.90)
+            }
+        }
+    }));
+    // wait till /tmp/pika-installer-gtk4-successful.txt to change progressbar
+    let (done_status_sender, done_status_receiver) = async_channel::unbounded();
+    let done_status_sender = done_status_sender.clone();
+    // The long running operation runs now in a separate thread
+    gio::spawn_blocking(move || {
+            let done_status = true;
+            while done_status == true {
+                if Path::new("/tmp/pika-installer-gtk4-successful.txt").exists() == false  && Path::new("/tmp/pika-installer-gtk4-fail.txt").exists() == false {
+                    done_status_sender
+                    .send_blocking(true)
+                    .expect("The channel needs to be open.");
+                    break
+                }
+            }   
+    });
+    let done_status_main_context = MainContext::default();
+    // The main loop executes the asynchronous block
+    done_status_main_context.spawn_local(clone!(@weak done_main_box, @weak content_stack, @weak window => async move {
+        while let Ok(done_status_state) = done_status_receiver.recv().await {
+            let done_status_pool = done_status_state;
+            if done_status_pool == true {
+                done_page(&done_main_box ,&content_stack, &window);
+            }
+        }
     }));
 }
