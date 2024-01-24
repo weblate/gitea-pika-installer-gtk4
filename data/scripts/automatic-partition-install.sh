@@ -39,7 +39,7 @@ then
         mount /dev/${DISK}p2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi
         mount /dev/${DISK}p1 /media/pika-install-mount/boot/efi
-        pikainstall -r /media/pika-install-mount/ -c ${LUKS_KEY} -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
+        pikainstall -r /media/pika-install-mount/ -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
     else
         sleep 10
         # Add filesystems
@@ -57,7 +57,7 @@ then
         mount /dev/${DISK}2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi
         mount /dev/${DISK}1 /media/pika-install-mount/boot/efi
-        pikainstall -r /media/pika-install-mount/ -c ${LUKS_KEY} -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
+        pikainstall -r /media/pika-install-mount/ -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
     fi
 else
     LUKS_KEY="$(cat "/tmp/pika-installer-gtk4-target-automatic-luks.txt")"
