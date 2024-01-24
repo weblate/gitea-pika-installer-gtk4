@@ -37,8 +37,9 @@ pub fn build_ui(app: &adw::Application) {
         .build();
     
     /// Add adwaita title box
-    let window_title_bar = gtk::HeaderBar::builder()
-        .show_title_buttons(false)
+    let window_title_bar = adw::WindowTitle::builder()
+        .title("PikaOS Installer")
+        .subtitle("PikaOS pikainstall GTK4 GUI")
         .build();
 
     /// Add page Stack containing all primary contents
