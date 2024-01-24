@@ -187,7 +187,7 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
         .margin_bottom(15)
         .margin_start(15)
         .margin_end(15)
-        .sensitive(false)
+        .input_enabled(false)
         .build();    
 
     let placeholder_icon = gtk::Image::builder()
@@ -294,7 +294,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while parting_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-parting.txt").exists() == true {
                     parting_status_sender
-                    .send_blocking("Partitioning The Disk Target")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -304,9 +304,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     parting_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(parting_status_state) = parting_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(parting_status_state));
-            if install_progress_bar.text().as_deref() == Some(parting_status_state) {
-                install_progress_bar.set_pulse_step(0.20)
+            
+            if parting_status_state == true {
+                install_progress_bar.set_pulse_step(0.20);
+                install_progress_bar.set_text(Some("Partitioning The Disk Target."));
             }
         }
     }));
@@ -319,7 +320,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while image_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-image.txt").exists() == true {
                     image_status_sender
-                    .send_blocking("Writing image to target")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -329,9 +330,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     image_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(image_status_state) = image_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(image_status_state));
-            if install_progress_bar.text().as_deref() == Some(image_status_state) {
-                install_progress_bar.set_pulse_step(0.60)
+            
+            if image_status_state == true {
+                install_progress_bar.set_pulse_step(0.60);
+                install_progress_bar.set_text(Some("Writing image to target."));
             }
         }
     }));
@@ -344,7 +346,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while flag1_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-flag1.txt").exists() == true {
                     flag1_status_sender
-                    .send_blocking("Enabling bls_boot flag on /boot")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -354,9 +356,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     flag1_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(flag1_status_state) = flag1_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(flag1_status_state));
-            if install_progress_bar.text().as_deref() == Some(flag1_status_state) {
-                install_progress_bar.set_pulse_step(0.65)
+            
+            if flag1_status_state == true {
+                install_progress_bar.set_pulse_step(0.65);
+                install_progress_bar.set_text(Some("Enabling bls_boot flag on /boot"));
             }
         }
     }));
@@ -369,7 +372,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while flag2_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-flag2.txt").exists() == true {
                     flag2_status_sender
-                    .send_blocking("Enabling efi flag on /boot/efi")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -379,9 +382,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     flag2_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(flag2_status_state) = flag2_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(flag2_status_state));
-            if install_progress_bar.text().as_deref() == Some(flag2_status_state) {
-                install_progress_bar.set_pulse_step(0.70)
+            
+            if flag2_status_state == true {
+                install_progress_bar.set_pulse_step(0.70);
+                install_progress_bar.set_text(Some("Enabling efi flag on /boot/efi"));
             }
         }
     }));
@@ -394,7 +398,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while crypt_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-crypt.txt").exists() == true {
                     crypt_status_sender
-                    .send_blocking("Setting up encryption crypttab")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -404,9 +408,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     crypt_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(crypt_status_state) = crypt_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(crypt_status_state));
-            if install_progress_bar.text().as_deref() == Some(crypt_status_state) {
-                install_progress_bar.set_pulse_step(0.75)
+            
+            if crypt_status_state == true {
+                install_progress_bar.set_pulse_step(0.75);
+                install_progress_bar.set_text(Some("Setting up encryption crypttab"));
             }
         }
     }));
@@ -419,7 +424,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while lang_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-lang.txt").exists() == true {
                     lang_status_sender
-                    .send_blocking("Setting Up Language and Keyboard")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -429,9 +434,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     lang_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(lang_status_state) = lang_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(lang_status_state));
-            if install_progress_bar.text().as_deref() == Some(lang_status_state) {
-                install_progress_bar.set_pulse_step(0.80)
+            
+            if lang_status_state == true {
+                install_progress_bar.set_pulse_step(0.80);
+                install_progress_bar.set_text(Some("Setting Up Language and Keyboard."));
             }
         }
     }));
@@ -444,7 +450,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while boot_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-boot.txt").exists() == true {
                     boot_status_sender
-                    .send_blocking("Configuring bootloader")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -454,9 +460,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     boot_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(boot_status_state) = boot_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(boot_status_state));
-            if install_progress_bar.text().as_deref() == Some(boot_status_state) {
-                install_progress_bar.set_pulse_step(0.85)
+            
+            if boot_status_state == true {
+                install_progress_bar.set_pulse_step(0.85);
+                install_progress_bar.set_text(Some("Configuring bootloader"));
             }
         }
     }));
@@ -469,7 +476,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             while post_status == true {
                 if Path::new("/tmp/pika-installer-gtk4-status-post.txt").exists() == true {
                     post_status_sender
-                    .send_blocking("Running post install script")
+                    .send_blocking(true)
                     .expect("The channel needs to be open.");
                     break
                 }
@@ -479,35 +486,10 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     post_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
         while let Ok(post_status_state) = post_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(post_status_state));
-            if install_progress_bar.text().as_deref() == Some(post_status_state) {
-                install_progress_bar.set_pulse_step(0.90)
-            }
-        }
-    }));
-    // wait till /tmp/pika-installer-gtk4-status-boot.txt to change progressbar
-    let (done_status_sender, done_status_receiver) = async_channel::unbounded();
-    let done_status_sender = done_status_sender.clone();
-    // The long running operation runs now in a separate thread
-    gio::spawn_blocking(move || {
-            let done_status = true;
-            while done_status == true {
-                if Path::new("/tmp/pika-installer-gtk4-status-boot.txt").exists() == true {
-                    done_status_sender
-                    .send_blocking("Enabling bls_boot flag on /boot")
-                    .expect("The channel needs to be open.");
-                    break
-                }
-            }   
-    });
-    // keep looping till there's 
-    let done_status_main_context = MainContext::default();
-    // The main loop executes the asynchronous block
-    done_status_main_context.spawn_local(clone!(@weak install_progress_bar => async move {
-        while let Ok(done_status_state) = done_status_receiver.recv().await {
-            install_progress_bar.set_text(Some(done_status_state));
-            if install_progress_bar.text().as_deref() == Some(done_status_state) {
-                install_progress_bar.set_pulse_step(0.90)
+            
+            if post_status_state == true {
+                install_progress_bar.set_pulse_step(0.90);
+                install_progress_bar.set_text(Some("Running post installation script."));
             }
         }
     }));
@@ -518,7 +500,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     gio::spawn_blocking(move || {
             let done_status = true;
             while done_status == true {
-                if Path::new("/tmp/pika-installer-gtk4-successful.txt").exists() == true  && Path::new("/tmp/pika-installer-gtk4-fail.txt").exists() == true {
+                if Path::new("/tmp/pika-installer-gtk4-successful.txt").exists() == true  || Path::new("/tmp/pika-installer-gtk4-fail.txt").exists() == true {
                     done_status_sender
                     .send_blocking(true)
                     .expect("The channel needs to be open.");
@@ -530,8 +512,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     // The main loop executes the asynchronous block
     done_status_main_context.spawn_local(clone!(@weak done_main_box, @weak content_stack, @weak window => async move {
         while let Ok(done_status_state) = done_status_receiver.recv().await {
-            let done_status_pool = done_status_state;
-            if done_status_pool == true {
+            if done_status_state == true {
                 done_page(&done_main_box ,&content_stack, &window);
             }
         }
