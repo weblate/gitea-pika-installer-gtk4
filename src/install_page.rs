@@ -363,7 +363,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             if flag1_status_state == true {
                 println!("Installation status: Flag1");
                 install_progress_bar.set_fraction(0.65);
-                install_progress_bar.set_text(Some("Enabling bls_boot flag on /boot"));
+                install_progress_bar.set_text(Some("Enabling bls_boot flag on /boot."));
             }
         }
     }));
@@ -390,7 +390,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             if flag2_status_state == true {
                 println!("Installation status: Flag2");
                 install_progress_bar.set_fraction(0.70);
-                install_progress_bar.set_text(Some("Enabling efi flag on /boot/efi"));
+                install_progress_bar.set_text(Some("Enabling efi flag on /boot/efi."));
             }
         }
     }));
@@ -417,7 +417,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             if crypt_status_state == true {
                 println!("Installation status: Crypttab");
                 install_progress_bar.set_fraction(0.75);
-                install_progress_bar.set_text(Some("Setting up encryption crypttab"));
+                install_progress_bar.set_text(Some("Setting up encryption crypttab."));
             }
         }
     }));
@@ -471,7 +471,7 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
             if boot_status_state == true {
                 println!("Installation status: Bootloader");
                 install_progress_bar.set_fraction(0.85);
-                install_progress_bar.set_text(Some("Configuring bootloader"));
+                install_progress_bar.set_text(Some("Configuring bootloader."));
             }
         }
     }));
