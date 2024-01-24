@@ -38,7 +38,7 @@ pub fn build_ui(app: &adw::Application) {
     
     /// Add adwaita title box
     let window_title_bar = gtk::HeaderBar::builder()
-        .show_title_buttons(true)
+        .show_title_buttons(false)
         .build();
 
     /// Add page Stack containing all primary contents
