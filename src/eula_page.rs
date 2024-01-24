@@ -116,7 +116,18 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     eula_selection_text.add_css_class("medium_sized_text");
 
     let eula_buffer = gtk::TextBuffer::builder()
-        .text("WE OWN YOU\nWE OWN YOUR SOUL\nWE OWN YOUR WIFE\nWE OWN YOUR FIRST BORN\nWE OWN YOUR HOUSE\nWE OWN YOUR FOOD\nWE OWN YOUR CAR\nWE WILL TRACK YOU\nWE WILL FIND YOU\nTHEN WE WILL KILL YOU")
+        .text("There are a few things to keep in mind: 
+        1 - You understand that this distribution is -NOT- to be considered an ‘Ubuntu Flavor’. 
+        2 - This is a hobby distribution, so we will try our best to provide formal support but it will -NOT- be guaranteed. 
+        3 - Although PikaOS might provide identical patches and user experience to the Nobara project, we are -NOT- directly a part of them so questions and bug reports should not be sent directly to them (they dont have to deal with it!) 
+        4 - While the installer is running DO NOT INTERRUPT IT! or you will end up with a corrupted system. 
+        5 - Try to use pikman instead of apt when using the terminal, it is much faster! 
+        6 - You understand the xone driver downloads needed binaries locally and does not directly package or distribute any copyrighted firmware or other related data. 
+        7 - Automatic partitioning will format all partitons on a drive, so if you want to dualboot make a separate EFI partition for PikaOS and use manual partitioning  
+        8 - In case you need the login info for this session: 
+         - username: pikaos 
+         - password: 
+        MEANING: JUST PRESS ENTER")
         .build();
 
     let eula_selection_text_view = gtk::TextView::builder()

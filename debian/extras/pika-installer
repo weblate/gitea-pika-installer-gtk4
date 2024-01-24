@@ -1,0 +1,16 @@
+#! /bin/bash
+
+if env | grep XDG_SESSION_DESKTOP | grep -i -E 'gnome|ubuntu|pika'
+then
+        gnome-session-inhibit /usr/lib/pika/pika-installer-gtk4/bin/pika-installer-gtk4
+elif env | grep XDG_SESSION_DESKTOP | grep -i -E 'kde|plasma'
+then
+        # Disable Auto Suspend
+        cp -vf /etc/pika-installer-gtk4/powermanagementprofilesrc ~/.config/ || exit 1
+        # Disable screen lock
+        kwriteconfig5 --file kscreenlockerrc --group Daemon --key Autolock false
+        qdbus org.freedesktop.ScreenSaver /ScreenSaver configure
+        /usr/lib/pika/pika-installer-gtk4/bin/pika-installer-gtk4
+else
+	/usr/lib/pika/pika-installer-gtk4/bin/pika-installer-gtk4
+fi

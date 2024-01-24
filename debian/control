@@ -1,0 +1,19 @@
+Source: pika-installer-gtk4
+Section: utils
+Priority: optional
+Maintainer: International Arms dealers <chipichipi@chapachapa.com>
+Build-Depends: build-essential,
+               debhelper,
+               cargo,
+               libadwaita-1-dev,
+               libgtk-4-dev,
+               desktop-file-utils,
+               make,
+               libvte-2.91-gtk4-dev
+Rules-Requires-Root: no
+
+Package: pika-installer-gtk4
+Architecture: any
+Depends: ${shlibs:Depends},
+         pikainstall
+Description: A frontend in GTK 4 and Libadwaita for pikainstall.

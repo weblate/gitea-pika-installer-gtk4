@@ -1,0 +1,11 @@
+#!/bin/sh
+
+
+set -e
+
+        update-mime-database /usr/share/mime
+        update-desktop-database
+        glib-compile-schemas /usr/share/glib-2.0/schemas
+
+
+

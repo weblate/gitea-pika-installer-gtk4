@@ -76,7 +76,7 @@ pub fn build_ui(app: &adw::Application) {
         // Add the box called "_main_box" to it
         .content(&_main_box)
         // Application icon
-        .icon_name("nautilus")
+        .icon_name("calamares")
         // Get current size from glib
         .default_width(glib_settings.int("window-width"))
         .default_height(glib_settings.int("window-height"))
