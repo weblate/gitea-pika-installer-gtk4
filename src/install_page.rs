@@ -215,6 +215,7 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
         .margin_end(15)
         .margin_top(15)
         .margin_bottom(15)
+        .show_text(true)
         .build();
 
     let progress_log_button_content = adw::ButtonContent::builder()
@@ -306,7 +307,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(parting_status_state) = parting_status_receiver.recv().await {
             
             if parting_status_state == true {
-                install_progress_bar.set_pulse_step(0.20);
+                println!("Installation status: Parting");
+                install_progress_bar.set_fraction(0.20);
                 install_progress_bar.set_text(Some("Partitioning The Disk Target."));
             }
         }
@@ -332,7 +334,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(image_status_state) = image_status_receiver.recv().await {
             
             if image_status_state == true {
-                install_progress_bar.set_pulse_step(0.60);
+                println!("Installation status: Imaging");
+                install_progress_bar.set_fraction(0.60);
                 install_progress_bar.set_text(Some("Writing image to target."));
             }
         }
@@ -358,7 +361,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(flag1_status_state) = flag1_status_receiver.recv().await {
             
             if flag1_status_state == true {
-                install_progress_bar.set_pulse_step(0.65);
+                println!("Installation status: Flag1");
+                install_progress_bar.set_fraction(0.65);
                 install_progress_bar.set_text(Some("Enabling bls_boot flag on /boot"));
             }
         }
@@ -384,7 +388,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(flag2_status_state) = flag2_status_receiver.recv().await {
             
             if flag2_status_state == true {
-                install_progress_bar.set_pulse_step(0.70);
+                println!("Installation status: Flag2");
+                install_progress_bar.set_fraction(0.70);
                 install_progress_bar.set_text(Some("Enabling efi flag on /boot/efi"));
             }
         }
@@ -410,7 +415,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(crypt_status_state) = crypt_status_receiver.recv().await {
             
             if crypt_status_state == true {
-                install_progress_bar.set_pulse_step(0.75);
+                println!("Installation status: Crypttab");
+                install_progress_bar.set_fraction(0.75);
                 install_progress_bar.set_text(Some("Setting up encryption crypttab"));
             }
         }
@@ -436,7 +442,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(lang_status_state) = lang_status_receiver.recv().await {
             
             if lang_status_state == true {
-                install_progress_bar.set_pulse_step(0.80);
+                println!("Installation status: Language");
+                install_progress_bar.set_fraction(0.80);
                 install_progress_bar.set_text(Some("Setting Up Language and Keyboard."));
             }
         }
@@ -462,7 +469,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(boot_status_state) = boot_status_receiver.recv().await {
             
             if boot_status_state == true {
-                install_progress_bar.set_pulse_step(0.85);
+                println!("Installation status: Bootloader");
+                install_progress_bar.set_fraction(0.85);
                 install_progress_bar.set_text(Some("Configuring bootloader"));
             }
         }
@@ -488,7 +496,8 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
         while let Ok(post_status_state) = post_status_receiver.recv().await {
             
             if post_status_state == true {
-                install_progress_bar.set_pulse_step(0.90);
+                println!("Installation status: Post Install");
+                install_progress_bar.set_fraction(0.90);
                 install_progress_bar.set_text(Some("Running post installation script."));
             }
         }
@@ -513,7 +522,9 @@ fn begin_install(install_progress_log_terminal: &vte::Terminal, install_progress
     done_status_main_context.spawn_local(clone!(@weak done_main_box, @weak content_stack, @weak window => async move {
         while let Ok(done_status_state) = done_status_receiver.recv().await {
             if done_status_state == true {
+                println!("Installation status: Done");
                 done_page(&done_main_box ,&content_stack, &window);
+                content_stack.set_visible_child_name("done_page");
             }
         }
     }));

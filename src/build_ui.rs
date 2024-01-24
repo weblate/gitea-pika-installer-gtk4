@@ -132,7 +132,7 @@ pub fn build_ui(app: &adw::Application) {
     content_stack.add_titled(&install_main_box, Some("install_page"), "Installation");
 
     // Add done_page.rs as a page for content_stack
-    content_stack.add_titled(&done_main_box, Some("installation_successful_page"), "Done");
+    content_stack.add_titled(&done_main_box, Some("done_page"), "Done");
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {
