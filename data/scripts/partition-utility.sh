@@ -2,7 +2,7 @@
 
 if [[ "$1" = "get_block_devices" ]]
 then
-	lsblk -dn -o NAME
+	lsblk -dn -o NAME | grep -v -i -E 'loop|zram|sr|cdrom|portal'
 fi
 
 if [[ "$1" = "get_block_size" ]]
