@@ -129,7 +129,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
          - password: 
         MEANING: JUST PRESS ENTER")
         .build();
-
+ 
     let eula_selection_text_view = gtk::TextView::builder()
         .hexpand(true)
         .vexpand(true)
@@ -139,6 +139,11 @@ pub fn eula_page(content_stack: &gtk::Stack) {
         .margin_end(15)
         .editable(false)
         .buffer(&eula_buffer)
+        .build();
+
+    let eula_selection_text_scroll = gtk::ScrolledWindow::builder()
+        .height_request(350)
+        .child(&eula_selection_text_view)
         .build();
 
     let eula_accept_checkbutton = gtk::CheckButton::builder()
@@ -152,7 +157,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     // / eula_selection_box appends
     //// add text and and entry to eula page selections
     eula_selection_box.append(&eula_selection_text);
-    eula_selection_box.append(&eula_selection_text_view);
+    eula_selection_box.append(&eula_selection_text_scroll);
     eula_selection_box.append(&eula_accept_checkbutton);
     
     // / eula_header_box appends

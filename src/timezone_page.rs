@@ -224,6 +224,12 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
             fs::remove_file("/tmp/pika-installer-gtk4-timezone.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-timezone.txt");
         }
         fs::write("/tmp/pika-installer-gtk4-timezone.txt", timezone_data_buffer_clone.text(&timezone_data_buffer_clone.bounds().0, &timezone_data_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+        Command::new("sudo")
+        .arg("timedatectl")
+        .arg("set-timezone")
+        .arg(&timezone_data_buffer_clone.text(&timezone_data_buffer_clone.bounds().0, &timezone_data_buffer_clone.bounds().1, true).to_string())
+        .spawn()
+        .expect("timezone failed to start");
         content_stack.set_visible_child_name("keyboard_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {

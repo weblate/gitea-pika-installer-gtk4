@@ -198,6 +198,11 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
                 keyboard_selection_expander_row.set_title(&keyboard_layout);
                 bottom_next_button.set_sensitive(true);
                 keyboard_data_buffer.set_text(&keyboard_layout);
+                Command::new("setxkbmap")
+                .arg("-layout")
+                .arg(keyboard_layout.clone())
+                .spawn()
+                .expect("keyboard failed to start");
             }
         }));
         if current_keyboard.contains(&(keyboard_layout_clone)) {
@@ -220,6 +225,9 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     keyboard_main_box.append(&keyboard_header_box);
     //// Add the keyboard selection/page content box to keyboard main box
     keyboard_main_box.append(&keyboard_selection_box);
+
+    //// Add the keyboard selection/page content box to keyboard main box
+    keyboard_main_box.append(&gtk::Entry::builder().hexpand(true).valign(Align::End).vexpand(false).margin_bottom(15).margin_top(15).margin_end(15).margin_start(15).build());
 
     keyboard_main_box.append(&bottom_box);
     
