@@ -227,7 +227,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     keyboard_main_box.append(&keyboard_selection_box);
 
     //// Add the keyboard selection/page content box to keyboard main box
-    keyboard_main_box.append(&gtk::Entry::builder().hexpand(true).valign(Align::End).vexpand(false).margin_bottom(15).margin_top(15).margin_end(15).margin_start(15).build());
+    keyboard_main_box.append(&gtk::Entry::builder().hexpand(true).valign(Align::End).vexpand(false).margin_bottom(15).margin_top(15).margin_end(15).margin_start(15).placeholder_text("Test Your Keyboard here!").build());
 
     keyboard_main_box.append(&bottom_box);
     

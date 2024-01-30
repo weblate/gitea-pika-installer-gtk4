@@ -85,6 +85,8 @@ pub fn build_ui(app: &adw::Application) {
         .height_request(500)
         // Hide window instead of destroy
         .hide_on_close(true)
+        //
+        .deletable(false)
         // Startup
         .startup_id("pika-installer-gtk4")
         // build the window

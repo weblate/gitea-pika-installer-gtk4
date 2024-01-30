@@ -7,6 +7,8 @@ LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
 KEYBOARD="$(cat "/tmp/pika-installer-gtk4-keyboard.txt")"
 TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
+p3_size=$(echo "scale=2 ; $(cat /tmp/pika-installer-p3-size.txt) / 1024 / 1024" | bc | cut -f1 -d".")
+
 touch "/tmp/pika-installer-gtk4-status-parting.txt"
 
 if [[ ! -f "/tmp/pika-installer-gtk4-target-automatic-luks.txt" ]]
@@ -16,8 +18,8 @@ then
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
         mkpart "linux-boot" 513Mib 1537Mib \
-        mkpart "linux-root" 1537Mib  42497Mib \
-        mkpart "linux-home" 42497Mib  100% \
+        mkpart "linux-root" 1537Mib  "$(p3_size)"Mib \
+        mkpart "linux-home" "$(p3_size)"Mib  100% \
         print
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
@@ -66,8 +68,8 @@ else
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
         mkpart "linux-boot" 513Mib 1537Mib \
-        mkpart "linux-root" 1537Mib  42497Mib \
-        mkpart "linux-home" 42497Mib  100% \
+        mkpart "linux-root" 1537Mib  "$(p3_size)"Mib \
+        mkpart "linux-home" "$(p3_size)"Mib  100% \
         print
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
