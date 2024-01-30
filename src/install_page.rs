@@ -141,8 +141,8 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
         let mut target_p3_size = 0.0;
         if (target_size * 40.0) / 100.0 >= 150000000000.0 {
             target_p3_size = 150000000000.0 ;
-        } else if (target_size * 40.0) / 100.0 <= 42949672960.0 {
-            target_p3_size = 42949672960.0 ;
+        } else if (target_size * 40.0) / 100.0 <= 36507222016.0 {
+            target_p3_size = 36507222016.0 ;
         } else {
             target_p3_size = (target_size * 40.0) / 100.0 ;
         }

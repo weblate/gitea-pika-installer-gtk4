@@ -18,8 +18,8 @@ then
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
         mkpart "linux-boot" 513Mib 1537Mib \
-        mkpart "linux-root" 1537Mib  "$(p3_size)"Mib \
-        mkpart "linux-home" "$(p3_size)"Mib  100% \
+        mkpart "linux-root" 1537Mib  "$p3_size"Mib \
+        mkpart "linux-home" "$p3_size"Mib  100% \
         print
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
@@ -68,8 +68,8 @@ else
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
         mkpart "linux-boot" 513Mib 1537Mib \
-        mkpart "linux-root" 1537Mib  "$(p3_size)"Mib \
-        mkpart "linux-home" "$(p3_size)"Mib  100% \
+        mkpart "linux-root" 1537Mib  "$p3_size"Mib \
+        mkpart "linux-home" "$p3_size"Mib  100% \
         print
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
