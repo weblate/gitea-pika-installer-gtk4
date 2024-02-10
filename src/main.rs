@@ -21,6 +21,9 @@ mod keyboard_page;
 mod partitioning_page;
 mod install_page;
 mod done_page;
+mod automatic_paritioning;
+mod manual_partitioning;
+
 use crate::save_window_size::save_window_size;
 use crate::welcome_page::welcome_page;
 use crate::efi_error_page::efi_error_page;
@@ -29,6 +32,8 @@ use crate::eula_page::eula_page;
 use crate::timezone_page::timezone_page;
 use crate::keyboard_page::keyboard_page;
 use crate::partitioning_page::partitioning_page;
+use crate::automatic_paritioning::automatic_partitioning;
+use crate::manual_partitioning::manual_partitioning;
 use crate::install_page::install_page;
 use crate::done_page::done_page;
 
