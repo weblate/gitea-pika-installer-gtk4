@@ -232,7 +232,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
         Command::new("sudo")
         .arg("localectl")
         .arg("set-locale")
-        .arg("LANG=".to_owned() + &lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string())
+        .arg("LANG=".to_owned() + &lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string() + ".UTF-8")
         .spawn()
         .expect("locale failed to start");
         content_stack.set_visible_child_name("eula_page")

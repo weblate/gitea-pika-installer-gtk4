@@ -22,9 +22,25 @@ use std::time::*;
 
 use std::fs;
 use std::path::Path;
+use crate::custom_button::CustomButton;
 
-use crate::install_page;
+fn create_mount_row_list_box(device: &str) -> ActionRow {
+    // Create check button
+    let check_button = CheckButton::builder()
+        .valign(Align::Center)
+        .can_focus(false)
+        .build();
 
+    // Create row
+    let row = ActionRow::builder()
+        .activatable_widget(&check_button)
+        .title(device)
+        .build();
+    row.add_prefix(&check_button);
+
+    // Return row
+    row
+}
 
 pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button) -> (gtk::TextBuffer, gtk::TextBuffer, adw::PasswordEntryRow) {
     let partition_method_manual_main_box = gtk::Box::builder()
@@ -206,6 +222,22 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     partition_method_manual_main_box.append(&partition_method_manual_boot_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_efi_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_gparted_button);
+
+    let shit_button = CustomButton::new();
+
+    shit_button.set_title("haggar");
+
+    let create_mount_row_list_box = gtk::ListBox::builder()
+        .build();
+
+    //shit_button.connect_clicked(clone!(@weak create_mount_row_list_box => move |_|{
+    //    create_mount_row_list_box.append(&create_mount_row("col"))
+    //}));
+
+    partition_method_manual_main_box.append(&shit_button);
+    partition_method_manual_main_box.append(&create_mount_row_list_box);
+
+
 
     // clone partition_method_manual_chroot_dir_file_dialog as rust becuase glib breaks it show function for some reason
     let partition_method_manual_chroot_dir_file_dialog_clone = partition_method_manual_chroot_dir_file_dialog.clone();

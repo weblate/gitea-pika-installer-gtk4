@@ -22,8 +22,6 @@ use std::time::*;
 
 use std::fs;
 use std::path::Path;
-
-use crate::install_page;
 pub fn automatic_partitioning(partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button) -> (gtk::TextBuffer, gtk::TextBuffer)  {
     let partition_method_automatic_main_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)

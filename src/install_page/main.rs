@@ -11,14 +11,13 @@ use gtk::subclass::layout_child;
 use vte::prelude::*;
 use vte::*;
 
+use crate::done_page::main::done_page;
 
 use std::process::Command;
 use pretty_bytes::converter::convert;
 
 use std::fs;
 use std::path::Path;
-
-use crate::done_page;
 
 pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
     

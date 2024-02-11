@@ -9,8 +9,9 @@ use glib::*;
 use gdk::Display;
 use gtk::subclass::layout_child;
 
-use crate::automatic_paritioning::automatic_partitioning;
-use crate::manual_partitioning::manual_partitioning;
+use crate::automatic_partitioning::main::automatic_partitioning;
+use crate::manual_partitioning::main::manual_partitioning;
+use crate::install_page::main::install_page;
 
 use std::io::BufRead;
 use std::io::BufReader;

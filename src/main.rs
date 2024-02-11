@@ -10,7 +10,6 @@ use glib::*;
 use gdk::Display;
 use gtk::subclass::layout_child;
 mod build_ui;
-use crate::build_ui::build_ui;
 mod save_window_size;
 mod welcome_page;
 mod efi_error_page;
@@ -21,21 +20,9 @@ mod keyboard_page;
 mod partitioning_page;
 mod install_page;
 mod done_page;
-mod automatic_paritioning;
+mod automatic_partitioning;
 mod manual_partitioning;
-
-use crate::save_window_size::save_window_size;
-use crate::welcome_page::welcome_page;
-use crate::efi_error_page::efi_error_page;
-use crate::language_page::language_page;
-use crate::eula_page::eula_page;
-use crate::timezone_page::timezone_page;
-use crate::keyboard_page::keyboard_page;
-use crate::partitioning_page::partitioning_page;
-use crate::automatic_paritioning::automatic_partitioning;
-use crate::manual_partitioning::manual_partitioning;
-use crate::install_page::install_page;
-use crate::done_page::done_page;
+mod custom_button;
 
 /// main function
 fn main() {
@@ -52,7 +39,7 @@ fn main() {
             STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
 
-        app.connect_activate(build_ui);
+        app.connect_activate(build_ui::build_ui);
     });
     application.run();
 }
