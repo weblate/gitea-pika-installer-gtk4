@@ -224,13 +224,13 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
     automatic_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_automatic_page")));
     manual_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_manual_page")));
 
-    let partition_method_automatic_target_buffer_clone = partitioning_page_automatic_partitioning.0.clone();
+    //let partition_method_automatic_target_buffer_clone = partitioning_page_automatic_partitioning.0.clone();
 
-    let partition_method_automatic_luks_buffer_clone = partitioning_page_automatic_partitioning.1.clone();
+    //let partition_method_automatic_luks_buffer_clone = partitioning_page_automatic_partitioning.1.clone();
 
-    let partition_method_manual_target_buffer_clone = partitioning_page_manual_partitioning.0.clone();
+    //let partition_method_manual_target_buffer_clone = partitioning_page_manual_partitioning.0.clone();
 
-    let partition_method_manual_luks_buffer_clone = partitioning_page_manual_partitioning.1.clone();
+    //let partition_method_manual_luks_buffer_clone = partitioning_page_manual_partitioning.1.clone();
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("install_page")
@@ -255,24 +255,24 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             fs::remove_file("/tmp/pika-installer-gtk4-target-manual-luks.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-manual.txt");
         }
         if partitioning_stack.visible_child_name() == Some(GString::from_string_unchecked("partition_method_automatic_page".into())) {
-            fs::write("/tmp/pika-installer-gtk4-target-auto.txt", partition_method_automatic_target_buffer_clone.text(&partition_method_automatic_target_buffer_clone.bounds().0, &partition_method_automatic_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
-            let automatic_luks_result = partition_method_automatic_luks_buffer_clone.text(&partition_method_automatic_luks_buffer_clone.bounds().0, &partition_method_automatic_luks_buffer_clone.bounds().1, true).to_string();
-            if automatic_luks_result.is_empty() {
-                //
-            } else {
-                fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
-            }
+            //fs::write("/tmp/pika-installer-gtk4-target-auto.txt", partition_method_automatic_target_buffer_clone.text(&partition_method_automatic_target_buffer_clone.bounds().0, &partition_method_automatic_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+            //let automatic_luks_result = partition_method_automatic_luks_buffer_clone.text(&partition_method_automatic_luks_buffer_clone.bounds().0, &partition_method_automatic_luks_buffer_clone.bounds().1, true).to_string();
+            //if automatic_luks_result.is_empty() {
+            //    //
+            //} else {
+            //    fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
+            //}
             install_page(&done_main_box, &install_main_box, &content_stack, &window);
             content_stack.set_visible_child_name("install_page");
         } else {
-            fs::write("/tmp/pika-installer-gtk4-target-manual.txt", partition_method_manual_target_buffer_clone.text(&partition_method_manual_target_buffer_clone.bounds().0, &partition_method_manual_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
-            partition_method_manual_luks_buffer_clone.set_text(&partitioning_page_manual_partitioning.2.text().to_string());
-            let manual_luks_result = partition_method_manual_luks_buffer_clone.text(&partition_method_manual_luks_buffer_clone.bounds().0, &partition_method_manual_luks_buffer_clone.bounds().1, true).to_string();
-            if manual_luks_result.is_empty() {
-                //
-            } else {
-                fs::write("/tmp/pika-installer-gtk4-target-manual-luks.txt", manual_luks_result);
-            }
+            //fs::write("/tmp/pika-installer-gtk4-target-manual.txt", partition_method_manual_target_buffer_clone.text(&partition_method_manual_target_buffer_clone.bounds().0, &partition_method_manual_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+            //partition_method_manual_luks_buffer_clone.set_text(&partitioning_page_manual_partitioning.2.text().to_string());
+            //let manual_luks_result = partition_method_manual_luks_buffer_clone.text(&partition_method_manual_luks_buffer_clone.bounds().0, &partition_method_manual_luks_buffer_clone.bounds().1, true).to_string();
+            //if manual_luks_result.is_empty() {
+            //    //
+            //} else {
+            //    fs::write("/tmp/pika-installer-gtk4-target-manual-luks.txt", manual_luks_result);
+            //}
             install_page(&done_main_box, &install_main_box, &content_stack, &window);
             content_stack.set_visible_child_name("install_page");
         }

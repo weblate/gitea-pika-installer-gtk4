@@ -116,8 +116,7 @@ impl ObjectImpl for DriveMountRow {
             .margin_start(5)
             .margin_top(5)
             .margin_bottom(5)
-            .height_request(60)
-            .width_request(60)
+            .width_request(40)
             .icon_name("edit-delete")
             .halign(gtk::Align::End)
             .build();
