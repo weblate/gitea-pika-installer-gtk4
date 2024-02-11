@@ -22,7 +22,7 @@ use std::time::*;
 
 use std::fs;
 use std::path::Path;
-use crate::custom_button::CustomButton;
+use crate::drive_mount_row::DriveMountRow;
 
 fn create_mount_row_list_box(device: &str) -> ActionRow {
     // Create check button
@@ -223,12 +223,25 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     partition_method_manual_main_box.append(&partition_method_manual_efi_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_gparted_button);
 
-    let shit_button = CustomButton::new();
+    let shit_button = DriveMountRow::new();
 
-    shit_button.set_title("haggar");
+    shit_button.set_property("partition", "KAM");
+    shit_button.set_property("mountpoint", "KAM");
+    shit_button.set_property("mountopt", "KAM");
+    shit_button.set_property("partition_scroll", &gtk::ScrolledWindow::new());
 
     let create_mount_row_list_box = gtk::ListBox::builder()
         .build();
+
+    let partition_method_manual_main_box_clone = partition_method_manual_main_box.clone();
+
+    shit_button.connect_closure(
+      "row-deleted",
+      false,
+      closure_local!(move |_shit_button: DriveMountRow| {
+            partition_method_manual_main_box_clone.remove(&_shit_button)
+        }),
+    );
 
     //shit_button.connect_clicked(clone!(@weak create_mount_row_list_box => move |_|{
     //    create_mount_row_list_box.append(&create_mount_row("col"))

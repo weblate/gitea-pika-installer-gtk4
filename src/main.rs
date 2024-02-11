@@ -22,7 +22,7 @@ mod install_page;
 mod done_page;
 mod automatic_partitioning;
 mod manual_partitioning;
-mod custom_button;
+mod drive_mount_row;
 
 /// main function
 fn main() {
