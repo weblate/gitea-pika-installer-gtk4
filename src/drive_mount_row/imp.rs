@@ -78,7 +78,7 @@ impl ObjectImpl for DriveMountRow {
 
         let partition_row_expander_adw_listbox = gtk::ListBox::builder()
             .margin_end(5)
-            .margin_start(5)
+            .margin_start(0)
             .margin_top(5)
             .margin_bottom(5)
             .build();
@@ -112,7 +112,7 @@ impl ObjectImpl for DriveMountRow {
             .build();
 
         let partition_row_delete_button = gtk::Button::builder()
-            .margin_end(5)
+            .margin_end(0)
             .margin_start(5)
             .margin_top(5)
             .margin_bottom(5)

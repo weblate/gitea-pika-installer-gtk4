@@ -12,21 +12,21 @@ use gtk::subclass::layout_child;
 
 use std::path::Path;
 
-use crate::save_window_size::main::save_window_size;
+use crate::save_window_size::save_window_size;
 
-use crate::welcome_page::main::welcome_page;
+use crate::welcome_page::welcome_page;
 
-use crate::efi_error_page::main::efi_error_page;
+use crate::efi_error_page::efi_error_page;
 
-use crate::language_page::main::language_page;
+use crate::language_page::language_page;
 
-use crate::eula_page::main::eula_page;
+use crate::eula_page::eula_page;
 
-use crate::timezone_page::main::timezone_page;
+use crate::timezone_page::timezone_page;
 
-use crate::keyboard_page::main::keyboard_page;
+use crate::keyboard_page::keyboard_page;
 
-use crate::partitioning_page::main::partitioning_page;
+use crate::partitioning_page::partitioning_page;
 
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
