@@ -1,3 +1,4 @@
+use std::cell::RefCell;
 // Use libraries
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
@@ -18,8 +19,13 @@ use pretty_bytes::converter::convert;
 
 use std::fs;
 use std::path::Path;
+use std::rc::Rc;
 
-pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
+use serde::*;
+use serde_json::*;
+use crate::manual_partitioning::DriveMount;
+
+pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,content_stack: &gtk::Stack, window: &adw::ApplicationWindow, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>) {
 
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -117,18 +123,23 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
         .build();
     install_confirm_detail_keyboard.add_css_class("property");
 
-    let install_confirm_detail_target = adw::ActionRow::builder()
-        .title("Install Target:")
-        .build();
-
     if Path::new("/tmp/pika-installer-gtk4-target-manual.txt").exists() {
-        install_confirm_detail_target.set_subtitle(&fs::read_to_string("/tmp/pika-installer-gtk4-target-manual.txt").expect("Unable to read file"));
+        //install_confirm_detail_target.set_subtitle(&fs::read_to_string("/tmp/pika-installer-gtk4-target-manual.txt").expect("Unable to read file"));
+        install_confirm_details_boxed_list.append(&install_confirm_detail_language);
+        install_confirm_details_boxed_list.append(&install_confirm_detail_timezone);
+        install_confirm_details_boxed_list.append(&install_confirm_detail_keyboard);
+        for partitions in manual_drive_mount_array.borrow_mut().iter() {
+            let confirm_row = adw::ActionRow::builder()
+                .title("/dev/".to_owned() + &partitions.partition + " mounted on " + &partitions.mountpoint)
+                .build();
+            install_confirm_details_boxed_list.append(&confirm_row);
+        }
     } else {
+        let install_confirm_detail_target = adw::ActionRow::builder()
+            .title("Install Target:")
+            .build();
         install_confirm_detail_target.set_subtitle(&fs::read_to_string("/tmp/pika-installer-gtk4-target-auto.txt").expect("Unable to read file"));
-    }
-    install_confirm_detail_target.add_css_class("property");
-
-    if Path::new("/tmp/pika-installer-gtk4-target-auto.txt").exists() {
+        install_confirm_detail_target.add_css_class("property");
         let target_block_device = &fs::read_to_string("/tmp/pika-installer-gtk4-target-auto.txt").expect("Unable to read file");
         let target_size_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
@@ -188,13 +199,6 @@ pub fn install_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,conte
         install_confirm_details_boxed_list.append(&install_confirm_p2);
         install_confirm_details_boxed_list.append(&install_confirm_p3);
         install_confirm_details_boxed_list.append(&install_confirm_p4);
-    } else {
-        // / install_confirm_selection_box appends
-        //// add live and install media button to install page selections
-        install_confirm_details_boxed_list.append(&install_confirm_detail_language);
-        install_confirm_details_boxed_list.append(&install_confirm_detail_timezone);
-        install_confirm_details_boxed_list.append(&install_confirm_detail_keyboard);
-        install_confirm_details_boxed_list.append(&install_confirm_detail_target);
     }
 
     let install_confirm_button = gtk::Button::builder()

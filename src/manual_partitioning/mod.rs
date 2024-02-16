@@ -46,16 +46,18 @@ use gtk::Orientation::Vertical;
 
 use pretty_bytes::converter::convert;
 use crate::drive_mount_row::DriveMountRow;
+use serde::*;
 
 #[derive(PartialEq)]
 #[derive(Debug)]
 #[derive(Eq)]
 #[derive(Hash)]
 #[derive(Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct DriveMount {
-    partition: String,
-    mountpoint: String,
-    mountopt: String,
+    pub partition: String,
+    pub mountpoint: String,
+    pub mountopt: String,
 }
 
 fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>, part_table_array: &Rc<RefCell<Vec<String>>>, check_part_unique: &Rc<RefCell<bool>>) -> DriveMountRow {
@@ -129,7 +131,7 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
 }
 
 //pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button) -> (gtk::TextBuffer, gtk::TextBuffer, adw::PasswordEntryRow) {
-pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button, manual_drive_mount_array: Rc<RefCell<Vec<DriveMount>>>) {
+pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>) {
 
     let part_table_array: Rc<RefCell<Vec<String>>> = Default::default();
 
@@ -309,7 +311,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     });
 
     let anti_dup_partition_loop_context = MainContext::default();
-    anti_dup_partition_loop_context.spawn_local(clone!(@weak drive_mounts_adw_listbox, @strong manual_drive_mount_array,@weak bottom_next_button, @strong  check_part_unique => async move {
+    anti_dup_partition_loop_context.spawn_local(clone!(@weak drive_mounts_adw_listbox, @weak partitioning_stack, @strong manual_drive_mount_array,@weak bottom_next_button, @strong  check_part_unique => async move {
         while let Ok(_state) = anti_dup_partition_receiver.recv().await {
             let mut counter = drive_mounts_adw_listbox.first_child();
 
@@ -357,13 +359,15 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
             }
             let manual_drive_mount_array_ref_clone = manual_drive_mount_array_ref.clone();
             partition_err_check(&partition_method_manual_warn_label, &partition_method_manual_error_label, manual_drive_mount_array_ref, &check_part_unique);
-            if manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot/efi" {return true} else {return false}}) && !partition_method_manual_error_label.is_visible() {
-                if !bottom_next_button.is_sensitive() {
-                    bottom_next_button.set_sensitive(true);
-                }
-            } else {
-                if bottom_next_button.is_sensitive() {
-                    bottom_next_button.set_sensitive(false);
+            if partitioning_stack.visible_child_name() == Some(GString::from_string_unchecked("partition_method_manual_page".into())) {
+                if manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot/efi" {return true} else {return false}}) && !partition_method_manual_error_label.is_visible() {
+                    if !bottom_next_button.is_sensitive() {
+                        bottom_next_button.set_sensitive(true);
+                    }
+                } else {
+                    if bottom_next_button.is_sensitive() {
+                        bottom_next_button.set_sensitive(false);
+                    }
                 }
             }
         }

@@ -8,6 +8,7 @@ use adw::*;
 use glib::*;
 use gdk::Display;
 use gtk::subclass::layout_child;
+use glob::glob;
 
 use crate::automatic_partitioning::automatic_partitioning;
 use crate::manual_partitioning::manual_partitioning;
@@ -219,7 +220,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
     /// add all pages to partitioning stack
     partitioning_stack.add_titled(&partitioning_method_main_box, Some("partition_method_select_page"), "partition_method_select_page");
     let partitioning_page_automatic_partitioning = automatic_partitioning(&partitioning_stack, &bottom_next_button);
-    let partitioning_page_manual_partitioning= manual_partitioning(window, &partitioning_stack, &bottom_next_button, manual_drive_mount_array);
+    let partitioning_page_manual_partitioning= manual_partitioning(window, &partitioning_stack, &bottom_next_button, &manual_drive_mount_array);
 
     // add everything to the main box
     partitioning_main_box.append(&partitioning_stack);
@@ -236,10 +237,6 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
 
     let partition_method_automatic_luks_buffer_clone = partitioning_page_automatic_partitioning.1.clone();
 
-    //let partition_method_manual_target_buffer_clone = partitioning_page_manual_partitioning.0.clone();
-
-    //let partition_method_manual_luks_buffer_clone = partitioning_page_manual_partitioning.1.clone();
-
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("install_page")
     }));
@@ -249,7 +246,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
         bottom_next_button.set_sensitive(false);
     }));
 
-    bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak install_main_box, @weak window, @weak done_main_box => move |_| {
+    bottom_next_button.connect_clicked(clone!(@strong manual_drive_mount_array, @weak content_stack, @weak partitioning_stack, @weak install_main_box, @weak window, @weak done_main_box => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-target-auto.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-target-auto.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-auto.txt");
         }
@@ -262,6 +259,10 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
         if Path::new("/tmp/pika-installer-gtk4-target-manual-luks.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-target-manual-luks.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-manual.txt");
         }
+        for partition_file in glob("/tmp/pika-installer-gtk4-target-manual-p*").expect("Failed to read glob pattern") {
+            let partition_file = partition_file.unwrap();
+            fs::remove_file(&partition_file).expect(&partition_file.to_str().unwrap());
+        }
         if partitioning_stack.visible_child_name() == Some(GString::from_string_unchecked("partition_method_automatic_page".into())) {
             fs::write("/tmp/pika-installer-gtk4-target-auto.txt", partition_method_automatic_target_buffer_clone.text(&partition_method_automatic_target_buffer_clone.bounds().0, &partition_method_automatic_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
             let automatic_luks_result = partition_method_automatic_luks_buffer_clone.text(&partition_method_automatic_luks_buffer_clone.bounds().0, &partition_method_automatic_luks_buffer_clone.bounds().1, true).to_string();
@@ -270,18 +271,17 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             } else {
                fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
             }
-            install_page(&done_main_box, &install_main_box, &content_stack, &window);
+            install_page(&done_main_box, &install_main_box, &content_stack, &window, &manual_drive_mount_array);
             content_stack.set_visible_child_name("install_page");
         } else {
-            //fs::write("/tmp/pika-installer-gtk4-target-manual.txt", partition_method_manual_target_buffer_clone.text(&partition_method_manual_target_buffer_clone.bounds().0, &partition_method_manual_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
-            //partition_method_manual_luks_buffer_clone.set_text(&partitioning_page_manual_partitioning.2.text().to_string());
-            //let manual_luks_result = partition_method_manual_luks_buffer_clone.text(&partition_method_manual_luks_buffer_clone.bounds().0, &partition_method_manual_luks_buffer_clone.bounds().1, true).to_string();
-            //if manual_luks_result.is_empty() {
-            //    //
-            //} else {
-            //    fs::write("/tmp/pika-installer-gtk4-target-manual-luks.txt", manual_luks_result);
-            //}
-            install_page(&done_main_box, &install_main_box, &content_stack, &window);
+            fs::write("/tmp/pika-installer-gtk4-target-manual.txt", "").expect("Unable to write file");
+            let mut iter_count = 0;
+            iter_count = 0;
+            for partitions in manual_drive_mount_array.borrow_mut().iter() {
+                fs::write("/tmp/pika-installer-gtk4-target-manual-p".to_owned() + &iter_count.to_string() + ".json", serde_json::to_string(partitions).unwrap()).expect("Unable to write file");
+                iter_count += 1;
+            }
+            install_page(&done_main_box, &install_main_box, &content_stack, &window, &manual_drive_mount_array);
             content_stack.set_visible_child_name("install_page");
         }
     }));

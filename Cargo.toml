@@ -15,3 +15,6 @@ gtk = { version = "0.7.3", package = "gtk4", features = ["v4_12"] }
 pretty-bytes = "0.2.2"
 time = "0.3.31"
 vte = { version = "0.0.2", package = "zoha-vte4", features = ["v0_72"] }
+glob = "0.3.1"
+serde_json = "1.0.113"
+serde = { version = "1.0", features = ["derive"] }
