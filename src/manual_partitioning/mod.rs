@@ -51,6 +51,7 @@ use crate::drive_mount_row::DriveMountRow;
 #[derive(Debug)]
 #[derive(Eq)]
 #[derive(Hash)]
+#[derive(Clone)]
 pub struct DriveMount {
     partition: String,
     mountpoint: String,
@@ -295,7 +296,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     });
 
     let anti_dup_partition_loop_context = MainContext::default();
-    anti_dup_partition_loop_context.spawn_local(clone!(@weak drive_mounts_adw_listbox, @strong manual_drive_mount_array, @strong  check_part_unique => async move {
+    anti_dup_partition_loop_context.spawn_local(clone!(@weak drive_mounts_adw_listbox, @strong manual_drive_mount_array,@weak bottom_next_button, @strong  check_part_unique => async move {
         while let Ok(_state) = anti_dup_partition_receiver.recv().await {
             let mut counter = drive_mounts_adw_listbox.first_child();
 
@@ -341,7 +342,17 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
                 }
                 counter = row.next_sibling();
             }
+            let manual_drive_mount_array_ref_clone = manual_drive_mount_array_ref.clone();
             partition_err_check(&partition_method_manual_warn_label, &partition_method_manual_error_label, manual_drive_mount_array_ref, &check_part_unique);
+            if manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot/efi" {return true} else {return false}}) && !partition_method_manual_error_label.is_visible() {
+                if !bottom_next_button.is_sensitive() {
+                    bottom_next_button.set_sensitive(true);
+                }
+            } else {
+                if bottom_next_button.is_sensitive() {
+                    bottom_next_button.set_sensitive(false);
+                }
+            }
         }
     }));
 
@@ -510,6 +521,18 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
                     }
                 } else {
                     if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to /home (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+            }
+            if drivemounts.mountpoint == "[SWAP]" {
+                if partition_fs != "linux-swap" {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Bad Filesystem: ".to_owned() + &drivemounts.partition + " Is not a swap partition"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains(" Is not a swap partition") {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
