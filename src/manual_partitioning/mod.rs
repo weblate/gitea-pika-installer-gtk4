@@ -58,7 +58,7 @@ pub struct DriveMount {
     mountopt: String,
 }
 
-fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>, check_part_unique: &Rc<RefCell<bool>>) -> DriveMountRow {
+fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>, part_table_array: &Rc<RefCell<Vec<String>>>, check_part_unique: &Rc<RefCell<bool>>) -> DriveMountRow {
     let partition_scroll_child = gtk::ListBox::builder()
         .build();
 
@@ -76,12 +76,8 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
 
     let partition_method_manual_emitter = gtk::SignalAction::new("partchg");
 
-    let partition_method_manual_get_partitions_cmd = cmd!("bash", "-c", "sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions");
-    let partition_method_manual_get_partitions_reader = partition_method_manual_get_partitions_cmd.stderr_to_stdout().reader();
-    let mut partition_method_manual_get_partitions_lines = BufReader::new(partition_method_manual_get_partitions_reader.unwrap()).lines();
-
-    for partition in partition_method_manual_get_partitions_lines {
-        let partition = partition.unwrap();
+    let mut part_table_array_ref = part_table_array.borrow_mut();
+    for partition in part_table_array_ref.iter() {
         let partition_size_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
             .arg("get_part_size")
@@ -112,7 +108,7 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
             if partition_button.is_active() == true {
                 row.set_partition(partition.clone());
             } else {
-                let manual_drive_mount_array_ref_index = manual_drive_mount_array_ref.iter().position(|x| *x.partition == partition.clone()).unwrap();
+                let manual_drive_mount_array_ref_index = manual_drive_mount_array_ref.iter().position(|x| x.partition == partition.clone()).unwrap();
                 manual_drive_mount_array_ref.remove(manual_drive_mount_array_ref_index);
             }
         }));
@@ -132,17 +128,10 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
     row
 }
 
-fn has_unique_elements<T>(iter: T) -> bool
-    where
-        T: IntoIterator,
-        T::Item: Eq + Hash,
-{
-    let mut uniq = HashSet::new();
-    iter.into_iter().all(move |x| uniq.insert(x))
-}
-
 //pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button) -> (gtk::TextBuffer, gtk::TextBuffer, adw::PasswordEntryRow) {
 pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button, manual_drive_mount_array: Rc<RefCell<Vec<DriveMount>>>) {
+
+    let part_table_array: Rc<RefCell<Vec<String>>> = Default::default();
 
     let check_part_unique = Rc::new(RefCell::new(true));
 
@@ -228,7 +217,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
         .build();
 
     let partition_method_manual_selection_text = gtk::Label::builder()
-            .label("\n - Press the plus button below to begin adding filesystem entries.\nNotes:\n - This installer doesn't erase any data automatically, format your drives manually via gparted.\n - To Add a linux-swap partition set mountpoint to [SWAP]\n - We recommend the following partitions as a base layout:\n /boot ~ 1000mb ext4.\n  /boot/efi ~ 512mb vfat/fat32.\n  / >= 25GB btrfs.\n ")
+            .label("\n - Press the plus button below to begin adding filesystem entries.\nNotes:\n - This installer doesn't erase any data automatically, format your drives manually via gparted.\n - To Add a linux-swap partition set mountpoint to [SWAP]\n - We recommend the following partitions as a base layout:\n /boot ~ 1000mb ext4.\n /boot/efi ~ 512mb vfat/fat32.\n / >= 25GB btrfs.\n ")
             .halign(gtk::Align::Center)
             .hexpand(true)
             .margin_top(15)
@@ -237,6 +226,12 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
             .margin_end(15)
             .build();
     partition_method_manual_selection_text.add_css_class("medium_sized_text");
+
+    let partition_refresh_button = gtk::Button::builder()
+        .label("Refresh Partition Table")
+        .halign(gtk::Align::End)
+        .build();
+    partition_refresh_button.add_css_class("destructive-action");
 
     let drive_mount_add_button = gtk::Button::builder()
         .icon_name("list-add")
@@ -263,6 +258,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     partition_method_manual_header_box.append(&partition_method_manual_header_text);
     partition_method_manual_header_box.append(&partition_method_manual_header_icon);
     partition_method_manual_selection_box.append(&partition_method_manual_selection_text);
+    partition_method_manual_selection_box.append(&partition_refresh_button);
     partition_method_manual_main_box.append(&partition_method_manual_header_box);
     partition_method_manual_main_box.append(&partition_method_manual_selection_box);
     partition_method_manual_gparted_button_content_box.append(&partition_method_manual_gparted_button_content);
@@ -273,14 +269,31 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     partition_method_manual_main_box.append(&partition_method_manual_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_warn_label);
 
+    partition_refresh_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox,@strong part_table_array => move |_| {
+        let mut counter = drive_mounts_adw_listbox.first_child();
+            while let Some(ref row) = counter {
+                if row.widget_name() == "DriveMountRow" {
+                    drive_mounts_adw_listbox.remove(row);
+                }
+                counter = row.next_sibling();
+            }
+        let mut partition_method_manual_get_partitions_lines = BufReader::new(cmd!("bash", "-c", "sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions").reader().unwrap()).lines();
+        let mut part_table_array_ref = part_table_array.borrow_mut();
+        part_table_array_ref.clear();
+        for partition in partition_method_manual_get_partitions_lines {
+            part_table_array_ref.push(partition.unwrap());
+        }
+    }));
+    partition_refresh_button.emit_clicked();
+
     partition_method_manual_gparted_button.connect_clicked(move |_| {
         Command::new("gparted")
             .spawn()
             .expect("gparted failed to start");
     });
 
-    drive_mount_add_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox, @strong manual_drive_mount_array, @strong  check_part_unique => move |_| {
-        drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &manual_drive_mount_array, &check_part_unique))
+    drive_mount_add_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox, @strong manual_drive_mount_array, @strong part_table_array, @strong  check_part_unique => move |_| {
+        drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &manual_drive_mount_array, &part_table_array,&check_part_unique))
     }));
 
     let (anti_dup_partition_sender, anti_dup_partition_receiver) = async_channel::unbounded();
