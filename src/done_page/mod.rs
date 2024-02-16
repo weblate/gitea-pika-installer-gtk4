@@ -1,19 +1,23 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
 use std::fs;
 use std::path::Path;
 use std::process::Command;
 
-pub fn done_page(done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
+pub fn done_page(
+    done_main_box: &gtk::Box,
+    content_stack: &gtk::Stack,
+    window: &adw::ApplicationWindow,
+) {
     // the header box for the installation_successful page
     let done_header_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -42,7 +46,6 @@ pub fn done_page(done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &
         .margin_start(0)
         .margin_end(15)
         .build();
-
 
     // Successful install yard
     // the header box for the installation_successful page
@@ -126,7 +129,8 @@ pub fn done_page(done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &
     //// Add the installation_successful selection/page content box to installation_successful main box
     installation_successful_main_box.append(&installation_successful_selection_box);
 
-    installation_successful_exit_button.connect_clicked(clone!(@weak window => move |_| window.close()));
+    installation_successful_exit_button
+        .connect_clicked(clone!(@weak window => move |_| window.close()));
     installation_successful_reboot_button.connect_clicked(move |_| {
         Command::new("reboot")
             .spawn()
@@ -215,7 +219,8 @@ pub fn done_page(done_main_box: &gtk::Box, content_stack: &gtk::Stack, window: &
     //// Add the installation_failed selection/page content box to installation_failed main box
     installation_failed_main_box.append(&installation_failed_selection_box);
 
-    installation_failed_exit_button.connect_clicked(clone!(@weak window => move |_| window.close()));
+    installation_failed_exit_button
+        .connect_clicked(clone!(@weak window => move |_| window.close()));
     installation_failed_logs_button.connect_clicked(move |_| {
         Command::new("xdg-open")
             .arg("/tmp/pika-installer-gtk4-log")

@@ -1,27 +1,25 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
+use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
 use std::time::Instant;
-use std::env;
 
 use std::fs;
 use std::path::Path;
 
-
 pub fn language_page(content_stack: &gtk::Stack) {
-
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -128,15 +126,15 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .label("No locale selected")
         .build();
 
-    let language_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
-        .height_request(200)
-        .build();
+    let language_selection_expander_row_viewport =
+        gtk::ScrolledWindow::builder().height_request(200).build();
 
     let language_selection_expander_row_viewport_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .build();
 
-    language_selection_expander_row_viewport.set_child(Some(&language_selection_expander_row_viewport_box));
+    language_selection_expander_row_viewport
+        .set_child(Some(&language_selection_expander_row_viewport_box));
 
     let language_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(SelectionMode::None)
@@ -152,7 +150,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     let current_locale = match env::var_os("LANG") {
         Some(v) => v.into_string().unwrap(),
-        None => panic!("$LANG is not set")
+        None => panic!("$LANG is not set"),
     };
 
     let locale_cli = Command::new("locale")
@@ -177,15 +175,12 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     let locale_reader = BufReader::new(locale_cli_sort.stdout.expect("could not get stdout"));
 
-    let lang_data_buffer = gtk::TextBuffer::builder()
-        .build();
+    let lang_data_buffer = gtk::TextBuffer::builder().build();
 
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();
         let locale_clone = locale.clone();
-        let locale_checkbutton = gtk::CheckButton::builder()
-            .label(locale.clone())
-            .build();
+        let locale_checkbutton = gtk::CheckButton::builder().label(locale.clone()).build();
         locale_checkbutton.set_group(Some(&null_checkbutton));
         language_selection_expander_row_viewport_box.append(&locale_checkbutton);
         locale_checkbutton.connect_toggled(clone!(@weak locale_checkbutton, @weak language_selection_expander_row, @weak bottom_next_button, @weak lang_data_buffer => move |_| {

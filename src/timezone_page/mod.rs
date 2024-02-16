@@ -1,26 +1,25 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
-use std::time::Instant;
 use std::str;
+use std::time::Instant;
 
 use std::fs;
 use std::path::Path;
 
 pub fn timezone_page(content_stack: &gtk::Stack) {
-
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -127,9 +126,8 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
         .label("No Time Zone selected")
         .build();
 
-    let timezone_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
-        .height_request(200)
-        .build();
+    let timezone_selection_expander_row_viewport =
+        gtk::ScrolledWindow::builder().height_request(200).build();
 
     let timezone_selection_expander_row_viewport_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)
@@ -145,7 +143,8 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     timezone_selection_expander_row_viewport_listbox.add_css_class("boxed-list");
     timezone_selection_expander_row_viewport_listbox.append(&timezone_selection_expander_row);
 
-    timezone_selection_expander_row_viewport.set_child(Some(&timezone_selection_expander_row_viewport_box));
+    timezone_selection_expander_row_viewport
+        .set_child(Some(&timezone_selection_expander_row_viewport_box));
 
     timezone_selection_expander_row.add_row(&timezone_selection_expander_row_viewport);
 
@@ -160,7 +159,9 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
         .unwrap_or_else(|e| panic!("failed {}", e));
 
     let current_timezone_output = current_timezone_cli.wait_with_output().unwrap();
-    let current_timezone = str::from_utf8(&current_timezone_output.stdout).unwrap().trim();
+    let current_timezone = str::from_utf8(&current_timezone_output.stdout)
+        .unwrap()
+        .trim();
 
     let timezone_layout_cli = Command::new("timedatectl")
         .arg("list-timezones")
@@ -172,8 +173,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     let timezone_layout_stdout = timezone_layout_cli.stdout.expect("could not get stdout");
     let timezone_layout_reader = BufReader::new(timezone_layout_stdout);
 
-    let timezone_data_buffer = gtk::TextBuffer::builder()
-        .build();
+    let timezone_data_buffer = gtk::TextBuffer::builder().build();
 
     for timezone_layout in timezone_layout_reader.lines() {
         let timezone_layout = timezone_layout.unwrap();
@@ -235,5 +235,4 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("eula_page")
     }));
-
 }

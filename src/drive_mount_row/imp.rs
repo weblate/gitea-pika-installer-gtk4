@@ -1,34 +1,12 @@
 use std::{
-    cell::{
-        Cell,
-        RefCell,
-    },
-    sync::{
-        OnceLock,
-    },
-    rc::{
-        Rc,
-    },
+    cell::{Cell, RefCell},
+    rc::Rc,
+    sync::OnceLock,
 };
 
-use glib::{
-    Properties,
-    subclass::Signal,
-    clone,
-};
-use gtk::{
-    glib,
-    prelude::*,
-    subclass::prelude::*,
-    *,
-    Orientation::Horizontal,
-};
-use adw::{
-    prelude::*,
-    subclass::prelude::*,
-    *,
-};
-
+use adw::{prelude::*, subclass::prelude::*, *};
+use glib::{clone, subclass::Signal, Properties};
+use gtk::{glib, prelude::*, subclass::prelude::*, Orientation::Horizontal, *};
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -60,10 +38,7 @@ impl ObjectSubclass for DriveMountRow {
 impl ObjectImpl for DriveMountRow {
     fn signals() -> &'static [Signal] {
         static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
-        SIGNALS.get_or_init(|| {
-            vec![Signal::builder("row-deleted")
-                .build()]
-        })
+        SIGNALS.get_or_init(|| vec![Signal::builder("row-deleted").build()])
     }
     fn constructed(&self) {
         self.parent_constructed();
@@ -141,7 +116,6 @@ impl ObjectImpl for DriveMountRow {
         action_row_content_box.append(&mountopt_entry_adw_listbox);
 
         action_row_content_box.append(&partition_row_delete_button);
-
 
         obj.add_prefix(&action_row_content_box);
 

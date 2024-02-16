@@ -1,32 +1,34 @@
-
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
-mod build_ui;
-mod save_window_size;
-mod welcome_page;
-mod efi_error_page;
-mod language_page;
-mod eula_page;
-mod timezone_page;
-mod keyboard_page;
-mod partitioning_page;
-mod install_page;
-mod done_page;
+use gtk::*;
 mod automatic_partitioning;
-mod manual_partitioning;
+mod build_ui;
+mod done_page;
 mod drive_mount_row;
+mod efi_error_page;
+mod eula_page;
+mod install_page;
+mod keyboard_page;
+mod language_page;
+mod manual_partitioning;
+mod partitioning_page;
+mod save_window_size;
+mod timezone_page;
+mod welcome_page;
 
 /// main function
 fn main() {
-    let application = adw::Application::new(Some("com.github.pikaos-linux.pikainstallergtk4"), Default::default());
+    let application = adw::Application::new(
+        Some("com.github.pikaos-linux.pikainstallergtk4"),
+        Default::default(),
+    );
     application.connect_startup(|app| {
         // The CSS "magic" happens here.
         let provider = CssProvider::new();

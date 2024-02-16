@@ -1,26 +1,26 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
+use glob::glob;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
-use glob::glob;
+use gtk::*;
 
 use crate::automatic_partitioning::automatic_partitioning;
-use crate::manual_partitioning::manual_partitioning;
 use crate::install_page::install_page;
+use crate::manual_partitioning::manual_partitioning;
 
+use pretty_bytes::converter::convert;
+use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
 use std::time::Instant;
-use std::env;
-use pretty_bytes::converter::convert;
 
 use std::thread;
 use std::time::*;
@@ -36,9 +36,13 @@ use crate::{install_page, manual_partitioning};
 
 use manual_partitioning::DriveMount;
 
-pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
-
-    let manual_drive_mount_array : Rc<RefCell<Vec<DriveMount>>> = Default::default();
+pub fn partitioning_page(
+    done_main_box: &gtk::Box,
+    install_main_box: &gtk::Box,
+    content_stack: &gtk::Stack,
+    window: &adw::ApplicationWindow,
+) {
+    let manual_drive_mount_array: Rc<RefCell<Vec<DriveMount>>> = Default::default();
 
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -183,7 +187,6 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
         .valign(gtk::Align::Center)
         .build();
 
-
     let automatic_method_button = gtk::Button::builder()
         .child(&automatic_method_button_content_box)
         .vexpand(true)
@@ -218,9 +221,19 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
     manual_method_button_content_box.append(&manual_method_button_content_image);
 
     /// add all pages to partitioning stack
-    partitioning_stack.add_titled(&partitioning_method_main_box, Some("partition_method_select_page"), "partition_method_select_page");
-    let partitioning_page_automatic_partitioning = automatic_partitioning(&partitioning_stack, &bottom_next_button);
-    let partitioning_page_manual_partitioning= manual_partitioning(window, &partitioning_stack, &bottom_next_button, &manual_drive_mount_array);
+    partitioning_stack.add_titled(
+        &partitioning_method_main_box,
+        Some("partition_method_select_page"),
+        "partition_method_select_page",
+    );
+    let partitioning_page_automatic_partitioning =
+        automatic_partitioning(&partitioning_stack, &bottom_next_button);
+    let partitioning_page_manual_partitioning = manual_partitioning(
+        window,
+        &partitioning_stack,
+        &bottom_next_button,
+        &manual_drive_mount_array,
+    );
 
     // add everything to the main box
     partitioning_main_box.append(&partitioning_stack);
@@ -228,14 +241,20 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
 
     // / Content stack appends
     //// Add the partitioning_main_box as page: partitioning_page, Give it nice title
-    content_stack.add_titled(&partitioning_main_box, Some("partitioning_page"), "Partitioning");
+    content_stack.add_titled(
+        &partitioning_main_box,
+        Some("partitioning_page"),
+        "Partitioning",
+    );
 
     automatic_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_automatic_page")));
     manual_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_manual_page")));
 
-    let partition_method_automatic_target_buffer_clone = partitioning_page_automatic_partitioning.0.clone();
+    let partition_method_automatic_target_buffer_clone =
+        partitioning_page_automatic_partitioning.0.clone();
 
-    let partition_method_automatic_luks_buffer_clone = partitioning_page_automatic_partitioning.1.clone();
+    let partition_method_automatic_luks_buffer_clone =
+        partitioning_page_automatic_partitioning.1.clone();
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("install_page")
@@ -246,7 +265,7 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
         bottom_next_button.set_sensitive(false);
     }));
 
-    bottom_next_button.connect_clicked(clone!(@strong manual_drive_mount_array, @weak content_stack, @weak partitioning_stack, @weak install_main_box, @weak window, @weak done_main_box => move |_| {
+    bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak install_main_box, @weak window, @weak done_main_box => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-target-auto.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-target-auto.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-auto.txt");
         }
@@ -275,15 +294,8 @@ pub fn partitioning_page(done_main_box: &gtk::Box, install_main_box: &gtk::Box ,
             content_stack.set_visible_child_name("install_page");
         } else {
             fs::write("/tmp/pika-installer-gtk4-target-manual.txt", "").expect("Unable to write file");
-            let mut iter_count = 0;
-            iter_count = 0;
-            for partitions in manual_drive_mount_array.borrow_mut().iter() {
-                fs::write("/tmp/pika-installer-gtk4-target-manual-p".to_owned() + &iter_count.to_string() + ".json", serde_json::to_string(partitions).unwrap()).expect("Unable to write file");
-                iter_count += 1;
-            }
             install_page(&done_main_box, &install_main_box, &content_stack, &window, &manual_drive_mount_array);
             content_stack.set_visible_child_name("install_page");
         }
     }));
-
 }

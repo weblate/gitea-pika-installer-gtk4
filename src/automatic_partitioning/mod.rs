@@ -1,28 +1,31 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
+use pretty_bytes::converter::convert;
+use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
 use std::time::Instant;
-use std::env;
-use pretty_bytes::converter::convert;
 
 use std::thread;
 use std::time::*;
 
 use std::fs;
 use std::path::Path;
-pub fn automatic_partitioning(partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button) -> (gtk::TextBuffer, gtk::TextBuffer)  {
+pub fn automatic_partitioning(
+    partitioning_stack: &gtk::Stack,
+    bottom_next_button: &gtk::Button,
+) -> (gtk::TextBuffer, gtk::TextBuffer) {
     let partition_method_automatic_main_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .margin_bottom(15)
@@ -79,18 +82,17 @@ pub fn automatic_partitioning(partitioning_stack: &gtk::Stack, bottom_next_butto
         .title("No disk selected for selection")
         .build();
 
-    let null_checkbutton = gtk::CheckButton::builder()
-        .build();
+    let null_checkbutton = gtk::CheckButton::builder().build();
 
-    let devices_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
-        .height_request(200)
-        .build();
+    let devices_selection_expander_row_viewport =
+        gtk::ScrolledWindow::builder().height_request(200).build();
 
     let devices_selection_expander_row_viewport_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .build();
 
-    devices_selection_expander_row_viewport.set_child(Some(&devices_selection_expander_row_viewport_box));
+    devices_selection_expander_row_viewport
+        .set_child(Some(&devices_selection_expander_row_viewport_box));
 
     let devices_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(SelectionMode::None)
@@ -111,7 +113,11 @@ pub fn automatic_partitioning(partitioning_stack: &gtk::Stack, bottom_next_butto
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
-    let partition_method_automatic_get_devices_reader = BufReader::new(partition_method_automatic_get_devices_cli.stdout.expect("could not get stdout"));
+    let partition_method_automatic_get_devices_reader = BufReader::new(
+        partition_method_automatic_get_devices_cli
+            .stdout
+            .expect("could not get stdout"),
+    );
 
     let partition_method_automatic_disk_error_label = gtk::Label::builder()
         .label("No Disk specified.")
@@ -156,11 +162,9 @@ pub fn automatic_partitioning(partitioning_stack: &gtk::Stack, bottom_next_butto
         .sensitive(false)
         .build();
 
-    let partition_method_automatic_target_buffer = gtk::TextBuffer::builder()
-        .build();
+    let partition_method_automatic_target_buffer = gtk::TextBuffer::builder().build();
 
-    let partition_method_automatic_luks_buffer = gtk::TextBuffer::builder()
-        .build();
+    let partition_method_automatic_luks_buffer = gtk::TextBuffer::builder().build();
 
     for device in partition_method_automatic_get_devices_reader.lines() {
         let device = device.unwrap();
@@ -170,7 +174,11 @@ pub fn automatic_partitioning(partitioning_stack: &gtk::Stack, bottom_next_butto
             .arg(device.clone())
             .output()
             .expect("failed to execute process");
-        let device_size = String::from_utf8(device_size_cli.stdout).expect("Failed to create float").trim().parse::<f64>().unwrap();
+        let device_size = String::from_utf8(device_size_cli.stdout)
+            .expect("Failed to create float")
+            .trim()
+            .parse::<f64>()
+            .unwrap();
         let device_button = gtk::CheckButton::builder()
             .valign(Align::Center)
             .can_focus(false)
@@ -273,7 +281,14 @@ pub fn automatic_partitioning(partitioning_stack: &gtk::Stack, bottom_next_butto
     partition_method_automatic_main_box.append(&partition_method_automatic_luks_error_label);
     partition_method_automatic_main_box.append(&partition_method_automatic_disk_error_label);
 
-    partitioning_stack.add_titled(&partition_method_automatic_main_box, Some("partition_method_automatic_page"), "partition_method_automatic_page");
+    partitioning_stack.add_titled(
+        &partition_method_automatic_main_box,
+        Some("partition_method_automatic_page"),
+        "partition_method_automatic_page",
+    );
 
-    return(partition_method_automatic_target_buffer, partition_method_automatic_luks_buffer)
+    return (
+        partition_method_automatic_target_buffer,
+        partition_method_automatic_luks_buffer,
+    );
 }

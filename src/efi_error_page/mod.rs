@@ -1,13 +1,13 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
 pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
     // the header box for the efi_error page
@@ -52,7 +52,6 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
         .margin_start(15)
         .margin_end(15)
         .build();
-
 
     let efi_error_text = gtk::Label::builder()
         .vexpand(true)

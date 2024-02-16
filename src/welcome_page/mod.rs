@@ -1,13 +1,13 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
 pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
     // the header box for the welcome page
@@ -102,7 +102,6 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
         .valign(gtk::Align::Center)
         .build();
 
-
     let install_media_button = gtk::Button::builder()
         .child(&install_media_button_content_box)
         .vexpand(true)
@@ -142,7 +141,6 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
     // / live_media_button_content_box appends
     //// add image and text to the live_media_button
     live_media_button_content_box.append(&live_media_button_content_image);
-
 
     // / welcome_selection_box appends
     //// add live and install media button to welcome page selections

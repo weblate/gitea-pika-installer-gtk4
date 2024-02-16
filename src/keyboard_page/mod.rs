@@ -1,26 +1,25 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
-use std::time::Instant;
 use std::str;
+use std::time::Instant;
 
 use std::fs;
 use std::path::Path;
 
 pub fn keyboard_page(content_stack: &gtk::Stack) {
-
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -127,9 +126,8 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         .label("No Keyboard Layout selected")
         .build();
 
-    let keyboard_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
-        .height_request(200)
-        .build();
+    let keyboard_selection_expander_row_viewport =
+        gtk::ScrolledWindow::builder().height_request(200).build();
 
     let keyboard_selection_expander_row_viewport_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)
@@ -145,7 +143,8 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     keyboard_selection_expander_row_viewport_listbox.add_css_class("boxed-list");
     keyboard_selection_expander_row_viewport_listbox.append(&keyboard_selection_expander_row);
 
-    keyboard_selection_expander_row_viewport.set_child(Some(&keyboard_selection_expander_row_viewport_box));
+    keyboard_selection_expander_row_viewport
+        .set_child(Some(&keyboard_selection_expander_row_viewport_box));
 
     keyboard_selection_expander_row.add_row(&keyboard_selection_expander_row_viewport);
 
@@ -170,7 +169,9 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         .unwrap();
 
     let current_keyboard_output = current_keyboard_cut.wait_with_output().unwrap();
-    let current_keyboard = str::from_utf8(&current_keyboard_output.stdout).unwrap().trim();
+    let current_keyboard = str::from_utf8(&current_keyboard_output.stdout)
+        .unwrap()
+        .trim();
 
     let keyboard_layout_cli = Command::new("localectl")
         .arg("list-x11-keymap-layouts")
@@ -182,8 +183,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     let keyboard_layout_stdout = keyboard_layout_cli.stdout.expect("could not get stdout");
     let keyboard_layout_reader = BufReader::new(keyboard_layout_stdout);
 
-    let keyboard_data_buffer = gtk::TextBuffer::builder()
-        .build();
+    let keyboard_data_buffer = gtk::TextBuffer::builder().build();
 
     for keyboard_layout in keyboard_layout_reader.lines() {
         let keyboard_layout = keyboard_layout.unwrap();
@@ -227,7 +227,18 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     keyboard_main_box.append(&keyboard_selection_box);
 
     //// Add the keyboard selection/page content box to keyboard main box
-    keyboard_main_box.append(&gtk::Entry::builder().hexpand(true).valign(Align::End).vexpand(false).margin_bottom(15).margin_top(15).margin_end(15).margin_start(15).placeholder_text("Test Your Keyboard here!").build());
+    keyboard_main_box.append(
+        &gtk::Entry::builder()
+            .hexpand(true)
+            .valign(Align::End)
+            .vexpand(false)
+            .margin_bottom(15)
+            .margin_top(15)
+            .margin_end(15)
+            .margin_start(15)
+            .placeholder_text("Test Your Keyboard here!")
+            .build(),
+    );
 
     keyboard_main_box.append(&bottom_box);
 
@@ -248,5 +259,4 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("timezone_page")
     }));
-
 }

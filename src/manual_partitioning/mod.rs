@@ -1,68 +1,52 @@
 // Use libraries
-use std::collections::HashMap;
-use std::thread;
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::{layout_child, window};
+use gtk::*;
+use std::collections::HashMap;
+use std::thread;
 
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
 
 use duct::*;
 
-use std::{
-    hash::{
-        Hash,
-    },
-    collections::{
-        HashSet
-    },
-    io::{
-        BufRead,
-        BufReader,
-    },
-    process::{
-        Command,
-        Stdio,
-    },
-    time::{
-        Instant,
-        Duration,
-    },
-    fs,
-    path::{
-        Path,
-    },
-};
-use std::ops::{Deref, DerefMut};
 use duct::cmd;
 use gtk::Orientation::Vertical;
+use std::ops::{Deref, DerefMut};
+use std::{
+    collections::HashSet,
+    fs,
+    hash::Hash,
+    io::{BufRead, BufReader},
+    path::Path,
+    process::{Command, Stdio},
+    time::{Duration, Instant},
+};
 
-use pretty_bytes::converter::convert;
 use crate::drive_mount_row::DriveMountRow;
+use pretty_bytes::converter::convert;
 use serde::*;
 
-#[derive(PartialEq)]
-#[derive(Debug)]
-#[derive(Eq)]
-#[derive(Hash)]
-#[derive(Clone)]
-#[derive(Serialize, Deserialize)]
+#[derive(PartialEq, Debug, Eq, Hash, Clone, Serialize, Deserialize)]
 pub struct DriveMount {
     pub partition: String,
     pub mountpoint: String,
     pub mountopt: String,
 }
 
-fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>, part_table_array: &Rc<RefCell<Vec<String>>>, check_part_unique: &Rc<RefCell<bool>>) -> DriveMountRow {
-    let partition_scroll_child = gtk::ListBox::builder()
-        .build();
+fn create_mount_row(
+    listbox: &gtk::ListBox,
+    manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
+    part_table_array: &Rc<RefCell<Vec<String>>>,
+    check_part_unique: &Rc<RefCell<bool>>,
+) -> DriveMountRow {
+    let partition_scroll_child = gtk::ListBox::builder().build();
 
     let partitions_scroll = gtk::ScrolledWindow::builder()
         .hexpand(true)
@@ -73,8 +57,7 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
     // Create row
     let row = DriveMountRow::new_with_scroll(&partitions_scroll);
 
-    let null_checkbutton = gtk::CheckButton::builder()
-        .build();
+    let null_checkbutton = gtk::CheckButton::builder().build();
 
     let partition_method_manual_emitter = gtk::SignalAction::new("partchg");
 
@@ -92,18 +75,35 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
             .arg(partition.clone().replace("mapper/", ""))
             .output()
             .expect("failed to execute process");
-        let partition_size = String::from_utf8(partition_size_cli.stdout).expect("Failed to create float").trim().parse::<f64>().unwrap();
+        let partition_size = String::from_utf8(partition_size_cli.stdout)
+            .expect("Failed to create float")
+            .trim()
+            .parse::<f64>()
+            .unwrap();
+        let partition_fs = String::from_utf8(partition_fs_cli.stdout).expect("Failed read stdout");
         let partition_button = gtk::CheckButton::builder()
             .valign(Align::Center)
             .can_focus(false)
             .build();
         partition_button.set_group(Some(&null_checkbutton));
-        let partition_row = adw::ActionRow::builder()
-            .activatable_widget(&partition_button)
-            .title(partition.clone())
-            .name(partition.clone())
-            .subtitle(String::from_utf8(partition_fs_cli.stdout).expect("Failed read stdout") + &pretty_bytes::converter::convert(partition_size))
-            .build();
+        let partition_row: adw::ActionRow =
+            if partition_fs.contains("crypto_LUKS") || partition_fs.contains("lvm") {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(partition.clone())
+                    .name(partition.clone())
+                    .subtitle("This partition needs a mapper!")
+                    .build();
+                prow
+            } else {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(partition.clone())
+                    .name(partition.clone())
+                    .subtitle(partition_fs + &pretty_bytes::converter::convert(partition_size))
+                    .build();
+                prow
+            };
         partition_row.add_prefix(&partition_button);
         partition_button.connect_toggled(clone!(@weak row, @weak listbox, @weak partition_button, @strong manual_drive_mount_array, @strong partition=> move |_| {
             let mut manual_drive_mount_array_ref = RefCell::borrow_mut(&manual_drive_mount_array);
@@ -123,7 +123,7 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
         false,
         closure_local!(@strong row => move |row: DriveMountRow| {
                     listbox_clone.remove(&row)
-        })
+        }),
     );
 
     // Return row
@@ -131,8 +131,12 @@ fn create_mount_row(listbox: &gtk::ListBox, manual_drive_mount_array: &Rc<RefCel
 }
 
 //pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button) -> (gtk::TextBuffer, gtk::TextBuffer, adw::PasswordEntryRow) {
-pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>) {
-
+pub fn manual_partitioning(
+    window: &adw::ApplicationWindow,
+    partitioning_stack: &gtk::Stack,
+    bottom_next_button: &gtk::Button,
+    manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
+) {
     let part_table_array: Rc<RefCell<Vec<String>>> = Default::default();
 
     let check_part_unique = Rc::new(RefCell::new(true));
@@ -196,10 +200,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
         .valign(Align::Start)
         .build();
 
-    let drive_mounts_adw_listbox = gtk::ListBox::builder()
-        .hexpand(true)
-        .vexpand(true)
-        .build();
+    let drive_mounts_adw_listbox = gtk::ListBox::builder().hexpand(true).vexpand(true).build();
     drive_mounts_adw_listbox.add_css_class("boxed-list");
 
     let drive_mounts_viewport = gtk::ScrolledWindow::builder()
@@ -263,8 +264,10 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     partition_method_manual_selection_box.append(&partition_refresh_button);
     partition_method_manual_main_box.append(&partition_method_manual_header_box);
     partition_method_manual_main_box.append(&partition_method_manual_selection_box);
-    partition_method_manual_gparted_button_content_box.append(&partition_method_manual_gparted_button_content);
-    partition_method_manual_gparted_button_content_box.append(&partition_method_manual_gparted_button_content_text);
+    partition_method_manual_gparted_button_content_box
+        .append(&partition_method_manual_gparted_button_content);
+    partition_method_manual_gparted_button_content_box
+        .append(&partition_method_manual_gparted_button_content_text);
     partition_method_manual_main_box.append(&partition_method_manual_gparted_button);
     drive_mounts_adw_listbox.append(&drive_mount_add_button);
     partition_method_manual_main_box.append(&drive_mounts_viewport);
@@ -301,13 +304,11 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     let (anti_dup_partition_sender, anti_dup_partition_receiver) = async_channel::unbounded();
     let anti_dup_partition_sender = anti_dup_partition_sender.clone();
     // The long running operation runs now in a separate thread
-    gio::spawn_blocking(move || {
-        loop {
-            thread::sleep(Duration::from_millis(400));
-            anti_dup_partition_sender
-                .send_blocking(true)
-                .expect("The channel needs to be open.");
-        }
+    gio::spawn_blocking(move || loop {
+        thread::sleep(Duration::from_millis(400));
+        anti_dup_partition_sender
+            .send_blocking(true)
+            .expect("The channel needs to be open.");
     });
 
     let anti_dup_partition_loop_context = MainContext::default();
@@ -346,9 +347,14 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
 
                             if *check_part_unique.borrow_mut() == true {
                                 row_scrw.set_sensitive(false)
+                            }  else if row_scrw.property::<String>("subtitle").contains("This partition needs a mapper!") {
+                                row_scrw.set_sensitive(false)
                             } else {
                                 row_scrw.set_sensitive(true)
                             }
+                        }
+                        else if row_scrw.property::<String>("subtitle").contains("This partition needs a mapper!") {
+                            row_scrw.set_sensitive(false)
                         } else {
                             row_scrw.set_sensitive(true)
                         }
@@ -373,16 +379,27 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
         }
     }));
 
-    partitioning_stack.add_titled(&partition_method_manual_main_box, Some("partition_method_manual_page"), "partition_method_manual_page");
+    partitioning_stack.add_titled(
+        &partition_method_manual_main_box,
+        Some("partition_method_manual_page"),
+        "partition_method_manual_page",
+    );
 
     //return(partition_method_manual_target_buffer, partition_method_manual_luks_buffer, partition_method_manual_luks_password_entry)
 }
 
-
-fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition_method_manual_error_label: &gtk::Label, manual_drive_mount_array_ref: RefMut<'_, Vec<DriveMount>>, check_part_unique: &Rc<RefCell<bool>>) {
-
+fn partition_err_check(
+    partition_method_manual_warn_label: &gtk::Label,
+    partition_method_manual_error_label: &gtk::Label,
+    manual_drive_mount_array_ref: RefMut<'_, Vec<DriveMount>>,
+    check_part_unique: &Rc<RefCell<bool>>,
+) {
     let mut empty_mountpoint = false;
-    for mountpoint in manual_drive_mount_array_ref.iter().map(|x| x.mountpoint.as_str()).collect::<HashSet<&str>>() {
+    for mountpoint in manual_drive_mount_array_ref
+        .iter()
+        .map(|x| x.mountpoint.as_str())
+        .collect::<HashSet<&str>>()
+    {
         if empty_mountpoint == false {
             if mountpoint.is_empty() {
                 empty_mountpoint = true
@@ -391,7 +408,11 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
     }
 
     let mut empty_partition = false;
-    for partition in manual_drive_mount_array_ref.iter().map(|x| x.partition.as_str()).collect::<HashSet<&str>>() {
+    for partition in manual_drive_mount_array_ref
+        .iter()
+        .map(|x| x.partition.as_str())
+        .collect::<HashSet<&str>>()
+    {
         if empty_partition == false {
             if partition.is_empty() {
                 empty_partition = true
@@ -400,45 +421,68 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
     }
 
     if empty_mountpoint == false {
-             if &partition_method_manual_error_label.label() == "Some drives don't have a mountpoint configured." {
-                 partition_method_manual_error_label.set_visible(false);
-             }
-             if manual_drive_mount_array_ref.len() - manual_drive_mount_array_ref.iter().map(|x| x.mountpoint.as_str()).collect::<HashSet<&str>>().len() > 0 {
-                 if !partition_method_manual_error_label.is_visible() {
-                     partition_method_manual_error_label.set_label("Multiple drives were mounted to the same mountpoint.");
-                     partition_method_manual_error_label.set_visible(true);
-                 }
-             } else {
-                 if partition_method_manual_error_label.label() == "Multiple drives were mounted to the same mountpoint." {
-                     partition_method_manual_error_label.set_visible(false);
-                 }
-             }
-         } else {
+        if &partition_method_manual_error_label.label()
+            == "Some drives don't have a mountpoint configured."
+        {
+            partition_method_manual_error_label.set_visible(false);
+        }
+        if manual_drive_mount_array_ref.len()
+            - manual_drive_mount_array_ref
+                .iter()
+                .map(|x| x.mountpoint.as_str())
+                .collect::<HashSet<&str>>()
+                .len()
+            > 0
+        {
             if !partition_method_manual_error_label.is_visible() {
-                partition_method_manual_error_label.set_label("Some drives don't have a mountpoint configured.");
+                partition_method_manual_error_label
+                    .set_label("Multiple drives were mounted to the same mountpoint.");
                 partition_method_manual_error_label.set_visible(true);
             }
-         }
+        } else {
+            if partition_method_manual_error_label.label()
+                == "Multiple drives were mounted to the same mountpoint."
+            {
+                partition_method_manual_error_label.set_visible(false);
+            }
+        }
+    } else {
+        if !partition_method_manual_error_label.is_visible() {
+            partition_method_manual_error_label
+                .set_label("Some drives don't have a mountpoint configured.");
+            partition_method_manual_error_label.set_visible(true);
+        }
+    }
 
     if empty_partition == true {
         if !partition_method_manual_error_label.is_visible() {
-            partition_method_manual_error_label.set_label("There's a drive row without a partition.");
+            partition_method_manual_error_label
+                .set_label("There's a drive row without a partition.");
             partition_method_manual_error_label.set_visible(true);
         }
     } else {
-        if partition_method_manual_error_label.label() == "There's a drive row without a partition." {
+        if partition_method_manual_error_label.label() == "There's a drive row without a partition."
+        {
             partition_method_manual_error_label.set_visible(false);
         }
     }
 
-    *check_part_unique.borrow_mut()=true;
-    for mountopts in manual_drive_mount_array_ref.iter().map(|x| x.mountopt.as_str()).collect::<HashSet<&str>>() {
+    *check_part_unique.borrow_mut() = true;
+    for mountopts in manual_drive_mount_array_ref
+        .iter()
+        .map(|x| x.mountopt.as_str())
+        .collect::<HashSet<&str>>()
+    {
         if mountopts.contains("subvol") {
-            *check_part_unique.borrow_mut()=false
+            *check_part_unique.borrow_mut() = false
         }
     }
 
-    for drivemounts in manual_drive_mount_array_ref.iter().map(|x| x).collect::<HashSet<&DriveMount>>() {
+    for drivemounts in manual_drive_mount_array_ref
+        .iter()
+        .map(|x| x)
+        .collect::<HashSet<&DriveMount>>()
+    {
         if !drivemounts.partition.is_empty() {
             let partition_size_cli = Command::new("sudo")
                 .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
@@ -452,26 +496,49 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
                 .arg(drivemounts.partition.replace("mapper/", ""))
                 .output()
                 .expect("failed to execute process");
-            let partition_size = String::from_utf8(partition_size_cli.stdout).expect("Failed to create float").trim().parse::<f64>().unwrap();
-            let partition_fs = String::from_utf8(partition_fs_cli.stdout).expect("Failed to create string").trim().parse::<String>().unwrap();
+            let partition_size = String::from_utf8(partition_size_cli.stdout)
+                .expect("Failed to create float")
+                .trim()
+                .parse::<f64>()
+                .unwrap();
+            let partition_fs = String::from_utf8(partition_fs_cli.stdout)
+                .expect("Failed to create string")
+                .trim()
+                .parse::<String>()
+                .unwrap();
             if drivemounts.mountpoint == "/boot/efi" {
                 if partition_size < 500000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to /boot/efi (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 512MBs"));
+                        partition_method_manual_error_label.set_label(
+                            &("Small size: The partition mounted to /boot/efi (/dev/".to_owned()
+                                + &drivemounts.partition
+                                + ") Must at least be 512MBs"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to /boot/efi (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Small size: The partition mounted to /boot/efi (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
                 if partition_fs != "vfat" {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to /boot/efi (/dev/".to_owned() + &drivemounts.partition + ") Must at be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_label(
+                            &("Bad Filesystem: The partition mounted to /boot/efi (/dev/"
+                                .to_owned()
+                                + &drivemounts.partition
+                                + ") Must at be FAT32/vFAT"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to /boot/efi (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Bad Filesystem: The partition mounted to /boot/efi (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -479,21 +546,35 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
             if drivemounts.mountpoint == "/boot" {
                 if partition_size < 1000000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to /boot (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 1000MBs"));
+                        partition_method_manual_error_label.set_label(
+                            &("Small size: The partition mounted to /boot (/dev/".to_owned()
+                                + &drivemounts.partition
+                                + ") Must at least be 1000MBs"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to /boot (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Small size: The partition mounted to /boot (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
                 if partition_fs == "vfat" {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to /boot (/dev/".to_owned() + &drivemounts.partition + ") Cannot be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_label(
+                            &("Bad Filesystem: The partition mounted to /boot (/dev/".to_owned()
+                                + &drivemounts.partition
+                                + ") Cannot be FAT32/vFAT"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to /boot (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Bad Filesystem: The partition mounted to /boot (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -501,21 +582,35 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
             if drivemounts.mountpoint == "/" {
                 if partition_size < 25000000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to / (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 25GBs"));
+                        partition_method_manual_error_label.set_label(
+                            &("Small size: The partition mounted to / (/dev/".to_owned()
+                                + &drivemounts.partition
+                                + ") Must at least be 25GBs"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to / (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Small size: The partition mounted to / (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
                 if partition_fs == "vfat" {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to / (/dev/".to_owned() + &drivemounts.partition + ") Cannot be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_label(
+                            &("Bad Filesystem: The partition mounted to / (/dev/".to_owned()
+                                + &drivemounts.partition
+                                + ") Cannot be FAT32/vFAT"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to / (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Bad Filesystem: The partition mounted to / (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -523,21 +618,35 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
             if drivemounts.mountpoint == "/home" {
                 if partition_size < 10000000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to /home (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 10GBs"));
+                        partition_method_manual_error_label.set_label(
+                            &("Small size: The partition mounted to /home (/dev/".to_owned()
+                                + &drivemounts.partition
+                                + ") Must at least be 10GBs"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to /home (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Small size: The partition mounted to /home (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
                 if partition_fs == "vfat" {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to /home (/dev/".to_owned() + &drivemounts.partition + ") Cannot be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_label(
+                            &("Bad Filesystem: The partition mounted to /home (/dev/".to_owned()
+                                + &drivemounts.partition
+                                + ") Cannot be FAT32/vFAT"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to /home (/dev/") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains("Bad Filesystem: The partition mounted to /home (/dev/")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -545,23 +654,40 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
             if drivemounts.mountpoint == "[SWAP]" {
                 if partition_fs != "linux-swap" {
                     if !partition_method_manual_error_label.is_visible() {
-                        partition_method_manual_error_label.set_label(&("Bad Filesystem: ".to_owned() + &drivemounts.partition + " Is not a swap partition"));
+                        partition_method_manual_error_label.set_label(
+                            &("Bad Filesystem: ".to_owned()
+                                + &drivemounts.partition
+                                + " Is not a swap partition"),
+                        );
                         partition_method_manual_error_label.set_visible(true);
                     }
                 } else {
-                    if partition_method_manual_error_label.label().contains(" Is not a swap partition") {
+                    if partition_method_manual_error_label
+                        .label()
+                        .contains(" Is not a swap partition")
+                    {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
             }
 
-            if empty_mountpoint == false && !drivemounts.mountpoint.starts_with("/") && drivemounts.mountpoint != "[SWAP]" {
+            if empty_mountpoint == false
+                && !drivemounts.mountpoint.starts_with("/")
+                && drivemounts.mountpoint != "[SWAP]"
+            {
                 if !partition_method_manual_error_label.is_visible() {
-                    partition_method_manual_error_label.set_label(&("Bad Mountpoint: ".to_owned() + &drivemounts.mountpoint + " Is not a valid mountpoint"));
+                    partition_method_manual_error_label.set_label(
+                        &("Bad Mountpoint: ".to_owned()
+                            + &drivemounts.mountpoint
+                            + " Is not a valid mountpoint"),
+                    );
                     partition_method_manual_error_label.set_visible(true);
                 }
             } else {
-                if partition_method_manual_error_label.label().contains(" Is not a valid mountpoint") {
+                if partition_method_manual_error_label
+                    .label()
+                    .contains(" Is not a valid mountpoint")
+                {
                     partition_method_manual_error_label.set_visible(false);
                 }
             }
@@ -569,7 +695,8 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
     }
 
     if *check_part_unique.borrow_mut() == false {
-        partition_method_manual_warn_label.set_label("Partition reuse check will be skipped due to subvol usage.");
+        partition_method_manual_warn_label
+            .set_label("Partition reuse check will be skipped due to subvol usage.");
         partition_method_manual_warn_label.set_visible(true);
     } else {
         partition_method_manual_warn_label.set_visible(false);

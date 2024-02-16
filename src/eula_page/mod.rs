@@ -1,13 +1,13 @@
 // Use libraries
+use adw::prelude::*;
+use adw::*;
+use gdk::Display;
+use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::prelude::*;
-use gtk::*;
-use adw::prelude::*;
-use adw::*;
-use glib::*;
-use gdk::Display;
 use gtk::subclass::layout_child;
+use gtk::*;
 
 use std::io::BufRead;
 use std::io::BufReader;
@@ -16,7 +16,6 @@ use std::process::Stdio;
 use std::time::Instant;
 
 pub fn eula_page(content_stack: &gtk::Stack) {
-
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -177,13 +176,15 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     //// Add the eula_main_box as page: eula_page, Give it nice title
     content_stack.add_titled(&eula_main_box, Some("eula_page"), "EULA");
 
-    eula_accept_checkbutton.connect_toggled(clone!(@weak eula_accept_checkbutton, @weak bottom_next_button => move |_| {
-        if eula_accept_checkbutton.is_active() == true {
-            bottom_next_button.set_sensitive(true);
-        } else {
-            bottom_next_button.set_sensitive(false)
-        }
-    }));
+    eula_accept_checkbutton.connect_toggled(
+        clone!(@weak eula_accept_checkbutton, @weak bottom_next_button => move |_| {
+            if eula_accept_checkbutton.is_active() == true {
+                bottom_next_button.set_sensitive(true);
+            } else {
+                bottom_next_button.set_sensitive(false)
+            }
+        }),
+    );
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("timezone_page")
@@ -191,5 +192,4 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
         content_stack.set_visible_child_name("language_page")
     }));
-
 }

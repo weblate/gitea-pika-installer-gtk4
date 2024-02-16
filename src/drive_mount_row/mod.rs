@@ -10,12 +10,13 @@ glib::wrapper! {
 }
 
 impl DriveMountRow {
-
     pub fn new() -> Self {
         Object::builder().build()
     }
     pub fn new_with_scroll(partitions_scroll: &gtk::ScrolledWindow) -> Self {
-        Object::builder().property("partitionscroll", partitions_scroll).build()
+        Object::builder()
+            .property("partitionscroll", partitions_scroll)
+            .build()
     }
 }
 // ANCHOR_END: mod
