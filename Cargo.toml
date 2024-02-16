@@ -8,10 +8,10 @@ edition = "2021"
 [dependencies]
 adw = { version = "0.5.3", package = "libadwaita", features = ["v1_4"] }
 async-channel = "2.1.1"
+duct = "0.13.7"
 fragile = "2.0.0"
 glib = "0.18.5"
 gtk = { version = "0.7.3", package = "gtk4", features = ["v4_12"] }
-# parted = { version = "0.1.5", package = "libparted" }
 pretty-bytes = "0.2.2"
 time = "0.3.31"
 vte = { version = "0.0.2", package = "zoha-vte4", features = ["v0_72"] }

@@ -32,6 +32,36 @@ then
 	fi
 fi
 
+if [[ "$1" = "get_partitions" ]]
+then
+  lsblk -ln -o NAME,TYPE | grep -E "part|crypt|lvm" |  awk '{print $1}' | while read i ; do
+    if lsblk -ln -o NAME,TYPE | grep "$i" | grep "crypt" > /dev/null 2>&1
+    then
+        echo "mapper/$(lsblk -ln -o NAME,TYPE | grep "$i" | awk '{print $1}')"
+    fi
+
+    if lsblk -ln -o NAME,TYPE | grep "$i" | grep "lvm" > /dev/null 2>&1
+    then
+        echo "mapper/$(lsblk -ln -o NAME,TYPE | grep "$i" | awk '{print $1}')"
+    fi
+
+    if lsblk -ln -o NAME,TYPE | grep "$i" | grep "part" > /dev/null 2>&1
+    then
+        lsblk -ln -o NAME,TYPE | grep "$i" |  awk '{print $1}'
+    fi
+  done
+fi
+
+if [[ "$1" = "get_part_fs" ]]
+then
+  lsblk -ln -o NAME,FSTYPE | grep "$2" | awk '{print $2}'
+fi
+
+if [[ "$1" = "get_part_size" ]]
+then
+  lsblk -b --output SIZE -n -d /dev/"$2"
+fi
+
 if [[ "$1" = "home_not_boot" ]]
 then
         if [[ $(blkid "$(df -P -h -T "$2/boot" | awk 'END{print $1}')" -s UUID -o value) == $(blkid "$(df -P -h -T "$2/home" | awk 'END{print $1}')" -s UUID -o value) ]]

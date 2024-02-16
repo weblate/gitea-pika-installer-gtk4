@@ -3,6 +3,11 @@
     color: red;
 }
 
+.small_warn_text {
+    font-size: 14px;
+    color: orange;
+}
+
 .big_error_text {
     font-size: 32px;
     color: red;
