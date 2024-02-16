@@ -49,6 +49,8 @@ use crate::drive_mount_row::DriveMountRow;
 
 #[derive(PartialEq)]
 #[derive(Debug)]
+#[derive(Eq)]
+#[derive(Hash)]
 pub struct DriveMount {
     partition: String,
     mountpoint: String,
@@ -224,6 +226,17 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
         .child(&drive_mounts_adw_listbox)
         .build();
 
+    let partition_method_manual_selection_text = gtk::Label::builder()
+            .label("\n - Press the plus button below to begin adding filesystem entries.\nNotes:\n - This installer doesn't erase any data automatically, format your drives manually via gparted.\n - To Add a linux-swap partition set mountpoint to [SWAP]\n - We recommend the following partitions as a base layout:\n /boot ~ 1000mb ext4.\n  /boot/efi ~ 512mb vfat/fat32.\n  / >= 25GB btrfs.\n ")
+            .halign(gtk::Align::Center)
+            .hexpand(true)
+            .margin_top(15)
+            .margin_bottom(15)
+            .margin_start(15)
+            .margin_end(15)
+            .build();
+    partition_method_manual_selection_text.add_css_class("medium_sized_text");
+
     let drive_mount_add_button = gtk::Button::builder()
         .icon_name("list-add")
         .vexpand(true)
@@ -248,6 +261,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
 
     partition_method_manual_header_box.append(&partition_method_manual_header_text);
     partition_method_manual_header_box.append(&partition_method_manual_header_icon);
+    partition_method_manual_selection_box.append(&partition_method_manual_selection_text);
     partition_method_manual_main_box.append(&partition_method_manual_header_box);
     partition_method_manual_main_box.append(&partition_method_manual_selection_box);
     partition_method_manual_gparted_button_content_box.append(&partition_method_manual_gparted_button_content);
@@ -273,7 +287,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
     // The long running operation runs now in a separate thread
     gio::spawn_blocking(move || {
         loop {
-            thread::sleep(Duration::from_millis(100));
+            thread::sleep(Duration::from_millis(400));
             anti_dup_partition_sender
                 .send_blocking(true)
                 .expect("The channel needs to be open.");
@@ -327,6 +341,7 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
                 }
                 counter = row.next_sibling();
             }
+            partition_err_check(&partition_method_manual_warn_label, &partition_method_manual_error_label, manual_drive_mount_array_ref, &check_part_unique);
         }
     }));
 
@@ -336,13 +351,54 @@ pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: 
 }
 
 
-fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition_method_manual_error_label: &gtk::Label, manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>, check_part_unique: &Rc<RefCell<bool>>) {
-    let mut manual_drive_mount_array_ref = manual_drive_mount_array.borrow_mut();
-    if manual_drive_mount_array_ref.len() - manual_drive_mount_array_ref.iter().map(|x| x.mountpoint.as_str()).collect::<HashSet<&str>>().len() > 0 {
-        partition_method_manual_error_label.set_label("Multiple drives were mounted to the same mountpoint.");
-        partition_method_manual_error_label.set_visible(true);
+fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition_method_manual_error_label: &gtk::Label, manual_drive_mount_array_ref: RefMut<'_, Vec<DriveMount>>, check_part_unique: &Rc<RefCell<bool>>) {
+
+    let mut empty_mountpoint = false;
+    for mountpoint in manual_drive_mount_array_ref.iter().map(|x| x.mountpoint.as_str()).collect::<HashSet<&str>>() {
+        if empty_mountpoint == false {
+            if mountpoint.is_empty() {
+                empty_mountpoint = true
+            }
+        }
+    }
+
+    let mut empty_partition = false;
+    for partition in manual_drive_mount_array_ref.iter().map(|x| x.partition.as_str()).collect::<HashSet<&str>>() {
+        if empty_partition == false {
+            if partition.is_empty() {
+                empty_partition = true
+            }
+        }
+    }
+
+    if empty_mountpoint == false {
+             if &partition_method_manual_error_label.label() == "Some drives don't have a mountpoint configured." {
+                 partition_method_manual_error_label.set_visible(false);
+             }
+             if manual_drive_mount_array_ref.len() - manual_drive_mount_array_ref.iter().map(|x| x.mountpoint.as_str()).collect::<HashSet<&str>>().len() > 0 {
+                 if !partition_method_manual_error_label.is_visible() {
+                     partition_method_manual_error_label.set_label("Multiple drives were mounted to the same mountpoint.");
+                     partition_method_manual_error_label.set_visible(true);
+                 }
+             } else {
+                 if partition_method_manual_error_label.label() == "Multiple drives were mounted to the same mountpoint." {
+                     partition_method_manual_error_label.set_visible(false);
+                 }
+             }
+         } else {
+            if !partition_method_manual_error_label.is_visible() {
+                partition_method_manual_error_label.set_label("Some drives don't have a mountpoint configured.");
+                partition_method_manual_error_label.set_visible(true);
+            }
+         }
+
+    if empty_partition == true {
+        if !partition_method_manual_error_label.is_visible() {
+            partition_method_manual_error_label.set_label("There's a drive row without a partition.");
+            partition_method_manual_error_label.set_visible(true);
+        }
     } else {
-        if partition_method_manual_error_label.label() == "Multiple drives were mounted to the same mountpoint." {
+        if partition_method_manual_error_label.label() == "There's a drive row without a partition." {
             partition_method_manual_error_label.set_visible(false);
         }
     }
@@ -351,6 +407,124 @@ fn partition_err_check(partition_method_manual_warn_label: &gtk::Label,partition
     for mountopts in manual_drive_mount_array_ref.iter().map(|x| x.mountopt.as_str()).collect::<HashSet<&str>>() {
         if mountopts.contains("subvol") {
             *check_part_unique.borrow_mut()=false
+        }
+    }
+
+    for drivemounts in manual_drive_mount_array_ref.iter().map(|x| x).collect::<HashSet<&DriveMount>>() {
+        if !drivemounts.partition.is_empty() {
+            let partition_size_cli = Command::new("sudo")
+                .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+                .arg("get_part_size")
+                .arg(drivemounts.partition.clone())
+                .output()
+                .expect("failed to execute process");
+            let partition_fs_cli = Command::new("sudo")
+                .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+                .arg("get_part_fs")
+                .arg(drivemounts.partition.replace("mapper/", ""))
+                .output()
+                .expect("failed to execute process");
+            let partition_size = String::from_utf8(partition_size_cli.stdout).expect("Failed to create float").trim().parse::<f64>().unwrap();
+            let partition_fs = String::from_utf8(partition_fs_cli.stdout).expect("Failed to create string").trim().parse::<String>().unwrap();
+            if drivemounts.mountpoint == "/boot/efi" {
+                if partition_size < 500000000.0 {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to /boot/efi (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 512MBs"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to /boot/efi (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+                if partition_fs != "vfat" {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to /boot/efi (/dev/".to_owned() + &drivemounts.partition + ") Must at be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to /boot/efi (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+            }
+            if drivemounts.mountpoint == "/boot" {
+                if partition_size < 1000000000.0 {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to /boot (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 1000MBs"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to /boot (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+                if partition_fs == "vfat" {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to /boot (/dev/".to_owned() + &drivemounts.partition + ") Cannot be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to /boot (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+            }
+            if drivemounts.mountpoint == "/" {
+                if partition_size < 25000000000.0 {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to / (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 25GBs"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to / (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+                if partition_fs == "vfat" {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to / (/dev/".to_owned() + &drivemounts.partition + ") Cannot be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to / (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+            }
+            if drivemounts.mountpoint == "/home" {
+                if partition_size < 10000000000.0 {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Small size: The partition mounted to /home (/dev/".to_owned() + &drivemounts.partition + ") Must at least be 10GBs"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Small size: The partition mounted to /home (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+                if partition_fs == "vfat" {
+                    if !partition_method_manual_error_label.is_visible() {
+                        partition_method_manual_error_label.set_label(&("Bad Filesystem: The partition mounted to /home (/dev/".to_owned() + &drivemounts.partition + ") Cannot be FAT32/vFAT"));
+                        partition_method_manual_error_label.set_visible(true);
+                    }
+                } else {
+                    if partition_method_manual_error_label.label().contains("Bad Filesystem: The partition mounted to /home (/dev/") {
+                        partition_method_manual_error_label.set_visible(false);
+                    }
+                }
+            }
+
+            if empty_mountpoint == false && !drivemounts.mountpoint.starts_with("/") && drivemounts.mountpoint != "[SWAP]" {
+                if !partition_method_manual_error_label.is_visible() {
+                    partition_method_manual_error_label.set_label(&("Bad Mountpoint: ".to_owned() + &drivemounts.mountpoint + " Is not a valid mountpoint"));
+                    partition_method_manual_error_label.set_visible(true);
+                }
+            } else {
+                if partition_method_manual_error_label.label().contains(" Is not a valid mountpoint") {
+                    partition_method_manual_error_label.set_visible(false);
+                }
+            }
         }
     }
 
