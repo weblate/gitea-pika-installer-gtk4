@@ -1,12 +1,12 @@
 use std::{
-    cell::{Cell, RefCell},
+    cell::{RefCell},
     rc::Rc,
     sync::OnceLock,
 };
 
 use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
-use gtk::{glib, prelude::*, subclass::prelude::*, Orientation::Horizontal, *};
+use gtk::{glib, Orientation::Horizontal};
 
 // ANCHOR: custom_button
 // Object holding the state

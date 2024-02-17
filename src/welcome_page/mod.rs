@@ -1,12 +1,9 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
 use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::subclass::layout_child;
 use gtk::*;
 
 pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {

@@ -1,36 +1,26 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
 use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::subclass::{layout_child, window};
 use gtk::*;
-use std::collections::HashMap;
 use std::thread;
 
 use std::cell::{RefCell, RefMut};
 use std::rc::Rc;
 
-use duct::*;
 
 use duct::cmd;
-use gtk::Orientation::Vertical;
-use std::ops::{Deref, DerefMut};
 use std::{
     collections::HashSet,
-    fs,
     hash::Hash,
     io::{BufRead, BufReader},
-    path::Path,
-    process::{Command, Stdio},
-    time::{Duration, Instant},
+    process::{Command},
+    time::{Duration},
 };
 
 use crate::drive_mount_row::DriveMountRow;
-use pretty_bytes::converter::convert;
 use serde::*;
 
 #[derive(PartialEq, Debug, Eq, Hash, Clone, Serialize, Deserialize)]
@@ -44,7 +34,7 @@ fn create_mount_row(
     listbox: &gtk::ListBox,
     manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
     part_table_array: &Rc<RefCell<Vec<String>>>,
-    check_part_unique: &Rc<RefCell<bool>>,
+    _check_part_unique: &Rc<RefCell<bool>>,
 ) -> DriveMountRow {
     let partition_scroll_child = gtk::ListBox::builder().build();
 
@@ -59,9 +49,7 @@ fn create_mount_row(
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 
-    let partition_method_manual_emitter = gtk::SignalAction::new("partchg");
-
-    let mut part_table_array_ref = part_table_array.borrow_mut();
+    let part_table_array_ref = part_table_array.borrow_mut();
     for partition in part_table_array_ref.iter() {
         let partition_size_cli = Command::new("sudo")
             .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
@@ -121,8 +109,8 @@ fn create_mount_row(
     row.connect_closure(
         "row-deleted",
         false,
-        closure_local!(@strong row => move |row: DriveMountRow| {
-                    listbox_clone.remove(&row)
+        closure_local!(@strong row as _row => move |_row: DriveMountRow| {
+                    listbox_clone.remove(&_row)
         }),
     );
 
@@ -132,7 +120,6 @@ fn create_mount_row(
 
 //pub fn manual_partitioning(window: &adw::ApplicationWindow, partitioning_stack: &gtk::Stack, bottom_next_button: &gtk::Button) -> (gtk::TextBuffer, gtk::TextBuffer, adw::PasswordEntryRow) {
 pub fn manual_partitioning(
-    window: &adw::ApplicationWindow,
     partitioning_stack: &gtk::Stack,
     bottom_next_button: &gtk::Button,
     manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
@@ -282,7 +269,7 @@ pub fn manual_partitioning(
                 }
                 counter = row.next_sibling();
             }
-        let mut partition_method_manual_get_partitions_lines = BufReader::new(cmd!("bash", "-c", "sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions").reader().unwrap()).lines();
+        let partition_method_manual_get_partitions_lines = BufReader::new(cmd!("bash", "-c", "sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions").reader().unwrap()).lines();
         let mut part_table_array_ref = part_table_array.borrow_mut();
         part_table_array_ref.clear();
         for partition in partition_method_manual_get_partitions_lines {

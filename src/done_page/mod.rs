@@ -1,21 +1,16 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
 use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::subclass::layout_child;
 use gtk::*;
 
-use std::fs;
 use std::path::Path;
 use std::process::Command;
 
 pub fn done_page(
     done_main_box: &gtk::Box,
-    content_stack: &gtk::Stack,
     window: &adw::ApplicationWindow,
 ) {
     // the header box for the installation_successful page

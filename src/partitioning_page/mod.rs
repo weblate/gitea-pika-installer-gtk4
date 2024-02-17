@@ -1,38 +1,23 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
 use glib::*;
 use glob::glob;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::subclass::layout_child;
 use gtk::*;
 
 use crate::automatic_partitioning::automatic_partitioning;
 use crate::install_page::install_page;
 use crate::manual_partitioning::manual_partitioning;
 
-use pretty_bytes::converter::convert;
-use std::env;
-use std::io::BufRead;
-use std::io::BufReader;
-use std::process::Command;
-use std::process::Stdio;
-use std::time::Instant;
-
-use std::thread;
-use std::time::*;
-
 use std::fs;
 use std::path::Path;
 
 use std::cell::RefCell;
-use std::ops::Deref;
 use std::rc::Rc;
 
-use crate::{install_page, manual_partitioning};
+use crate::{manual_partitioning};
 
 use manual_partitioning::DriveMount;
 
@@ -220,7 +205,6 @@ pub fn partitioning_page(
 
     manual_method_button_content_box.append(&manual_method_button_content_image);
 
-    /// add all pages to partitioning stack
     partitioning_stack.add_titled(
         &partitioning_method_main_box,
         Some("partition_method_select_page"),
@@ -228,8 +212,7 @@ pub fn partitioning_page(
     );
     let partitioning_page_automatic_partitioning =
         automatic_partitioning(&partitioning_stack, &bottom_next_button);
-    let partitioning_page_manual_partitioning = manual_partitioning(
-        window,
+    let _partitioning_page_manual_partitioning = manual_partitioning(
         &partitioning_stack,
         &bottom_next_button,
         &manual_drive_mount_array,
@@ -292,7 +275,7 @@ pub fn partitioning_page(
             if automatic_luks_result.is_empty() {
                //
             } else {
-               fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
+               let _ = fs::write("/tmp/pika-installer-gtk4-target-automatic-luks.txt", automatic_luks_result);
             }
             install_page(&done_main_box, &install_main_box, &content_stack, &window, &manual_drive_mount_array);
             content_stack.set_visible_child_name("install_page");

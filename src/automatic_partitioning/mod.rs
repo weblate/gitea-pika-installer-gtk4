@@ -1,27 +1,16 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
 use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::subclass::layout_child;
 use gtk::*;
 
-use pretty_bytes::converter::convert;
-use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
-use std::time::Instant;
 
-use std::thread;
-use std::time::*;
-
-use std::fs;
-use std::path::Path;
 pub fn automatic_partitioning(
     partitioning_stack: &gtk::Stack,
     bottom_next_button: &gtk::Button,

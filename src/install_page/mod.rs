@@ -2,19 +2,15 @@ use std::cell::RefCell;
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
 use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::subclass::layout_child;
 use gtk::*;
 use vte::prelude::*;
 use vte::*;
 
 use crate::done_page::done_page;
 
-use pretty_bytes::converter::convert;
 use std::process::Command;
 
 use std::fs;
@@ -23,7 +19,6 @@ use std::rc::Rc;
 
 use crate::manual_partitioning::DriveMount;
 use serde::*;
-use serde_json::*;
 use duct::*;
 
 #[derive(PartialEq, Debug, Eq, Hash, Clone, Serialize, Deserialize)]
@@ -39,8 +34,8 @@ pub fn install_page(
     window: &adw::ApplicationWindow,
     manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
 ) {
-    let mut iter_count = 0;
-    iter_count = 0;
+    let mut _iter_count = 0;
+    _iter_count = 0;
     let mut unlocked_array: Vec<String> = Default::default();
     for partitions in manual_drive_mount_array.borrow_mut().iter() {
         let new_crypt = if partitions.mountpoint != "/"
@@ -118,7 +113,7 @@ pub fn install_page(
                     };
                     fs::write(
                         "/tmp/pika-installer-gtk4-target-manual-luks-p".to_owned()
-                            + &iter_count.to_string()
+                            + &_iter_count.to_string()
                             + ".json",
                         serde_json::to_string(&crypttab_entry).unwrap(),
                     )
@@ -130,7 +125,7 @@ pub fn install_page(
                     };
                     fs::write(
                         "/tmp/pika-installer-gtk4-target-manual-luks-p".to_owned()
-                            + &iter_count.to_string()
+                            + &_iter_count.to_string()
                             + ".json",
                         serde_json::to_string(&crypttab_entry).unwrap(),
                     )
@@ -143,7 +138,7 @@ pub fn install_page(
         };
         fs::write(
             "/tmp/pika-installer-gtk4-target-manual-p".to_owned()
-                + &iter_count.to_string()
+                + &_iter_count.to_string()
                 + ".json",
             serde_json::to_string(partitions).unwrap(),
         )
@@ -152,7 +147,7 @@ pub fn install_page(
             unlocked_array.push(new_crypt);
         }
         dbg!(&unlocked_array);
-        iter_count += 1;
+        _iter_count += 1;
     }
 
     // create the bottom box for next and back buttons
@@ -296,67 +291,67 @@ pub fn install_page(
             .trim()
             .parse::<f64>()
             .unwrap();
-        let mut target_p3_size = 0.0;
+        let mut _target_p3_size = 0.0;
         if (target_size * 40.0) / 100.0 >= 150000000000.0 {
-            target_p3_size = 150000000000.0;
+            _target_p3_size = 150000000000.0;
         } else if (target_size * 40.0) / 100.0 <= 36507222016.0 {
-            target_p3_size = 36507222016.0;
+            _target_p3_size = 36507222016.0
         } else {
-            target_p3_size = (target_size * 40.0) / 100.0;
+            _target_p3_size = (target_size * 40.0) / 100.0;
         }
-        let target_p4_size = target_size - (target_p3_size + 1536.0);
+        let target_p4_size = target_size - (_target_p3_size + 1536.0);
         if Path::new("/tmp/pika-installer-p3-size.txt").exists() {
             fs::remove_file("/tmp/pika-installer-p3-size.txt")
                 .expect("Bad permissions on /tmp/pika-installer-p3-size.txt");
         }
-        let target_p3_sector = target_p3_size + 1537.0;
+        let target_p3_sector = _target_p3_size + 1537.0;
         fs::write(
             "/tmp/pika-installer-p3-size.txt",
             target_p3_sector.to_string(),
         )
         .expect("Unable to write file");
-        let mut p1_row_text = String::new();
-        let mut p2_row_text = String::new();
-        let mut p3_row_text = String::new();
-        let mut p4_row_text = String::new();
+        let mut _p1_row_text = String::new();
+        let mut _p2_row_text = String::new();
+        let mut _p3_row_text = String::new();
+        let mut _p4_row_text = String::new();
         if target_block_device.contains("nvme") {
-            p1_row_text =
+            _p1_row_text =
                 "512 MB ".to_owned() + target_block_device + "p1" + " as fat32" + " on /boot/efi";
-            p2_row_text =
+            _p2_row_text =
                 "1 GB ".to_owned() + target_block_device + "p2" + " as ext4" + " on /boot";
-            p3_row_text = pretty_bytes::converter::convert(target_p3_size)
+            _p3_row_text = pretty_bytes::converter::convert(_target_p3_size)
                 + " "
                 + target_block_device
                 + "p3"
                 + " as btrfs"
                 + " on /";
-            p4_row_text = pretty_bytes::converter::convert(target_p4_size)
+            _p4_row_text = pretty_bytes::converter::convert(target_p4_size)
                 + " "
                 + target_block_device
                 + "p4"
                 + " as btrfs"
                 + " on /home";
         } else {
-            p1_row_text =
+            _p1_row_text =
                 "512 MB ".to_owned() + target_block_device + "1" + " as fat32" + " on /boot/efi";
-            p2_row_text = "1 GB ".to_owned() + target_block_device + "2" + " as ext4" + " on /boot";
-            p3_row_text = pretty_bytes::converter::convert(target_p3_size)
+            _p2_row_text = "1 GB ".to_owned() + target_block_device + "2" + " as ext4" + " on /boot";
+            _p3_row_text = pretty_bytes::converter::convert(_target_p3_size)
                 + " "
                 + target_block_device
                 + "3"
                 + " as btrfs"
                 + " on /";
-            p4_row_text = pretty_bytes::converter::convert(target_p4_size)
+            _p4_row_text = pretty_bytes::converter::convert(target_p4_size)
                 + " "
                 + target_block_device
                 + "4"
                 + " as btrfs"
                 + " on /home";
         }
-        let install_confirm_p1 = adw::ActionRow::builder().title(p1_row_text.clone()).build();
-        let install_confirm_p2 = adw::ActionRow::builder().title(p2_row_text.clone()).build();
-        let install_confirm_p3 = adw::ActionRow::builder().title(p3_row_text.clone()).build();
-        let install_confirm_p4 = adw::ActionRow::builder().title(p4_row_text.clone()).build();
+        let install_confirm_p1 = adw::ActionRow::builder().title(_p1_row_text.clone()).build();
+        let install_confirm_p2 = adw::ActionRow::builder().title(_p2_row_text.clone()).build();
+        let install_confirm_p3 = adw::ActionRow::builder().title(_p3_row_text.clone()).build();
+        let install_confirm_p4 = adw::ActionRow::builder().title(_p4_row_text.clone()).build();
         // / install_confirm_selection_box appends
         //// add live and install media button to install page selections
         install_confirm_details_boxed_list.append(&install_confirm_detail_language);
@@ -408,7 +403,6 @@ pub fn install_page(
 
     install_confirm_box.append(&bottom_box);
 
-    ///
     let install_progress_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)
         .build();
@@ -783,7 +777,7 @@ fn begin_install(
             while let Ok(done_status_state) = done_status_receiver.recv().await {
                 if done_status_state == true {
                     println!("Installation status: Done");
-                    done_page(&done_main_box ,&content_stack, &window);
+                    done_page(&done_main_box, &window);
                     content_stack.set_visible_child_name("done_page");
                 }
             }

@@ -1,12 +1,9 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
 use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::subclass::layout_child;
 use gtk::*;
 
 use std::path::Path;
@@ -36,23 +33,19 @@ pub fn build_ui(app: &adw::Application) {
 
     // Widget Bank
 
-    /// Create A box
     let _main_box = gtk::Box::builder()
         // that puts items vertically
         .orientation(Orientation::Vertical)
         .build();
 
-    /// Add adwaita title box
     let window_title_bar = adw::HeaderBar::builder().build();
 
-    /// Add page Stack containing all primary contents
     let content_stack = gtk::Stack::builder()
         .hexpand(true)
         .vexpand(true)
         .transition_type(StackTransitionType::SlideLeftRight)
         .build();
 
-    /// Add a Visual Stack Switcher for content_stack
     let content_stack_switcher = gtk::StackSwitcher::builder()
         .stack(&content_stack)
         .margin_top(15)
@@ -69,9 +62,7 @@ pub fn build_ui(app: &adw::Application) {
     _main_box.append(&content_stack_switcher);
     //// Add the stack pager containing all the steps to _main_box
     _main_box.append(&content_stack);
-    //// Add the the next and back buttons box to _main_box (moved)
-    ///_main_box.append(&bottom_box);
-    // create the main Application window
+
     let window = adw::ApplicationWindow::builder()
         // The text on the titlebar
         .title("PikaOS Installer")
@@ -144,11 +135,6 @@ pub fn build_ui(app: &adw::Application) {
     if glib_settings.boolean("is-maximized") == true {
         window.maximize()
     }
-
-    // Connects the clicking of  "_click_me_button" to the external function "print_why" and idk why but everyone tells me to be "move |_| " before the external function
-    /// and instead of () we put an aurgment for the target label with & before it so it's"
-    /// print_why() -> print_why(&_warning_label)
-    //_click_me_button.connect_clicked(move |_| print_why(&_warning_label));
 
     // Connect the hiding of window to the save_window_size function and window destruction
     window.connect_hide(clone!(@weak window => move |_| save_window_size(&window, &glib_settings)));

@@ -1,11 +1,11 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use gdk::Display;
-use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
+#[allow(unused_imports)]
 use gtk::prelude::*;
+#[allow(unused_imports)]
 use gtk::*;
 
 // Save current window size to glib
