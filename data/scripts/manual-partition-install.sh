@@ -39,18 +39,18 @@ for drivemount in /tmp/pika-installer-gtk4-target-manual-p*.json; do
 	PARTITION="/dev/$(jq -r .partition $drivemount)"
 	MOUNTPOINT="/media/pika-install-mount/$(jq -r .mountpoint $drivemount)"
 	MOUNTOPT=$(jq -r .mountopt $drivemount)
-	if [[ -z $MOUNTOPT ]]
+	if [[ $MOUNTPOINT = '/media/pika-install-mount/[SWAP]' ]]
+  then
+		touch /tmp/pika-installer-gtk4-swaplist
+		echo $PARTITION >  /tmp/pika-installer-gtk4-swaplist
+  elif [[ -z $MOUNTOPT ]]
 	then
 		mkdir -p $MOUNTPOINT
 		mount $PARTITION $MOUNTPOINT
-	elif [[ $MOUNTPOINT == "[SWAP]" ]]
-	then
-		touch /tmp/pika-installer-gtk4-swaplist
-		echo $PARTITION >  /tmp/pika-installer-gtk4-swaplist
 	else
 		mkdir -p $MOUNTPOINT
 		mount -o $MOUNTOPT $PARTITION $MOUNTPOINT
-	fi
+  fi
 done
 
 if [[ ! -f "/tmp/pika-installer-gtk4-crypttab" ]]
