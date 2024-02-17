@@ -49,6 +49,8 @@ impl ObjectImpl for DriveMountRow {
         let action_row_content_box = gtk::Box::builder()
             .orientation(Horizontal)
             .spacing(0)
+            .vexpand(true)
+            .hexpand(true)
             .build();
 
         let partition_row_expander_adw_listbox = gtk::ListBox::builder()
@@ -56,39 +58,45 @@ impl ObjectImpl for DriveMountRow {
             .margin_start(10)
             .margin_top(5)
             .margin_bottom(5)
+            .vexpand(true)
+            .hexpand(true)
             .build();
         partition_row_expander_adw_listbox.add_css_class("boxed-list");
 
         let partition_row_expander = adw::ExpanderRow::builder()
             .subtitle("Partition")
+            .vexpand(true)
+            .hexpand(true)
             .width_request(300)
             .build();
 
         let mountpoint_entry_adw_listbox = gtk::ListBox::builder()
-            .halign(gtk::Align::Center)
             .margin_top(5)
             .margin_bottom(5)
             .vexpand(true)
+            .hexpand(true)
             .build();
         mountpoint_entry_adw_listbox.add_css_class("boxed-list");
 
         let mountpoint_entry_row = adw::EntryRow::builder()
             .title("Mountpoint")
             .vexpand(true)
+            .hexpand(true)
             .build();
 
         let mountopt_entry_adw_listbox = gtk::ListBox::builder()
             .margin_top(5)
             .margin_bottom(5)
             .margin_start(5)
-            .halign(gtk::Align::Center)
             .vexpand(true)
+            .hexpand(true)
             .build();
         mountopt_entry_adw_listbox.add_css_class("boxed-list");
 
         let mountopt_entry_row = adw::EntryRow::builder()
             .title("Additional Mount Options")
             .vexpand(true)
+            .hexpand(true)
             .build();
 
         let partition_row_delete_button = gtk::Button::builder()
@@ -98,6 +106,7 @@ impl ObjectImpl for DriveMountRow {
             .margin_bottom(5)
             .width_request(40)
             .vexpand(true)
+            .hexpand(true)
             .icon_name("edit-delete")
             .halign(gtk::Align::End)
             .build();

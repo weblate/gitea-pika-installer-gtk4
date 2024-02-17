@@ -24,6 +24,7 @@ use std::rc::Rc;
 use crate::manual_partitioning::DriveMount;
 use serde::*;
 use serde_json::*;
+use duct::*;
 
 #[derive(PartialEq, Debug, Eq, Hash, Clone, Serialize, Deserialize)]
 struct CrypttabEntry {
@@ -63,6 +64,7 @@ pub fn install_page(
             let crypttab_password = adw::PasswordEntryRow::builder()
                 .title("LUKS Password for ".to_owned() + &partitions.partition)
                 .build();
+            crypttab_password.set_show_apply_button(true);
             crypttab_password_listbox.append(&crypttab_password);
             let crypttab_dialog = adw::MessageDialog::builder()
                 .transient_for(window)
@@ -80,26 +82,18 @@ pub fn install_page(
             crypttab_dialog
                 .add_response("crypttab_dialog_auto", "Automatic Unlock with root unlock");
             crypttab_dialog.set_response_enabled("crypttab_dialog_auto", false);
-            crypttab_password.connect_changed(clone!(@weak crypttab_password, @strong partitions, @weak crypttab_dialog => move |_| {
+            crypttab_password.connect_apply(clone!(@weak crypttab_password, @strong partitions, @weak crypttab_dialog => move |_| {
             let (luks_manual_password_sender, luks_manual_password_receiver) = async_channel::unbounded();
             let luks_manual_password_sender = luks_manual_password_sender.clone();
-            let luks_password = crypttab_password.text();
+            let luks_password = crypttab_password.text().to_string();
 
             gio::spawn_blocking(clone!(@strong crypttab_password, @strong partitions  => move || {
-                    let luks_check_cli = Command::new("sudo")
-                        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
-                        .arg("test_luks_passwd")
-                        .arg(&partitions.partition)
-                        .arg(&luks_password)
-                        .output()
-                        .expect("failed to execute process");
-                    if luks_check_cli.status.success() {
-                        println!("fuck");
+                    let result = cmd!("sudo", "/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh", "test_luks_passwd", &partitions.partition, luks_password).run();
+                    if result.is_ok() {
                         luks_manual_password_sender
                         .send_blocking(false)
                         .expect("The channel needs to be open.");
                     } else {
-                        println!("shit");
                         luks_manual_password_sender
                         .send_blocking(true)
                         .expect("The channel needs to be open.");
