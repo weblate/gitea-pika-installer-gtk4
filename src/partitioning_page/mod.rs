@@ -261,6 +261,16 @@ pub fn partitioning_page(
         if Path::new("/tmp/pika-installer-gtk4-target-manual-luks.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-target-manual-luks.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-manual.txt");
         }
+        if Path::new("/tmp/pika-installer-gtk4-fail.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-fail.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-fail.txt");
+        }
+        if Path::new("/tmp/pika-installer-gtk4-successful.txt").exists() {
+            fs::remove_file("/tmp/pika-installer-gtk4-successful.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-successful.txt");
+        }
+        for status_file in glob("/tmp/pika-installer-gtk4-status*").expect("Failed to read glob pattern") {
+            let status_file = status_file.unwrap();
+            fs::remove_file(&status_file).expect(&status_file.to_str().unwrap());
+        }
         for partition_file in glob("/tmp/pika-installer-gtk4-target-manual-p*").expect("Failed to read glob pattern") {
             let partition_file = partition_file.unwrap();
             fs::remove_file(&partition_file).expect(&partition_file.to_str().unwrap());

@@ -37,6 +37,7 @@ pub fn install_page(
     let mut _iter_count = 0;
     _iter_count = 0;
     let mut unlocked_array: Vec<String> = Default::default();
+    manual_drive_mount_array.borrow_mut().sort_by_key(|p| p.clone().mountpoint);
     for partitions in manual_drive_mount_array.borrow_mut().iter() {
         let new_crypt = if partitions.mountpoint != "/"
             && !unlocked_array.contains(&partitions.partition)

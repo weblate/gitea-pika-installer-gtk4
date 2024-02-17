@@ -7,7 +7,7 @@ use glib::*;
 use gtk::*;
 use std::thread;
 
-use std::cell::{RefCell, RefMut};
+use std::cell::{RefCell};
 use std::rc::Rc;
 
 
@@ -223,6 +223,12 @@ pub fn manual_partitioning(
         .build();
     partition_refresh_button.add_css_class("destructive-action");
 
+    let fstab_valid_check = gtk::Button::builder()
+        .label("Validate Filesystem Table")
+        .halign(gtk::Align::Start)
+        .build();
+    fstab_valid_check.add_css_class("valid-action");
+
     let drive_mount_add_button = gtk::Button::builder()
         .icon_name("list-add")
         .vexpand(true)
@@ -236,6 +242,15 @@ pub fn manual_partitioning(
         .visible(false)
         .build();
     partition_method_manual_error_label.add_css_class("small_error_text");
+
+    let partition_method_manual_valid_label = gtk::Label::builder()
+        .halign(Align::Start)
+        .valign(Align::End)
+        .vexpand(true)
+        .visible(false)
+        .label("Filesystem Table is valid!")
+        .build();
+    partition_method_manual_valid_label.add_css_class("small_valid_text");
 
     let partition_method_manual_warn_label = gtk::Label::builder()
         .halign(Align::Start)
@@ -258,8 +273,14 @@ pub fn manual_partitioning(
     partition_method_manual_main_box.append(&partition_method_manual_gparted_button);
     drive_mounts_adw_listbox.append(&drive_mount_add_button);
     partition_method_manual_main_box.append(&drive_mounts_viewport);
+    partition_method_manual_main_box.append(&fstab_valid_check);
     partition_method_manual_main_box.append(&partition_method_manual_error_label);
+    partition_method_manual_main_box.append(&partition_method_manual_valid_label);
     partition_method_manual_main_box.append(&partition_method_manual_warn_label);
+
+    fstab_valid_check.connect_clicked(clone!(@weak partition_method_manual_error_label, @weak partition_method_manual_valid_label, @strong manual_drive_mount_array, @strong  check_part_unique => move |_| {
+        partition_err_check(&partition_method_manual_error_label, &partition_method_manual_valid_label, &manual_drive_mount_array);
+    }));
 
     partition_refresh_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox,@strong part_table_array, @strong manual_drive_mount_array => move |_| {
         while let Some(row) = drive_mounts_adw_listbox.last_child() {
@@ -353,9 +374,28 @@ pub fn manual_partitioning(
                 counter = row.next_sibling();
             }
             let manual_drive_mount_array_ref_clone = manual_drive_mount_array_ref.clone();
-            partition_err_check(&partition_method_manual_warn_label, &partition_method_manual_error_label, manual_drive_mount_array_ref, &check_part_unique);
+
+            *check_part_unique.borrow_mut() = true;
+            for mountopts in manual_drive_mount_array_ref
+                .iter()
+                .map(|x| x.mountopt.as_str())
+                .collect::<HashSet<&str>>()
+            {
+                if mountopts.contains("subvol") {
+                    *check_part_unique.borrow_mut() = false
+                }
+            }
+
+            if *check_part_unique.borrow_mut() == false {
+                partition_method_manual_warn_label
+                    .set_label("Partition reuse check will be skipped due to subvol usage.");
+                partition_method_manual_warn_label.set_visible(true);
+            } else {
+                partition_method_manual_warn_label.set_visible(false);
+            }
+
             if partitioning_stack.visible_child_name() == Some(GString::from_string_unchecked("partition_method_manual_page".into())) {
-                if manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot/efi" {return true} else {return false}}) && !partition_method_manual_error_label.is_visible() {
+                if manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot" {return true} else {return false}}) && manual_drive_mount_array_ref_clone.iter().any(|x| {if x.mountpoint == "/boot/efi" {return true} else {return false}}) && !partition_method_manual_error_label.is_visible() && partition_method_manual_valid_label.is_visible() {
                     if !bottom_next_button.is_sensitive() {
                         bottom_next_button.set_sensitive(true);
                     }
@@ -378,12 +418,12 @@ pub fn manual_partitioning(
 }
 
 fn partition_err_check(
-    partition_method_manual_warn_label: &gtk::Label,
     partition_method_manual_error_label: &gtk::Label,
-    manual_drive_mount_array_ref: RefMut<'_, Vec<DriveMount>>,
-    check_part_unique: &Rc<RefCell<bool>>,
+    partition_method_manual_valid_label: &gtk::Label,
+    manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
 ) {
     let mut empty_mountpoint = false;
+    let manual_drive_mount_array_ref = manual_drive_mount_array.borrow_mut();
     for mountpoint in manual_drive_mount_array_ref
         .iter()
         .map(|x| x.mountpoint.as_str())
@@ -453,17 +493,6 @@ fn partition_err_check(
         if partition_method_manual_error_label.label() == "There's a drive row without a partition."
         {
             partition_method_manual_error_label.set_visible(false);
-        }
-    }
-
-    *check_part_unique.borrow_mut() = true;
-    for mountopts in manual_drive_mount_array_ref
-        .iter()
-        .map(|x| x.mountopt.as_str())
-        .collect::<HashSet<&str>>()
-    {
-        if mountopts.contains("subvol") {
-            *check_part_unique.borrow_mut() = false
         }
     }
 
@@ -680,14 +709,11 @@ fn partition_err_check(
                     partition_method_manual_error_label.set_visible(false);
                 }
             }
+            if !partition_method_manual_error_label.is_visible() {
+                partition_method_manual_valid_label.set_visible(true)
+            } else {
+                partition_method_manual_valid_label.set_visible(false)
+            }
         }
-    }
-
-    if *check_part_unique.borrow_mut() == false {
-        partition_method_manual_warn_label
-            .set_label("Partition reuse check will be skipped due to subvol usage.");
-        partition_method_manual_warn_label.set_visible(true);
-    } else {
-        partition_method_manual_warn_label.set_visible(false);
     }
 }

@@ -8,9 +8,11 @@ TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
 touch "/tmp/pika-installer-gtk4-status-parting.txt"
 
+rm -rf /tmp/pika-installer-gtk4-swaplist || true
+
 if ls /tmp/pika-installer-gtk4-target-manual-luks-p*.json
 then
-  rm -rf /tmp/pika-installer-gtk4-crypttab
+  rm -rf /tmp/pika-installer-gtk4-crypttab || true
   touch /tmp/pika-installer-gtk4-crypttab
 
   for cryptentry in /tmp/pika-installer-gtk4-target-manual-luks-p*.json; do
