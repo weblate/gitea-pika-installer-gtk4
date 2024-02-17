@@ -264,13 +264,13 @@ pub fn partitioning_page(
             fs::remove_file("/tmp/pika-installer-gtk4-target-manual-luks.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-target-manual.txt");
         }
         if Path::new("/tmp/pika-installer-gtk4-fail.txt").exists() {
-            cmd!("sudo", "rm", "-rf", "/tmp/pika-installer-gtk4-fail.txt").run();
+            let _ = cmd!("bash","-c","sudo rm -rfv /tmp/pika-installer-gtk4-fail.txt").run();
         }
         if Path::new("/tmp/pika-installer-gtk4-successful.txt").exists() {
-            cmd!("sudo", "rm", "-rf", "/tmp/pika-installer-gtk4-successful.txt").run();
+            let _ = cmd!("bash","-c","sudo rm -rfv /tmp/pika-installer-gtk4-successful.txt").run();
         }
-        for status_file in glob("/tmp/pika-installer-gtk4-status*").expect("Failed to read glob pattern") {
-            cmd!("sudo", "rm", "-rf", "/tmp/pika-installer-gtk4-status*").run();
+        for _status_file in glob("/tmp/pika-installer-gtk4-status*").expect("Failed to read glob pattern") {
+            let _ = cmd!("bash","-c","sudo rm -rfv /tmp/pika-installer-gtk4-status*").run();
         }
         for partition_file in glob("/tmp/pika-installer-gtk4-target-manual-p*").expect("Failed to read glob pattern") {
             let partition_file = partition_file.unwrap();
