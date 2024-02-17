@@ -13,7 +13,11 @@ touch "/tmp/pika-installer-gtk4-status-parting.txt"
 
 if [[ ! -f "/tmp/pika-installer-gtk4-target-automatic-luks.txt" ]]
 then
-    wipefs -a /dev/${DISK}
+    for part in $(sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions | grep ${DISK}); do
+    	PARTITION="/dev/$part"
+    	sudo swapoff $PARTITION || true
+    done
+    wipefs -af /dev/${DISK}
     # Partition the drives
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
@@ -63,7 +67,11 @@ then
     fi
 else
     LUKS_KEY="$(cat "/tmp/pika-installer-gtk4-target-automatic-luks.txt")"
-    wipefs -a /dev/${DISK}
+    for part in $(sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions | grep ${DISK}); do
+    	PARTITION="/dev/$part"
+    	sudo swapoff $PARTITION || true
+    done
+    wipefs -af /dev/${DISK}
     # Partition the drives
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
