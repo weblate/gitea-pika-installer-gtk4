@@ -261,17 +261,19 @@ pub fn manual_partitioning(
     partition_method_manual_main_box.append(&partition_method_manual_error_label);
     partition_method_manual_main_box.append(&partition_method_manual_warn_label);
 
-    partition_refresh_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox,@strong part_table_array => move |_| {
-        let mut counter = drive_mounts_adw_listbox.first_child();
-            while let Some(ref row) = counter {
+    partition_refresh_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox,@strong part_table_array, @strong manual_drive_mount_array => move |_| {
+        while let Some(row) = drive_mounts_adw_listbox.last_child() {
                 if row.widget_name() == "DriveMountRow" {
-                    drive_mounts_adw_listbox.remove(row);
-                }
-                counter = row.next_sibling();
+                    drive_mounts_adw_listbox.remove(&row);
+                } else {
+                break
             }
+        }
         let partition_method_manual_get_partitions_lines = BufReader::new(cmd!("bash", "-c", "sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions").reader().unwrap()).lines();
         let mut part_table_array_ref = part_table_array.borrow_mut();
         part_table_array_ref.clear();
+        let mut manual_drive_mount_array_ref = manual_drive_mount_array.borrow_mut();
+        manual_drive_mount_array_ref.clear();
         for partition in partition_method_manual_get_partitions_lines {
             part_table_array_ref.push(partition.unwrap());
         }

@@ -26,7 +26,7 @@ then
       UUID="$(blkid "$(lsblk -sJp | jq -r --arg dsk /dev/"$LUKS" '.blockdevices | .[] | select(.name == $dsk) | .children | .[0] | .name')" -s UUID -o value)"
       LUKS_PASSWD=$(jq -r .password $cryptentry)
       echo "$MAP $UUID /key-"$MAP".txt luks" >> /tmp/pika-installer-gtk4-crypttab
-      touch /keyfile.txt
+      touch /key-"$MAP".txt
       openssl genrsa > /key-"$MAP".txt
       echo $LUKS_PASSWD | cryptsetup luksAddKey UUID=$UUID	/key-"$MAP".txt -
     fi
@@ -35,18 +35,18 @@ fi
 
 for drivemount in /tmp/pika-installer-gtk4-target-manual-p*.json; do
 	PARTITION="/dev/$(jq -r .partition $drivemount)"
-	MOUNTPOINT=$(jq -r .mountpoint $drivemount)
+	MOUNTPOINT="/media/pika-install-mount/$(jq -r .mountpoint $drivemount)"
 	MOUNTOPT=$(jq -r .mountopt $drivemount)
 	if [[ -z $MOUNTOPT ]]
 	then
-		mkdir -p /media/pika-install-mount/$MOUNTPOINT
+		mkdir -p $MOUNTPOINT
 		mount $PARTITION $MOUNTPOINT
 	elif [[ $MOUNTPOINT == "[SWAP]" ]]
 	then
 		touch /tmp/pika-installer-gtk4-swaplist
 		echo $PARTITION >  /tmp/pika-installer-gtk4-swaplist
 	else
-		mkdir -p /media/pika-install-mount/$MOUNTPOINT
+		mkdir -p $MOUNTPOINT
 		mount -o $MOUNTOPT $PARTITION $MOUNTPOINT
 	fi
 done
