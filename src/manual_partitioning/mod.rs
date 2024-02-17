@@ -670,7 +670,7 @@ fn partition_err_check(
                 }
             }
             if drivemounts.mountpoint == "[SWAP]" {
-                if partition_fs != "linux-swap" {
+                if partition_fs != "swap" {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
                             &("Bad Filesystem: ".to_owned()
