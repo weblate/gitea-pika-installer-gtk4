@@ -282,6 +282,10 @@ pub fn partitioning_page(
             let partition_file = partition_file.unwrap();
             fs::remove_file(&partition_file).expect(&partition_file.to_str().unwrap());
         }
+        for luks_file in glob("/tmp/pika-installer-gtk4-target-manual-luks-p*").expect("Failed to read glob pattern") {
+            let luks_file = luks_file.unwrap();
+            fs::remove_file(&luks_file).expect(&luks_file.to_str().unwrap());
+        }
         if partitioning_stack.visible_child_name() == Some(GString::from_string_unchecked("partition_method_automatic_page".into())) {
             fs::write("/tmp/pika-installer-gtk4-target-auto.txt", partition_method_automatic_target_buffer_clone.text(&partition_method_automatic_target_buffer_clone.bounds().0, &partition_method_automatic_target_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
             let automatic_luks_result = partition_method_automatic_luks_buffer_clone.text(&partition_method_automatic_luks_buffer_clone.bounds().0, &partition_method_automatic_luks_buffer_clone.bounds().1, true).to_string();
