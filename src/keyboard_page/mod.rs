@@ -234,7 +234,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
             .margin_top(15)
             .margin_end(15)
             .margin_start(15)
-            .placeholder_text(gettext("test_you_keyboard"))
+            .placeholder_text(gettext("test_your_keyboard"))
             .build(),
     );
 

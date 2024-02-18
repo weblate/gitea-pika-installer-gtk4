@@ -18,7 +18,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label("Back")
+        .label(gettext("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -27,7 +27,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label("Next")
+        .label(gettext("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -57,7 +57,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
 
     // the header text for the eula page
     let eula_header_text = gtk::Label::builder()
-        .label("PikaOS User license Agreement")
+        .label(gettext("pikaos_eula_agreement"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -97,7 +97,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
 
     // text above eula selection box
     let eula_selection_text = gtk::Label::builder()
-        .label("Please carefully read and make sure you consent to the following before installing PikaOS:")
+        .label(gettext("please_read_eula"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -108,18 +108,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     eula_selection_text.add_css_class("medium_sized_text");
 
     let eula_buffer = gtk::TextBuffer::builder()
-        .text("There are a few things to keep in mind: 
-        1 - You understand that this distribution is -NOT- to be considered an ‘Ubuntu Flavor’. 
-        2 - This is a hobby distribution, so we will try our best to provide formal support but it will -NOT- be guaranteed. 
-        3 - Although PikaOS might provide identical patches and user experience to the Nobara project, we are -NOT- directly a part of them so questions and bug reports should not be sent directly to them (they dont have to deal with it!) 
-        4 - While the installer is running DO NOT INTERRUPT IT! or you will end up with a corrupted system. 
-        5 - Try to use pikman instead of apt when using the terminal, it is much faster! 
-        6 - You understand the xone driver downloads needed binaries locally and does not directly package or distribute any copyrighted firmware or other related data. 
-        7 - Automatic partitioning will format all partitons on a drive, so if you want to dualboot make a separate EFI partition for PikaOS and use manual partitioning  
-        8 - In case you need the login info for this session: 
-         - username: pikaos 
-         - password: 
-        MEANING: JUST PRESS ENTER")
+        .text(gettext("eula_buffer"))
         .build();
 
     let eula_selection_text_view = gtk::TextView::builder()
@@ -139,7 +128,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
         .build();
 
     let eula_accept_checkbutton = gtk::CheckButton::builder()
-        .label("I Agree and Accept the User license Agreement")
+        .label(gettext("i_agree_eula"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -167,7 +156,7 @@ pub fn eula_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the eula_main_box as page: eula_page, Give it nice title
-    content_stack.add_titled(&eula_main_box, Some("eula_page"), "EULA");
+    content_stack.add_titled(&eula_main_box, Some("eula_page"), &gettext("eula"));
 
     eula_accept_checkbutton.connect_toggled(
         clone!(@weak eula_accept_checkbutton, @weak bottom_next_button => move |_| {
