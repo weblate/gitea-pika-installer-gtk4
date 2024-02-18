@@ -67,7 +67,6 @@ msgstr "Open GPARTED"
 
 msgid "manual_part_note"
 msgstr ""
-"\n"
 " - Press the plus button below to begin adding filesystem entries.\n"
 "Notes:\n"
 " - This installer doesn't erase any data automatically, format your drives manually via gparted.\n"
