@@ -21,7 +21,7 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
 
     // the header text for the efi_error page
     let efi_error_header_text = gtk::Label::builder()
-        .label("Unsupported boot platform")
+        .label(gettext("bad_boot_platfrom"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -55,14 +55,14 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
     let efi_error_text = gtk::Label::builder()
         .vexpand(true)
         .hexpand(true)
-        .label("PikaOS Only works on GPT UEFI Systems, this machine is booted in CSM/LEGACY mode.")
+        .label(gettext("pika_nowork_csm"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
     efi_error_text.add_css_class("big_error_text");
 
-    let kill_me_button = gtk::Button::builder()
-        .label("Exit")
+    let exit_button = gtk::Button::builder()
+        .label(gettext("exit"))
         .vexpand(true)
         .hexpand(true)
         .halign(gtk::Align::Center)
@@ -87,7 +87,7 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
     // / efi_error_selection_box appends
     //// add live and install media button to efi_error page selections
     efi_error_selection_box.append(&efi_error_text);
-    efi_error_selection_box.append(&kill_me_button);
+    efi_error_selection_box.append(&exit_button);
 
     // / efi_error_header_box appends
     //// Add the efi_error page header text and icon
@@ -104,5 +104,5 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
     //// Add the efi_error_main_box as page: efi_error_page, Give it nice title
     content_stack.add_titled(&efi_error_main_box, Some("efi_error_page"), "Welcome");
 
-    kill_me_button.connect_clicked(clone!(@weak window => move |_| window.close()));
+    exit_button.connect_clicked(clone!(@weak window => move |_| window.close()));
 }

@@ -72,7 +72,7 @@ pub fn done_page(
         .build();
 
     let installation_successful_text = gtk::Label::builder()
-        .label("The installation of PikaOS has been completed sucessfully.")
+        .label(gettext("pika_install_good"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
@@ -89,7 +89,7 @@ pub fn done_page(
         .build();
 
     let installation_successful_exit_button = gtk::Button::builder()
-        .label("Exit")
+        .label(gettext("exit"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
@@ -97,7 +97,7 @@ pub fn done_page(
         .build();
 
     let installation_successful_reboot_button = gtk::Button::builder()
-        .label("Reboot")
+        .label(gettext("reboot"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
@@ -162,7 +162,7 @@ pub fn done_page(
         .build();
 
     let installation_failed_text = gtk::Label::builder()
-        .label("PikaOS has Failed!\nCheck logs for further info.")
+        .label(gettext("pika_install_bad"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
@@ -179,7 +179,7 @@ pub fn done_page(
         .build();
 
     let installation_failed_exit_button = gtk::Button::builder()
-        .label("Exit")
+        .label(gettext("exit"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
@@ -187,7 +187,7 @@ pub fn done_page(
         .build();
 
     let installation_failed_logs_button = gtk::Button::builder()
-        .label("Logs")
+        .label(gettext("logs"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)

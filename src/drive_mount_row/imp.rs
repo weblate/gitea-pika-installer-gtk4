@@ -66,7 +66,7 @@ impl ObjectImpl for DriveMountRow {
         partition_row_expander_adw_listbox.add_css_class("boxed-list");
 
         let partition_row_expander = adw::ExpanderRow::builder()
-            .subtitle("Partition")
+            .subtitle(gettext("subtitle_partition"))
             .vexpand(true)
             .hexpand(true)
             .width_request(300)
@@ -87,7 +87,7 @@ impl ObjectImpl for DriveMountRow {
         mountpoint_entry_adw_listbox.add_css_class("boxed-list");
 
         let mountpoint_entry_row = adw::EntryRow::builder()
-            .title("Mountpoint")
+            .title(gettext("title_mountpoint"))
             .hexpand(true)
             .valign(gtk::Align::Start)
             .width_request(300)
@@ -109,7 +109,7 @@ impl ObjectImpl for DriveMountRow {
         mountopt_entry_adw_listbox.add_css_class("boxed-list");
 
         let mountopt_entry_row = adw::EntryRow::builder()
-            .title("Additional Mount Options")
+            .title(gettext("title_mountopt"))
             .hexpand(true)
             .valign(gtk::Align::Start)
             .width_request(300)

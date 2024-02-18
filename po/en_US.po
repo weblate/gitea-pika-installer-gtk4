@@ -258,3 +258,33 @@ msgstr "I Agree and Accept the User license Agreement"
 
 msgid "eula"
 msgstr "EULA"
+
+msgid "bad_boot_platfrom"
+msgstr Unsupported boot platform
+
+msgid "pika_nowork_csm"
+msgstr "PikaOS Only works on GPT UEFI Systems, this machine is booted in CSM/LEGACY mode."
+
+msgid "exit"
+msgstr "Exit"
+
+msgid "subtitle_partition"
+msgstr "Partition"
+
+msgid "title_mountpoint"
+msgstr "Mountpoint"
+
+msgid "title_mountopt"
+msgstr "Additional Mount Options"
+
+msgid "pika_install_good"
+msgstr "The installation of PikaOS has been completed sucessfully."
+
+msgid "reboot"
+msgstr "Reboot"
+
+msgid "pika_install_bad"
+msgstr "PikaOS has Failed!\nCheck logs for further info."
+
+msgid "logs"
+msgstr "Logs"
