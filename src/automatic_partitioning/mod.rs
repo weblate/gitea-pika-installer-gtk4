@@ -31,7 +31,7 @@ pub fn automatic_partitioning(
 
     // the header text for the partitioning page
     let partition_method_automatic_header_text = gtk::Label::builder()
-        .label("Automatic Partitioning Installer")
+        .label(gettext("auto_part_installer"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -58,7 +58,7 @@ pub fn automatic_partitioning(
         .build();
 
     let partition_method_automatic_selection_text = gtk::Label::builder()
-        .label("Choose the Drive you want to install PikaOS on\nNote: This will erase the entire drive backup your data!")
+        .label(gettext("choose_drive_auto"))
         .justify(Justification::Center)
         .halign(gtk::Align::Center)
         .hexpand(true)
@@ -70,7 +70,7 @@ pub fn automatic_partitioning(
     partition_method_automatic_selection_text.add_css_class("medium_sized_text");
 
     let devices_selection_expander_row = adw::ExpanderRow::builder()
-        .title("No disk selected for selection")
+        .title(gettext("no_drive_auto_selected"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder().build();
@@ -111,7 +111,7 @@ pub fn automatic_partitioning(
     );
 
     let partition_method_automatic_disk_error_label = gtk::Label::builder()
-        .label("No Disk specified.")
+        .label(gettext("no_disk_specified"))
         .halign(Align::Start)
         .valign(Align::End)
         .vexpand(true)
@@ -119,7 +119,7 @@ pub fn automatic_partitioning(
     partition_method_automatic_disk_error_label.add_css_class("small_error_text");
 
     let partition_method_automatic_luks_error_label = gtk::Label::builder()
-        .label("LUKS Encryption Enabled but no password provided.")
+        .label(gettext("luks_yes_but_empty"))
         .halign(Align::Start)
         .valign(Align::End)
         .vexpand(true)
@@ -132,7 +132,7 @@ pub fn automatic_partitioning(
         .build();
 
     let partition_method_automatic_luks_checkbutton = gtk::CheckButton::builder()
-        .label("Enable LUKS2 Disk Encryption")
+        .label(gettext("enable_luks2_enc"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -148,7 +148,7 @@ pub fn automatic_partitioning(
     partition_method_automatic_luks_listbox.add_css_class("boxed-list");
 
     let partition_method_automatic_luks_password_entry = adw::PasswordEntryRow::builder()
-        .title("LUKS Password")
+        .title(gettext("luks2_password"))
         .hexpand(true)
         .sensitive(false)
         .build();
@@ -200,7 +200,7 @@ pub fn automatic_partitioning(
                     }
                 } else {
                     partition_method_automatic_disk_error_label.set_visible(true);
-                    partition_method_automatic_disk_error_label.set_label("Disk Size too small, PikaOS needs 40GB Disk");
+                    partition_method_automatic_disk_error_label.set_label(&gettext("disk_auto_target_small"));
                     bottom_next_button.set_sensitive(false);
                 }
             }

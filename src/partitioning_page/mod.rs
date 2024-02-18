@@ -231,7 +231,7 @@ pub fn partitioning_page(
     content_stack.add_titled(
         &partitioning_main_box,
         Some("partitioning_page"),
-        "Partitioning",
+        &gettext("partitioning"),
     );
 
     automatic_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_automatic_page")));

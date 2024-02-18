@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-18 23:53+0300\n"
+"PO-Revision-Date: 2024-02-19 00:21+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_US\n"
@@ -259,9 +259,6 @@ msgstr "I Agree and Accept the User license Agreement"
 msgid "eula"
 msgstr "EULA"
 
-msgid "bad_boot_platfrom"
-msgstr Unsupported boot platform
-
 msgid "pika_nowork_csm"
 msgstr "PikaOS Only works on GPT UEFI Systems, this machine is booted in CSM/LEGACY mode."
 
@@ -284,7 +281,44 @@ msgid "reboot"
 msgstr "Reboot"
 
 msgid "pika_install_bad"
-msgstr "PikaOS has Failed!\nCheck logs for further info."
+msgstr ""
+"PikaOS has Failed!\n"
+"Check logs for further info."
 
 msgid "logs"
-msgstr "Logs"
+msgstr "Log"
+
+msgid "auto_part_installer"
+msgstr "Automatic Partitioning Installer"
+
+msgid "choose_drive_auto"
+msgstr ""
+"Choose the Drive you want to install PikaOS on\n"
+"Note: This will erase the entire drive backup your data!"
+
+msgid "no_drive_auto_selected"
+msgstr "No disk selected for installation"
+
+msgid "no_disk_specified"
+msgstr "No Disk specified."
+
+msgid "luks_yes_but_empty"
+msgstr "LUKS Encryption Enabled but no password provided."
+
+msgid "enable_luks2_enc"
+msgstr "Enable LUKS2 Disk Encryption"
+
+msgid "luks2_password"
+msgstr "LUKS Password"
+
+msgid "disk_auto_target_small"
+msgstr "Disk Size too small, PikaOS needs 40GB Disk"
+
+msgid "installation"
+msgstr "Installation"
+
+msgid "done"
+msgstr "Done"
+
+msgid "partitioning"
+msgstr "Partitioning"
