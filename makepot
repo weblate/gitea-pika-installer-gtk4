@@ -5,5 +5,5 @@ set -e
 for i in po/*.po
 do
   mkdir -p "$1"/"$(echo $i | cut -d"/" -f2 | cut -d"." -f1)"/LC_MESSAGES
-  msgfmt -v $i -o "$1"/"$(echo $i | cut -d"/" -f2 | cut -d"." -f1)"/LC_MESSAGES/pika-first-setup-gtk4.mo
+  msgfmt -v $i -o "$1"/"$(echo $i | cut -d"/" -f2 | cut -d"." -f1)"/LC_MESSAGES/pika-installer-gtk4.mo
 done
