@@ -1,3 +1,4 @@
+use crate::config::DISTRO_ICON;
 use std::cell::RefCell;
 // Use libraries
 use adw::prelude::*;
@@ -423,7 +424,7 @@ pub fn install_page(
         .build();
 
     let placeholder_icon = gtk::Image::builder()
-        .icon_name("debian-swirl")
+        .icon_name(DISTRO_ICON)
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .hexpand(true)

@@ -1,4 +1,5 @@
 // Use libraries
+use crate::config::DISTRO_ICON;
 use adw::prelude::*;
 use adw::*;
 use glib::*;
@@ -31,7 +32,7 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
 
     // the header icon for the welcome icon
     let welcome_header_icon = gtk::Image::builder()
-        .icon_name("debian-swirl")
+        .icon_name(DISTRO_ICON)
         .halign(gtk::Align::Start)
         .hexpand(true)
         .pixel_size(78)

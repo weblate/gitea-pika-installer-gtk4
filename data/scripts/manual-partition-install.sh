@@ -21,13 +21,13 @@ then
       LUKS=$(jq -r .partition $cryptentry)
       MAP=$(jq -r .partition $cryptentry | cut -d "/" -f2-)
       UUID="$(blkid "$(lsblk -sJp | jq -r --arg dsk /dev/"$LUKS" '.blockdevices | .[] | select(.name == $dsk) | .children | .[0] | .name')" -s UUID -o value)"
-      echo "$MAP $UUID none luks,discard" >> /tmp/pika-installer-gtk4-crypttab
+      echo "$MAP UUID="$UUID" none luks,discard" >> /tmp/pika-installer-gtk4-crypttab
     else
       LUKS=$(jq -r .partition $cryptentry)
       MAP=$(jq -r .partition $cryptentry | cut -d "/" -f2-)
       UUID="$(blkid "$(lsblk -sJp | jq -r --arg dsk /dev/"$LUKS" '.blockdevices | .[] | select(.name == $dsk) | .children | .[0] | .name')" -s UUID -o value)"
       LUKS_PASSWD=$(jq -r .password $cryptentry)
-      echo "$MAP $UUID /key-"$MAP".txt luks" >> /tmp/pika-installer-gtk4-crypttab
+      echo "$MAP UUID="$UUID" /key-"$MAP".txt luks" >> /tmp/pika-installer-gtk4-crypttab
       touch /key-"$MAP".txt
       openssl genrsa > /key-"$MAP".txt
       echo $LUKS_PASSWD | cryptsetup luksAddKey UUID=$UUID	/key-"$MAP".txt -
