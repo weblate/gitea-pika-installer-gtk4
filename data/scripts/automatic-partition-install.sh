@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export LANG=en_US.UTF8
+
 set -e
 
 DISK="$(cat "/tmp/pika-installer-gtk4-target-auto.txt")"

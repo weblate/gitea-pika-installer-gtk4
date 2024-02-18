@@ -43,7 +43,7 @@ pub fn automatic_partitioning(
 
     // the header icon for the partitioning icon
     let partition_method_automatic_header_icon = gtk::Image::builder()
-        .icon_name("media-playlist-shuffle")
+        .icon_name("builder")
         .halign(gtk::Align::Start)
         .hexpand(true)
         .pixel_size(78)

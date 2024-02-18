@@ -54,3 +54,86 @@ msgstr "Manually Partition The Drive"
 msgid "auto_partition_drive"
 msgstr "Automatically Partition\nThe Drive"
 
+msgid "manual_part_installer"
+msgstr "Manual Partitioning Installer"
+
+msgid "use_utility_manual"
+msgstr "Use this utility to partition/mount/format your drives."
+
+msgid "open_gparted"
+msgstr "Open GPARTED"
+
+msgid "manual_part_note"
+msgstr "\n - Press the plus button below to begin adding filesystem entries.\nNotes:\n - This installer doesn't erase any data automatically, format your drives manually via gparted.\n - To Add a linux-swap partition set mountpoint to [SWAP]\n - We recommend the following partitions as a base layout:\n /boot ~ 1000mb ext4.\n /boot/efi ~ 512mb vfat/fat32.\n / >= 25GB btrfs.\n "
+
+msgid "refresh_part_table"
+msgstr "Refresh Partition Table"
+
+msgid "validate_fs_table"
+msgstr "Validate Filesystem Table"
+
+msgid "fstab_status_valid"
+msgstr "Filesystem Table Status: All entries are valid!"
+
+msgid "part_need_mapper"
+msgstr "This partition needs a mapper!"
+
+msgid "fstab_subvol_warn"
+msgstr "Filesystem Table Warning: Partition reuse check will be skipped due to subvol usage."
+
+msgid "fstab_multiple_part_mountpoint_err"
+msgstr "Filesystem Table Error: Multiple partitions are configured to the same mountpoint!"
+
+msgid "fstab_no_mountpoint_err"
+msgstr "Filesystem Table Error: One or more partitions don't have a mountpoint configured!"
+
+msgid "fstab_no_partition_err"
+msgstr "Filesystem Table Error: One or more entries don't have a partition configured!"
+
+msgid "fstab_badfs"
+msgstr "Filesystem Table Error: Invalid filesystem: (/dev/"
+
+msgstr "fstab_small_efi_err"
+msgstr "Filesystem Table Error: Small size: The partition mounted to /boot/efi (/dev/"
+
+msgid "fstab_small_efi_size"
+msgstr ") Must at least be 512MBs!"
+
+msgid "fstab_badfs_efi"
+msgstr ") Must be FAT32/vFAT to be mounted at /boot/efi!"
+
+msgstr "fstab_small_boot_err"
+msgstr "Filesystem Table Error: Small size: The partition mounted to /boot (/dev/"
+
+msgid "fstab_small_boot_size"
+msgstr ") Must at least be 1GBs!"
+
+msgid "fstab_badfs_boot"
+msgstr ") Must not be FAT32/vFAT to be mounted at /boot!"
+
+msgstr "fstab_small_root_err"
+msgstr "Filesystem Table Error: Small size: The partition mounted to / (/dev/"
+
+msgid "fstab_small_root_size"
+msgstr ") Must at least be 26GBs!"
+
+msgid "fstab_badfs_root"
+msgstr ") Must be a Linux* compatible filesystem such as:\n ext4/btrfs/xfs/f2fs to be mounted at /!"
+
+msgstr "fstab_small_home_err"
+msgstr "Filesystem Table Error: Small size: The partition mounted to /home (/dev/"
+
+msgid "fstab_small_home_size"
+msgstr ") Must at least be 11GBs!"
+
+msgid "fstab_badfs_home"
+msgstr ") Must be a Linux* compatible filesystem such as:\n ext4/btrfs/xfs/f2fs to be mounted at /home!"
+
+msgid "fstab_badfs_swap"
+msgstr ") Must not be swap to be used as [SWAP]!"
+
+msgid "fstab_bad_mountpoint"
+msgstr "Filesystem Table Error: Invalid mountpoint: ("
+
+msgid "fstab_bad_mountpoint_msg"
+msgstr ") Is not a valid mountpoint!"

@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export LANG=en_US.UTF8
+
 exec &> >(tee /tmp/pika-installer-gtk4-log)
 
 if [[ -f /tmp/pika-installer-gtk4-target-manual.txt ]]

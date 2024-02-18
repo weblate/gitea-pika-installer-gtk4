@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export LANG=en_US.UTF8
+
 if [[ "$1" = "get_block_devices" ]]
 then
 	lsblk -dn -o NAME | grep -v -i -E 'loop|zram|sr|cdrom|portal'

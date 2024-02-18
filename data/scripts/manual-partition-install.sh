@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export LANG=en_US.UTF8
+
 set -e
 
 LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
