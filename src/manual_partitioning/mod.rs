@@ -7,7 +7,7 @@ use glib::*;
 use gtk::*;
 use std::thread;
 
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 use std::cell::{RefCell};
 use std::rc::Rc;
@@ -116,6 +116,7 @@ fn create_mount_row(
         closure_local!(@strong partition_method_manual_error_label ,@strong partition_method_manual_valid_label, @strong row as _row => move |_row: DriveMountRow| {
                     listbox_clone.remove(&_row);
                     partition_method_manual_error_label.set_label("");
+                    partition_method_manual_error_label.set_widget_name("");
                     partition_method_manual_error_label.set_visible(false);
                     partition_method_manual_valid_label.set_label("");
                     partition_method_manual_valid_label.set_visible(false);
@@ -458,8 +459,8 @@ fn partition_err_check(
     }
 
     if empty_mountpoint == false {
-        if &partition_method_manual_error_label.label()
-            == "Some drives don't have a mountpoint configured."
+        if &partition_method_manual_error_label.widget_name()
+            == "err1"
         {
             partition_method_manual_error_label.set_visible(false);
         }
@@ -475,11 +476,10 @@ fn partition_err_check(
                 partition_method_manual_error_label
                     .set_label("Multiple drives were mounted to the same mountpoint.");
                 partition_method_manual_error_label.set_visible(true);
+                partition_method_manual_error_label.set_widget_name("err0");
             }
         } else {
-            if partition_method_manual_error_label.label()
-                == "Multiple drives were mounted to the same mountpoint."
-            {
+            if &partition_method_manual_error_label.widget_name() == "err0" {
                 partition_method_manual_error_label.set_visible(false);
             }
         }
@@ -487,6 +487,7 @@ fn partition_err_check(
         if !partition_method_manual_error_label.is_visible() {
             partition_method_manual_error_label
                 .set_label("Some drives don't have a mountpoint configured.");
+            partition_method_manual_error_label.set_widget_name("err1");
             partition_method_manual_error_label.set_visible(true);
         }
     }
@@ -495,10 +496,11 @@ fn partition_err_check(
         if !partition_method_manual_error_label.is_visible() {
             partition_method_manual_error_label
                 .set_label("There's a drive row without a partition.");
+            partition_method_manual_error_label.set_widget_name("err2");
             partition_method_manual_error_label.set_visible(true);
         }
     } else {
-        if partition_method_manual_error_label.label() == "There's a drive row without a partition."
+        if partition_method_manual_error_label.widget_name() == "err2"
         {
             partition_method_manual_error_label.set_visible(false);
         }
@@ -541,12 +543,10 @@ fn partition_err_check(
                                 + ") Must at least be 512MBs"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err3");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Small size: The partition mounted to /boot/efi (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err3" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -559,12 +559,10 @@ fn partition_err_check(
                                 + ") Must at be FAT32/vFAT"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err4");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Bad Filesystem: The partition mounted to /boot/efi (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err4" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -578,12 +576,10 @@ fn partition_err_check(
                                 + ") Must at least be 1000MBs"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err5");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Small size: The partition mounted to /boot (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err5" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -595,12 +591,10 @@ fn partition_err_check(
                                 + ") Cannot be FAT32/vFAT"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err6");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Bad Filesystem: The partition mounted to /boot (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err6" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -614,16 +608,14 @@ fn partition_err_check(
                                 + ") Must at least be 25GBs"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err7")
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Small size: The partition mounted to / (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err7" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
-                if partition_fs == "vfat" || partition_fs == "vfat" || partition_fs == "ntfs" || partition_fs == "swap" || partition_fs == "exfat" {
+                if partition_fs == "vfat" || partition_fs == "ntfs" || partition_fs == "swap" || partition_fs == "exfat" {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
                             &("Bad Filesystem: The partition mounted to / (/dev/".to_owned()
@@ -631,12 +623,10 @@ fn partition_err_check(
                                 + ") Has an Invalid Filesystem"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err8");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Bad Filesystem: The partition mounted to / (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err8" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -650,29 +640,25 @@ fn partition_err_check(
                                 + ") Must at least be 10GBs"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err9");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Small size: The partition mounted to /home (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err9" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
-                if partition_fs == "vfat" {
+                if partition_fs == "vfat" || partition_fs == "ntfs" || partition_fs == "swap" || partition_fs == "exfat" {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
                             &("Bad Filesystem: The partition mounted to /home (/dev/".to_owned()
                                 + &drivemounts.partition
-                                + ") Cannot be FAT32/vFAT"),
+                                + ") Has an Invalid Filesystem"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err10");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains("Bad Filesystem: The partition mounted to /home (/dev/")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err10" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -686,12 +672,10 @@ fn partition_err_check(
                                 + " Is not a swap partition"),
                         );
                         partition_method_manual_error_label.set_visible(true);
+                        partition_method_manual_error_label.set_widget_name("err11");
                     }
                 } else {
-                    if partition_method_manual_error_label
-                        .label()
-                        .contains(" Is not a swap partition")
-                    {
+                    if &partition_method_manual_error_label.widget_name() == "err11" {
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
@@ -708,12 +692,10 @@ fn partition_err_check(
                             + " Is not a valid mountpoint"),
                     );
                     partition_method_manual_error_label.set_visible(true);
+                    partition_method_manual_error_label.set_widget_name("err12");
                 }
             } else {
-                if partition_method_manual_error_label
-                    .label()
-                    .contains(" Is not a valid mountpoint")
-                {
+                if &partition_method_manual_error_label.widget_name() == "err12" {
                     partition_method_manual_error_label.set_visible(false);
                 }
             }

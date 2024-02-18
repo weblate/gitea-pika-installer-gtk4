@@ -6,7 +6,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 use std::io::BufRead;
 use std::io::BufReader;
@@ -27,7 +27,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label("Back")
+        .label(gettext("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -36,7 +36,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label("Next")
+        .label(gettext("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -66,7 +66,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     // the header text for the timezone page
     let timezone_header_text = gtk::Label::builder()
-        .label("Select a timezone")
+        .label(gettext("select_a_timezone"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -78,7 +78,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     // the header icon for the timezone icon
     let timezone_header_icon = gtk::Image::builder()
-        .icon_name("clock")
+        .icon_name("alarm-clock")
         .halign(gtk::Align::Start)
         .hexpand(true)
         .pixel_size(78)
@@ -106,7 +106,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     // text above timezone selection box
     let timezone_selection_text = gtk::Label::builder()
-        .label("Please select a Time Zone for the system to use")
+        .label(gettext("please_select_timezone"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -117,11 +117,11 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     timezone_selection_text.add_css_class("medium_sized_text");
 
     let timezone_selection_expander_row = adw::ExpanderRow::builder()
-        .title("No Time Zone selected")
+        .title(gettext("no_timezone_select"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label("No Time Zone selected")
+        .label(gettext("no_timezone_select"))
         .build();
 
     let timezone_selection_expander_row_viewport =
@@ -213,7 +213,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the timezone_main_box as page: timezone_page, Give it nice title
-    content_stack.add_titled(&timezone_main_box, Some("timezone_page"), "Time Zone");
+    content_stack.add_titled(&timezone_main_box, Some("timezone_page"), &gettext("timezone"));
 
     let timezone_data_buffer_clone = timezone_data_buffer.clone();
 

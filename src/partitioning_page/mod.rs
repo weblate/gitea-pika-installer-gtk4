@@ -7,7 +7,7 @@ use glob::glob;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 use crate::automatic_partitioning::automatic_partitioning;
 use crate::install_page::install_page;
@@ -42,7 +42,7 @@ pub fn partitioning_page(
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label("Back")
+        .label(gettext("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -51,7 +51,7 @@ pub fn partitioning_page(
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label("Next")
+        .label(gettext("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -81,7 +81,7 @@ pub fn partitioning_page(
 
     // the header text for the partitioning page
     let partitioning_header_text = gtk::Label::builder()
-        .label("Choose an install method")
+        .label(gettext("choose_install_method"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -125,7 +125,7 @@ pub fn partitioning_page(
         .build();
 
     let manual_method_button_content_image = gtk::Image::builder()
-        .icon_name("input-tablet")
+        .icon_name("org.gnome.Settings")
         .pixel_size(128)
         .margin_top(15)
         .margin_bottom(15)
@@ -134,7 +134,7 @@ pub fn partitioning_page(
         .build();
 
     let manual_method_button_content_text = gtk::Label::builder()
-        .label("Manually Partition The Drive")
+        .label(gettext("manual_partition_drive"))
         .margin_top(0)
         .margin_bottom(15)
         .margin_start(15)
@@ -151,7 +151,7 @@ pub fn partitioning_page(
         .build();
 
     let automatic_method_button_content_image = gtk::Image::builder()
-        .icon_name("media-playlist-shuffle")
+        .icon_name("builder")
         .pixel_size(128)
         .margin_top(15)
         .margin_bottom(15)
@@ -160,7 +160,7 @@ pub fn partitioning_page(
         .build();
 
     let automatic_method_button_content_text = gtk::Label::builder()
-        .label("Automatically Partition\nThe Drive")
+        .label(gettext("auto_partition_drive"))
         .margin_top(0)
         .margin_bottom(15)
         .margin_start(15)

@@ -8,7 +8,7 @@ use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
 use gtk::{glib, Orientation::Horizontal};
 
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -123,7 +123,7 @@ impl ObjectImpl for DriveMountRow {
             .width_request(53)
             .height_request(53)
             .valign(gtk::Align::Start)
-            .icon_name("edit-delete")
+            .icon_name("user-trash")
             .halign(gtk::Align::End)
             .build();
 

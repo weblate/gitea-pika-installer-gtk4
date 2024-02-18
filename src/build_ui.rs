@@ -6,7 +6,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 use std::path::Path;
 
@@ -30,7 +30,7 @@ use crate::partitioning_page::partitioning_page;
 pub fn build_ui(app: &adw::Application) {
     // setup glib
     gtk::glib::set_prgname(Some(gettext("pikaos_installer")));
-    glib::set_application_name("PikaOS Installer");
+    glib::set_application_name(&gettext("pikaos_installer"));
     let glib_settings = gio::Settings::new("com.github.pikaos-linux.pikainstallergtk4");
 
     // Widget Bank
@@ -67,7 +67,7 @@ pub fn build_ui(app: &adw::Application) {
 
     let window = adw::ApplicationWindow::builder()
         // The text on the titlebar
-        .title("PikaOS Installer")
+        .title(gettext("pikaos_installer"))
         // link it to the application "app"
         .application(app)
         // Add the box called "_main_box" to it

@@ -10,7 +10,7 @@ use gtk::*;
 use vte::prelude::*;
 use vte::*;
 
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 use crate::done_page::done_page;
 

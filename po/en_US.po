@@ -14,3 +14,43 @@ msgstr ""
 
 msgid "pikaos_installer"
 msgstr "PikaOS Installer"
+
+msgid "welcome_to_pikaos"
+msgstr "Welcome to PikaOS"
+
+msgid "use_pikaos_in_live_media"
+msgstr "Use PikaOS in Live media"
+
+msgid "install_distro_to_system"
+msgstr "Install Distro to System"
+
+msgid "welcome"
+msgstr "Welcome"
+
+msgid "back"
+msgstr "Back"
+
+msgid "next"
+msgstr "Next"
+
+msgid "select_a_timezone"
+msgstr "Select a timezone"
+
+msgid "please_select_timezone"
+msgstr "Please select a Time Zone for the system to use"
+
+msgid "no_timezone_select"
+msgstr "No Time Zone selected"
+
+msgid "timezone"
+msgstr "Time Zone"
+
+msgid "choose_install_method"
+msgstr "Choose an install method"
+
+msgid "manual_partition_drive"
+msgstr "Manually Partition The Drive"
+
+msgid "auto_partition_drive"
+msgstr "Automatically Partition\nThe Drive"
+

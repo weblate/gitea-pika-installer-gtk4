@@ -7,7 +7,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
     // the header box for the welcome page
@@ -22,7 +22,7 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
 
     // the header text for the welcome page
     let welcome_header_text = gtk::Label::builder()
-        .label("Welcome to PikaOS")
+        .label(gettext("welcome_to_pikaos"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -64,7 +64,7 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
         .build();
 
     let live_media_button_content_text = gtk::Label::builder()
-        .label("Use PikaOS in Live media")
+        .label(gettext("use_pikaos_in_live_media"))
         .margin_top(0)
         .margin_bottom(15)
         .margin_start(15)
@@ -86,7 +86,7 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
         .build();
 
     let install_media_button_content_text = gtk::Label::builder()
-        .label("Install Distro to System")
+        .label(gettext("install_distro_to_system"))
         .margin_top(0)
         .margin_bottom(15)
         .margin_start(15)
@@ -160,7 +160,7 @@ pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack)
 
     // / Content stack appends
     //// Add the welcome_main_box as page: welcome_page, Give it nice title
-    content_stack.add_titled(&welcome_main_box, Some("welcome_page"), "Welcome");
+    content_stack.add_titled(&welcome_main_box, Some("welcome_page"), &gettext("welcome"));
 
     install_media_button.connect_clicked(clone!(@weak content_stack => move |_| content_stack.set_visible_child_name("language_page")));
     live_media_button.connect_clicked(clone!(@weak window => move |_| window.close()));

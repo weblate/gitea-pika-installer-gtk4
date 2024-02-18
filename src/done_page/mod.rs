@@ -7,7 +7,7 @@ use glib::*;
 use gtk::*;
 
 use crate::config::{DISTRO_ICON};
-use gettextrs::{gettext, LocaleCategory};
+use gettextrs::{gettext};
 
 use std::path::Path;
 use std::process::Command;
