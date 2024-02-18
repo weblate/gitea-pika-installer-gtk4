@@ -137,3 +137,15 @@ msgstr "Filesystem Table Error: Invalid mountpoint: ("
 
 msgid "fstab_bad_mountpoint_msg"
 msgstr ") Is not a valid mountpoint!"
+
+msgid "select_a_language"
+msgstr "Select a language"
+
+msgid "please_select_locale"
+msgstr "Please select a locale for the system to use"
+
+msgid "no_locale_selected"
+msgstr "No locale selected"
+
+msgid "language"
+msgid "Language"

@@ -27,7 +27,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label("Back")
+        .label(gettext("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -36,7 +36,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label("Next")
+        .label(gettext("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -66,7 +66,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     // the header text for the language page
     let language_header_text = gtk::Label::builder()
-        .label("Select a language")
+        .label(gettext("select_a_language"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -106,7 +106,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     // text above language selection box
     let language_selection_text = gtk::Label::builder()
-        .label("Please select a locale for the system to use")
+        .label(gettext("please_select_locale"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -117,11 +117,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
     language_selection_text.add_css_class("medium_sized_text");
 
     let language_selection_expander_row = adw::ExpanderRow::builder()
-        .title("No locale selected")
+        .title(gettext("no_locale_selected"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label("No locale selected")
+        .label(gettext("no_locale_selected"))
         .build();
 
     let language_selection_expander_row_viewport =
@@ -213,7 +213,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the language_main_box as page: language_page, Give it nice title
-    content_stack.add_titled(&language_main_box, Some("language_page"), "Language");
+    content_stack.add_titled(&language_main_box, Some("language_page"), &gettext("language"));
 
     let lang_data_buffer_clone = lang_data_buffer.clone();
 
