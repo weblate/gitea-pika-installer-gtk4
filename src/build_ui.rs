@@ -6,6 +6,8 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
 use std::path::Path;
 
 use crate::save_window_size::save_window_size;
@@ -27,7 +29,7 @@ use crate::partitioning_page::partitioning_page;
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
     // setup glib
-    gtk::glib::set_prgname(Some("PikaOS Installer"));
+    gtk::glib::set_prgname(Some(gettext("pikaos_installer")));
     glib::set_application_name("PikaOS Installer");
     let glib_settings = gio::Settings::new("com.github.pikaos-linux.pikainstallergtk4");
 

@@ -7,6 +7,8 @@ use glob::glob;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
 use crate::automatic_partitioning::automatic_partitioning;
 use crate::install_page::install_page;
 use crate::manual_partitioning::manual_partitioning;

@@ -6,6 +6,8 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;

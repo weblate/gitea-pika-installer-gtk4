@@ -6,6 +6,8 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
 pub fn eula_page(content_stack: &gtk::Stack) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()

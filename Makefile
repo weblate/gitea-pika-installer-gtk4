@@ -1,3 +1,5 @@
+export PATH := $(PWD):$(PATH)
+
 all:
 	true
 
@@ -19,3 +21,4 @@ install:
 	mkdir -p $(DESTDIR)/usr/share/icons/hicolor/scalable/apps
 	#cp -vf data/pika-drivers.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/
 	#cp -vf data/com.pika.drivers.desktop  $(DESTDIR)/usr/share/applications/
+	makepot $(DESTDIR)/usr/share/locale

@@ -10,6 +10,8 @@ use gtk::*;
 use vte::prelude::*;
 use vte::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
 use crate::done_page::done_page;
 
 use std::process::Command;

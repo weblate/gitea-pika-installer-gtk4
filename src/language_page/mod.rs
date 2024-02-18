@@ -6,6 +6,8 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
 use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
@@ -226,6 +228,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .arg("LANG=".to_owned() + &lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string() + ".UTF-8")
         .spawn()
         .expect("locale failed to start");
+        gettextrs::setlocale(LocaleCategory::LcAll, lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string() + ".UTF-8");
+        if gettext("pikaos_installer") == "pikaos_installer" {
+            println!("Warning: Current LANG is not supported, using fallback Locale.");
+            gettextrs::setlocale(LocaleCategory::LcAll, "en_US.UTF8");
+        }
         content_stack.set_visible_child_name("eula_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {

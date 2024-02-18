@@ -8,6 +8,8 @@ use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
 use gtk::{glib, Orientation::Horizontal};
 
+use gettextrs::{gettext, LocaleCategory};
+
 // ANCHOR: custom_button
 // Object holding the state
 #[derive(Properties, Default)]

@@ -7,6 +7,8 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
 pub fn welcome_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
     // the header box for the welcome page
     let welcome_main_box = gtk::Box::builder()

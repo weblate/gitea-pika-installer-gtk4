@@ -7,6 +7,8 @@ use glib::*;
 use gtk::*;
 use std::thread;
 
+use gettextrs::{gettext, LocaleCategory};
+
 use std::cell::{RefCell};
 use std::rc::Rc;
 
