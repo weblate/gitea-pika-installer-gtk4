@@ -32,6 +32,8 @@ pub struct DriveMount {
 
 fn create_mount_row(
     listbox: &gtk::ListBox,
+    partition_method_manual_error_label: &gtk::Label,
+    partition_method_manual_valid_label: &gtk::Label,
     manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
     part_table_array: &Rc<RefCell<Vec<String>>>,
     _check_part_unique: &Rc<RefCell<bool>>,
@@ -109,8 +111,12 @@ fn create_mount_row(
     row.connect_closure(
         "row-deleted",
         false,
-        closure_local!(@strong row as _row => move |_row: DriveMountRow| {
-                    listbox_clone.remove(&_row)
+        closure_local!(@strong partition_method_manual_error_label ,@strong partition_method_manual_valid_label, @strong row as _row => move |_row: DriveMountRow| {
+                    listbox_clone.remove(&_row);
+                    partition_method_manual_error_label.set_label("");
+                    partition_method_manual_error_label.set_visible(false);
+                    partition_method_manual_valid_label.set_label("");
+                    partition_method_manual_valid_label.set_visible(false);
         }),
     );
 
@@ -307,8 +313,8 @@ pub fn manual_partitioning(
             .expect("gparted failed to start");
     });
 
-    drive_mount_add_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox, @strong manual_drive_mount_array, @strong part_table_array, @strong  check_part_unique => move |_| {
-        drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &manual_drive_mount_array, &part_table_array,&check_part_unique))
+    drive_mount_add_button.connect_clicked(clone!(@weak partition_method_manual_error_label, @weak partition_method_manual_valid_label ,@weak drive_mounts_adw_listbox, @strong manual_drive_mount_array, @strong part_table_array, @strong  check_part_unique => move |_| {
+        drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &partition_method_manual_error_label, &partition_method_manual_valid_label, &manual_drive_mount_array, &part_table_array,&check_part_unique))
     }));
 
     let (anti_dup_partition_sender, anti_dup_partition_receiver) = async_channel::unbounded();
@@ -322,7 +328,7 @@ pub fn manual_partitioning(
     });
 
     let anti_dup_partition_loop_context = MainContext::default();
-    anti_dup_partition_loop_context.spawn_local(clone!(@weak drive_mounts_adw_listbox, @weak partitioning_stack, @strong manual_drive_mount_array,@weak bottom_next_button, @strong  check_part_unique => async move {
+    anti_dup_partition_loop_context.spawn_local(clone!(@weak partition_method_manual_error_label, @weak partition_method_manual_valid_label ,@weak drive_mounts_adw_listbox, @weak partitioning_stack, @strong manual_drive_mount_array,@weak bottom_next_button, @strong  check_part_unique => async move {
         while let Ok(_state) = anti_dup_partition_receiver.recv().await {
             let mut counter = drive_mounts_adw_listbox.first_child();
 
@@ -615,12 +621,12 @@ fn partition_err_check(
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
-                if partition_fs == "vfat" {
+                if partition_fs == "vfat" || partition_fs == "vfat" || partition_fs == "ntfs" || partition_fs == "swap" || partition_fs == "exfat" {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
                             &("Bad Filesystem: The partition mounted to / (/dev/".to_owned()
                                 + &drivemounts.partition
-                                + ") Cannot be FAT32/vFAT"),
+                                + ") Has an Invalid Filesystem"),
                         );
                         partition_method_manual_error_label.set_visible(true);
                     }
