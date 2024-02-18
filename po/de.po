@@ -1,0 +1,292 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2024-02-09 17:48+0300\n"
+"PO-Revision-Date: 2024-02-19 00:21+0300\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4\n"
+"X-Poedit-Basepath: .\n"
+
+msgid "pikaos_installer"
+msgstr ""
+
+msgid "welcome_to_pikaos"
+msgstr ""
+
+msgid "use_pikaos_in_live_media"
+msgstr ""
+
+msgid "install_distro_to_system"
+msgstr ""
+
+msgid "welcome"
+msgstr ""
+
+msgid "back"
+msgstr ""
+
+msgid "next"
+msgstr ""
+
+msgid "select_a_timezone"
+msgstr ""
+
+msgid "please_select_timezone"
+msgstr ""
+
+msgid "no_timezone_select"
+msgstr ""
+
+msgid "timezone"
+msgstr ""
+
+msgid "choose_install_method"
+msgstr ""
+
+msgid "manual_partition_drive"
+msgstr ""
+
+msgid "auto_partition_drive"
+msgstr ""
+
+msgid "manual_part_installer"
+msgstr ""
+
+msgid "use_utility_manual"
+msgstr ""
+
+msgid "open_gparted"
+msgstr ""
+
+msgid "manual_part_note"
+msgstr ""
+
+msgid "refresh_part_table"
+msgstr ""
+
+msgid "validate_fs_table"
+msgstr ""
+
+msgid "fstab_status_valid"
+msgstr ""
+
+msgid "part_need_mapper"
+msgstr ""
+
+msgid "fstab_subvol_warn"
+msgstr ""
+
+msgid "fstab_multiple_part_mountpoint_err"
+msgstr ""
+
+msgid "fstab_no_mountpoint_err"
+msgstr ""
+
+msgid "fstab_no_partition_err"
+msgstr ""
+
+msgid "fstab_badfs"
+msgstr ""
+
+msgid "fstab_small_efi_size"
+msgstr ""
+
+msgid "fstab_badfs_efi"
+msgstr ""
+
+msgid "fstab_small_boot_size"
+msgstr ""
+
+msgid "fstab_badfs_boot"
+msgstr ""
+
+msgid "fstab_small_root_size"
+msgstr ""
+
+msgid "fstab_badfs_root"
+msgstr ""
+
+msgid "fstab_small_home_size"
+msgstr ""
+
+msgid "fstab_badfs_home"
+msgstr ""
+
+msgid "fstab_badfs_swap"
+msgstr ""
+
+msgid "fstab_bad_mountpoint"
+msgstr ""
+
+msgid "fstab_bad_mountpoint_msg"
+msgstr ""
+
+msgid "select_a_language"
+msgstr ""
+
+msgid "please_select_locale"
+msgstr ""
+
+msgid "no_locale_selected"
+msgstr ""
+
+msgid "language"
+msgstr ""
+
+msgid "select_a_keyboard"
+msgstr ""
+
+msgid "please_select_keyboard"
+msgstr ""
+
+msgid "no_keyboard_selected"
+msgstr ""
+
+msgid "test_your_keyboard"
+msgstr ""
+
+msgid "keyboard"
+msgstr ""
+
+msgid "luks_password_for"
+msgstr ""
+
+msgid "luks_how_should"
+msgstr ""
+
+msgid "be_added_crypttab"
+msgstr ""
+
+msgid "unlock_boot_manually"
+msgstr ""
+
+msgid "unlock_boot_manual"
+msgstr ""
+
+msgid "sit_back_relax"
+msgstr ""
+
+msgid "language_detail"
+msgstr ""
+
+msgid "timezone_detail"
+msgstr ""
+
+msgid "keyboard_detail"
+msgstr ""
+
+msgid "mounted_on_detail"
+msgstr ""
+
+msgid "install_target_detail"
+msgstr ""
+
+msgid "confirm_install_pika"
+msgstr ""
+
+msgid "view_logs"
+msgstr ""
+
+msgid "parting_status_text"
+msgstr ""
+
+msgid "image_status_text"
+msgstr ""
+
+msgid "flag1_status_text"
+msgstr ""
+
+msgid "flag2_status_text"
+msgstr ""
+
+msgid "crypt_status_text"
+msgstr ""
+
+msgid "lang_status_text"
+msgstr ""
+
+msgid "boot_status_status_text"
+msgstr ""
+
+msgid "post_status_text"
+msgstr ""
+
+msgid "pikaos_eula_agreement"
+msgstr ""
+
+msgid "please_read_eula"
+msgstr ""
+
+msgid "eula_buffer"
+msgstr ""
+
+msgid "i_agree_eula"
+msgstr ""
+
+msgid "eula"
+msgstr ""
+
+msgid "pika_nowork_csm"
+msgstr ""
+
+msgid "exit"
+msgstr ""
+
+msgid "subtitle_partition"
+msgstr ""
+
+msgid "title_mountpoint"
+msgstr ""
+
+msgid "title_mountopt"
+msgstr ""
+
+msgid "pika_install_good"
+msgstr ""
+
+msgid "reboot"
+msgstr ""
+
+msgid "pika_install_bad"
+msgstr ""
+
+msgid "logs"
+msgstr ""
+
+msgid "auto_part_installer"
+msgstr ""
+
+msgid "choose_drive_auto"
+msgstr ""
+
+msgid "no_drive_auto_selected"
+msgstr ""
+
+msgid "no_disk_specified"
+msgstr ""
+
+msgid "luks_yes_but_empty"
+msgstr ""
+
+msgid "enable_luks2_enc"
+msgstr ""
+
+msgid "luks2_password"
+msgstr ""
+
+msgid "disk_auto_target_small"
+msgstr ""
+
+msgid "installation"
+msgstr ""
+
+msgid "done"
+msgstr ""
+
+msgid "partitioning"
+msgstr ""
