@@ -27,7 +27,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label("Back")
+        .label(gettext("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -36,7 +36,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label("Next")
+        .label(gettext("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -66,7 +66,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     // the header text for the keyboard page
     let keyboard_header_text = gtk::Label::builder()
-        .label("Select a keyboard")
+        .label(gettext("select_a_keyboard"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -106,7 +106,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     // text above keyboard selection box
     let keyboard_selection_text = gtk::Label::builder()
-        .label("Please select a Keyboard layout for the system to use")
+        .label(gettext("please_select_keyboard"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -117,11 +117,11 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     keyboard_selection_text.add_css_class("medium_sized_text");
 
     let keyboard_selection_expander_row = adw::ExpanderRow::builder()
-        .title("No Keyboard Layout selected")
+        .title(gettext("no_keyboard_selected"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label("No Keyboard Layout selected")
+        .label(gettext("no_keyboard_selected"))
         .build();
 
     let keyboard_selection_expander_row_viewport =
@@ -234,7 +234,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
             .margin_top(15)
             .margin_end(15)
             .margin_start(15)
-            .placeholder_text("Test Your Keyboard here!")
+            .placeholder_text(gettext("test_you_keyboard"))
             .build(),
     );
 
@@ -242,7 +242,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the keyboard_main_box as page: keyboard_page, Give it nice title
-    content_stack.add_titled(&keyboard_main_box, Some("keyboard_page"), "Keyboard");
+    content_stack.add_titled(&keyboard_main_box, Some("keyboard_page"), &gettext("keyboard"));
 
     let keyboard_data_buffer_clone = keyboard_data_buffer.clone();
 

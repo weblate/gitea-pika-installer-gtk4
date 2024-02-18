@@ -148,4 +148,82 @@ msgid "no_locale_selected"
 msgstr "No locale selected"
 
 msgid "language"
-msgid "Language"
+msgstr "Language"
+
+msgid "select_a_keyboard"
+msgstr "Select a keyboard"
+
+msgid "please_select_keyboard"
+msgstr "Please select a Keyboard layout for the system to use"
+
+msgid "no_keyboard_selected"
+msgstr "No Keyboard Layout selected"
+
+msgid "test_you_keyboard"
+msgstr "Test Your Keyboard here!"
+
+msgid "keyboard"
+msgstr "Keyboard"
+
+msgid "luks_password_for"
+msgstr "LUKS Password for "
+
+msgid "luks_how_should"
+msgstr "How should "
+
+msgid "be_added_crypttab"
+msgstr " be added to /etc/crypttab?"
+
+msgid "unlock_boot_manually"
+msgstr "Unlock on boot manually"
+
+msgid "unlock_boot_manual"
+msgstr "Automatic Unlock with root unlock"
+
+msgid "sit_back_relax"
+msgstr "Sit back, Relax, and watch the show."
+
+msgid "language_detail"
+msgstr "Language:"
+
+msgid "timezone_detail"
+msgstr "Timezone:"
+
+msgid "keyboard_detail"
+msgstr "Keyboard layout:"
+
+msgid "mounted_on_detail"
+msgstr " mounted on "
+
+msgid "install_target_detail"
+msgstr "Install Target:"
+
+msgid "confirm_install_pika"
+msgstr "Confirm & Install PikaOS"
+
+msgid "view_logs"
+msgstr "View Logs"
+
+msgid "parting_status_text"
+msgstr "Partitioning The Target Drives."
+
+msgid "image_status_text"
+msgstr "Writing image to target."
+
+msgid "flag1_status_text"
+msgstr "Enabling bls_boot flag on /boot."
+
+msgid "flag2_status_text"
+msgstr "Enabling efi flag on /boot/efi."
+
+msgid "crypt_status_text"
+msgstr "Setting up encryption crypttab."
+
+msgid "lang_status_text"
+msgstr "Setting Up Language and Keyboard."
+
+msgid "boot_status_status_text"
+msgstr "Configuring bootloader."
+
+msgid "post_status_text"
+msgstr "Running post installation script."
