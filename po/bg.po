@@ -2,78 +2,80 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 00:21+0300\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-02-19 11:46+0000\n"
+"Last-Translator: Peter Tsvetkov <me4odefy@gmail.com>\n"
+"Language-Team: Bulgarian <https://hosted.weblate.org/projects/pikaos/"
+"pika-installer-gtk4-old/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.4\n"
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr ""
+msgstr "pikaos_инсталатор"
 
 msgid "welcome_to_pikaos"
-msgstr ""
+msgstr "добре_дошли_в_pikaos"
 
 msgid "use_pikaos_in_live_media"
-msgstr ""
+msgstr "използвай_pikaos_без_да_инсталираш"
 
 msgid "install_distro_to_system"
-msgstr ""
+msgstr "инсталирай_дистрибуцията"
 
 msgid "welcome"
-msgstr ""
+msgstr "добре_дошли"
 
 msgid "back"
-msgstr ""
+msgstr "върни"
 
 msgid "next"
-msgstr ""
+msgstr "следващ"
 
 msgid "select_a_timezone"
-msgstr ""
+msgstr "изберте_часова_зона"
 
 msgid "please_select_timezone"
-msgstr ""
+msgstr "Моля, изберете времева зона"
 
 msgid "no_timezone_select"
-msgstr ""
+msgstr "Не е избрава времева зона"
 
 msgid "timezone"
-msgstr ""
+msgstr "Времева зона"
 
 msgid "choose_install_method"
-msgstr ""
+msgstr "Изберете метод на инсталиране"
 
 msgid "manual_partition_drive"
-msgstr ""
+msgstr "ръчно_разделяне_на_диска"
 
 msgid "auto_partition_drive"
-msgstr ""
+msgstr "автоматично_разделяне_на_диска"
 
 msgid "manual_part_installer"
-msgstr ""
+msgstr "ръчно_"
 
 msgid "use_utility_manual"
 msgstr ""
 
 msgid "open_gparted"
-msgstr ""
+msgstr "отвори_gparter"
 
 msgid "manual_part_note"
 msgstr ""
 
 msgid "refresh_part_table"
-msgstr ""
+msgstr "обнови_таблица_на_дяловете"
 
 msgid "validate_fs_table"
-msgstr ""
+msgstr "валидиране_таблица_на_файлова_система"
 
 msgid "fstab_status_valid"
-msgstr ""
+msgstr "таблицата_на_файловата_система_е_валидна"
 
 msgid "part_need_mapper"
 msgstr ""
@@ -94,7 +96,7 @@ msgid "fstab_badfs"
 msgstr ""
 
 msgid "fstab_small_efi_size"
-msgstr ""
+msgstr "размерът_на_EFI_дялът_е_малък"
 
 msgid "fstab_badfs_efi"
 msgstr ""
@@ -259,34 +261,34 @@ msgid "logs"
 msgstr ""
 
 msgid "auto_part_installer"
-msgstr ""
+msgstr "Автоматичен дялов инсталатор"
 
 msgid "choose_drive_auto"
-msgstr ""
+msgstr "Автоматичо избери диск"
 
 msgid "no_drive_auto_selected"
 msgstr ""
 
 msgid "no_disk_specified"
-msgstr ""
+msgstr "Не е избран диск"
 
 msgid "luks_yes_but_empty"
 msgstr ""
 
 msgid "enable_luks2_enc"
-msgstr ""
+msgstr "Активирайте Luks2 криптиране"
 
 msgid "luks2_password"
-msgstr ""
+msgstr "Luks2 парола"
 
 msgid "disk_auto_target_small"
 msgstr ""
 
 msgid "installation"
-msgstr ""
+msgstr "Инсталация"
 
 msgid "done"
-msgstr ""
+msgstr "Завършено"
 
 msgid "partitioning"
 msgstr ""

@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-18 23:48+0000\n"
-"Last-Translator: ToasterUwU <aki@toasteruwu.com>\n"
+"PO-Revision-Date: 2024-02-19 11:46+0000\n"
+"Last-Translator: Ryota <mailifican@gmail.com>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/pikaos/"
-"pika-installer-gtk4/de/>\n"
+"pika-installer-gtk4-old/de/>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,46 +15,46 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr ""
+msgstr "PikaOS-Installationsprogramm"
 
 msgid "welcome_to_pikaos"
-msgstr ""
+msgstr "Willkommen bei PikaOS"
 
 msgid "use_pikaos_in_live_media"
 msgstr "Nutze PikaOS im Live Modus"
 
 msgid "install_distro_to_system"
-msgstr ""
+msgstr "PikaOS installieren"
 
 msgid "welcome"
-msgstr ""
+msgstr "Willkommen"
 
 msgid "back"
-msgstr ""
+msgstr "Zurück"
 
 msgid "next"
-msgstr ""
+msgstr "Weiter"
 
 msgid "select_a_timezone"
-msgstr ""
+msgstr "Wähle eine Zeitzone"
 
 msgid "please_select_timezone"
-msgstr ""
+msgstr "Bitte wähle eine Zeitzone"
 
 msgid "no_timezone_select"
-msgstr ""
+msgstr "Keine Zeitzohne ausgewählt"
 
 msgid "timezone"
-msgstr ""
+msgstr "Zeitzone"
 
 msgid "choose_install_method"
 msgstr ""
 
 msgid "manual_partition_drive"
-msgstr ""
+msgstr "Manuelle Partitionierung"
 
 msgid "auto_partition_drive"
-msgstr ""
+msgstr "Automatische Partitionierung"
 
 msgid "manual_part_installer"
 msgstr ""
@@ -63,13 +63,13 @@ msgid "use_utility_manual"
 msgstr ""
 
 msgid "open_gparted"
-msgstr ""
+msgstr "Öffne Gparted"
 
 msgid "manual_part_note"
 msgstr ""
 
 msgid "refresh_part_table"
-msgstr ""
+msgstr "Aktualisiere Partitionstabelle"
 
 msgid "validate_fs_table"
 msgstr ""
@@ -129,7 +129,7 @@ msgid "fstab_bad_mountpoint_msg"
 msgstr ""
 
 msgid "select_a_language"
-msgstr ""
+msgstr "Sprache auswählen"
 
 msgid "please_select_locale"
 msgstr ""
@@ -138,7 +138,7 @@ msgid "no_locale_selected"
 msgstr ""
 
 msgid "language"
-msgstr ""
+msgstr "Sprache"
 
 msgid "select_a_keyboard"
 msgstr ""
@@ -153,10 +153,10 @@ msgid "test_your_keyboard"
 msgstr ""
 
 msgid "keyboard"
-msgstr ""
+msgstr "Tastatur"
 
 msgid "luks_password_for"
-msgstr ""
+msgstr "Luks Passwort für"
 
 msgid "luks_how_should"
 msgstr ""
