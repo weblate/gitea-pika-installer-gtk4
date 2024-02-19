@@ -2,83 +2,98 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 11:46+0000\n"
+"PO-Revision-Date: 2024-02-19 15:38+0000\n"
 "Last-Translator: Peter Tsvetkov <me4odefy@gmail.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/pikaos/"
-"pika-installer-gtk4-old/bg/>\n"
+"gui-applications/pika-installer-gtk4/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr "pikaos_инсталатор"
+msgstr "PikaOS инсталатор"
 
 msgid "welcome_to_pikaos"
-msgstr "добре_дошли_в_pikaos"
+msgstr "Добре Дошли в PikaOS"
 
 msgid "use_pikaos_in_live_media"
-msgstr "използвай_pikaos_без_да_инсталираш"
+msgstr "Използвай PikaOS без да Инсталираш"
 
 msgid "install_distro_to_system"
-msgstr "инсталирай_дистрибуцията"
+msgstr "Инсталирай Дистрибуцията"
 
 msgid "welcome"
-msgstr "добре_дошли"
+msgstr "Добре Дошли"
 
 msgid "back"
-msgstr "върни"
+msgstr "Назад"
 
 msgid "next"
-msgstr "следващ"
+msgstr "Следващ"
 
 msgid "select_a_timezone"
-msgstr "изберте_часова_зона"
+msgstr "Изберте часова зона"
 
 msgid "please_select_timezone"
-msgstr "Моля, изберете времева зона"
+msgstr "Моля, изберете часова зона за вашата система"
 
 msgid "no_timezone_select"
-msgstr "Не е избрава времева зона"
+msgstr "Не е избрана часова зона"
 
 msgid "timezone"
-msgstr "Времева зона"
+msgstr "Часова Зона"
 
 msgid "choose_install_method"
 msgstr "Изберете метод на инсталиране"
 
 msgid "manual_partition_drive"
-msgstr "ръчно_разделяне_на_диска"
+msgstr "Ръчно Разделяне на Диска"
 
 msgid "auto_partition_drive"
-msgstr "автоматично_разделяне_на_диска"
+msgstr ""
+"Автоматично Разделяне\n"
+"Дискът"
 
 msgid "manual_part_installer"
-msgstr "ръчно_"
+msgstr "Инсталиране с ръчно разделяне на дискове"
 
 msgid "use_utility_manual"
 msgstr ""
+"Използвайте тази помощна програма, за да разделите/монтирате/форматирате "
+"вашите дискове."
 
 msgid "open_gparted"
-msgstr "отвори_gparter"
+msgstr "Отвори GPARTED"
 
 msgid "manual_part_note"
 msgstr ""
+"- Натиснете бутона плюс по-долу, за да започнете да добавяте записи във "
+"файловата система.\n"
+"Забележки:\n"
+" - Този инсталатор не изтрива никакви данни автоматично, форматирайте "
+"дисковете си ръчно с GParter.\n"
+" - За да добавите linux-swap дял, задайте точка на монтиране на [SWAP]\n"
+" - Ние препоръчваме следните дялове на диска, като основно оформление:\n"
+" /boot ~ 1000МВ ext4\n"
+" /boot/efi ~ 512MB vfat/fat32\n"
+" />=25GB btrfs."
 
 msgid "refresh_part_table"
-msgstr "обнови_таблица_на_дяловете"
+msgstr "Обновяване на Таблицата с дялове"
 
 msgid "validate_fs_table"
-msgstr "валидиране_таблица_на_файлова_система"
+msgstr "Проверка на Таблицата на Файловата Система"
 
 msgid "fstab_status_valid"
-msgstr "таблицата_на_файловата_система_е_валидна"
+msgstr "Състояние на Таблица на Файловата Система: Всички записи са валидни!"
 
+#, fuzzy
 msgid "part_need_mapper"
-msgstr ""
+msgstr "Този дял се нуждае от картограф!"
 
 msgid "fstab_subvol_warn"
 msgstr ""
