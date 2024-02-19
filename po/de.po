@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 15:59+0000\n"
+"PO-Revision-Date: 2024-02-19 18:43+0000\n"
 "Last-Translator: selektionsrest <selektionsrest@hotmail.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/pikaos/"
 "gui-applications/pika-installer-gtk4/de/>\n"
@@ -15,7 +15,7 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr "PikaOS-Installationsprogramm"
+msgstr "PikaOS Installationsprogramm"
 
 msgid "welcome_to_pikaos"
 msgstr "Willkommen bei PikaOS"
@@ -51,7 +51,7 @@ msgid "choose_install_method"
 msgstr "Wähle eine Installationsmethode"
 
 msgid "manual_partition_drive"
-msgstr "Manuelle Partitionierung"
+msgstr "Laufwerk Manuell Partitionieren"
 
 msgid "auto_partition_drive"
 msgstr ""
@@ -63,7 +63,7 @@ msgstr "Manuelles Partitionsinstallationsprogramm"
 
 msgid "use_utility_manual"
 msgstr ""
-"Verwende dieses Dienstprogramm, um Laufwerke zu partitionieren/einbinden/"
+"Verwende dieses Dienstprogramm um Laufwerke zu partitionieren/einbinden/"
 "formatieren."
 
 msgid "open_gparted"
@@ -182,14 +182,16 @@ msgstr "Teste hier die Tastatur!"
 msgid "keyboard"
 msgstr "Tastatur"
 
+#, fuzzy
 msgid "luks_password_for"
 msgstr "LUKS Passwort für"
 
+#, fuzzy
 msgid "luks_how_should"
-msgstr "Wie sollte"
+msgstr "How should"
 
 msgid "be_added_crypttab"
-msgstr "zu /etc/crypttab hinzugefügt werden?"
+msgstr "hinzugefügt werden zu /etc/crypttab?"
 
 msgid "unlock_boot_manually"
 msgstr "Beim booten manuell entsperren"
@@ -210,7 +212,7 @@ msgid "keyboard_detail"
 msgstr "Tastaturbelegung:"
 
 msgid "mounted_on_detail"
-msgstr "Eingehängt unter"
+msgstr "eingehängt unter"
 
 msgid "install_target_detail"
 msgstr "Installationsziel:"
