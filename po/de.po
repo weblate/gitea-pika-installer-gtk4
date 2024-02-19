@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
 "PO-Revision-Date: 2024-02-19 11:46+0000\n"
-"Last-Translator: Nico Hartwig <RageMen1749@outlook.de>\n"
+"Last-Translator: selektionsrest <selektionsrest@hotmail.de>\n"
 "Language-Team: German <https://hosted.weblate.org/projects/pikaos/"
 "pika-installer-gtk4-old/de/>\n"
 "Language: de\n"
@@ -15,16 +15,16 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr ""
+msgstr "PikaOS-Installationsprogramm"
 
 msgid "welcome_to_pikaos"
-msgstr ""
+msgstr "Willkommen bei PikaOS"
 
 msgid "use_pikaos_in_live_media"
 msgstr "Nutze PikaOS im Live Modus"
 
 msgid "install_distro_to_system"
-msgstr ""
+msgstr "PikaOS installieren"
 
 msgid "welcome"
 msgstr "Willkommen"
