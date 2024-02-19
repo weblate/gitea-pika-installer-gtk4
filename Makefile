@@ -15,8 +15,10 @@ install:
 	mkdir -p $(DESTDIR)/usr/lib/pika/pika-installer-gtk4/scripts/
 	mkdir -p $(DESTDIR)/usr/share/glib-2.0/schemas/
 	cp -rvf data/scripts/*.sh $(DESTDIR)/usr/lib/pika/pika-installer-gtk4/scripts/
+	cp -rvf data/scripts/*.py $(DESTDIR)/usr/lib/pika/pika-installer-gtk4/scripts/
 	cp data/*.xml $(DESTDIR)/usr/share/glib-2.0/schemas/
 	chmod 755 $(DESTDIR)/usr/lib/pika/pika-installer-gtk4/scripts/*.sh
+	chmod 755 $(DESTDIR)/usr/lib/pika/pika-installer-gtk4/scripts/*.py
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/icons/hicolor/scalable/apps
 	#cp -vf data/pika-drivers.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/
