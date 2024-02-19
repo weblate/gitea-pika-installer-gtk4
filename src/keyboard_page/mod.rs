@@ -17,6 +17,8 @@ use std::str;
 use std::fs;
 use std::path::Path;
 
+use gnome_desktop::*;
+
 pub fn keyboard_page(content_stack: &gtk::Stack) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -125,11 +127,11 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         .build();
 
     let keyboard_selection_expander_row_viewport =
-        gtk::ScrolledWindow::builder().height_request(200).build();
+        gtk::ScrolledWindow::builder().height_request(450).build();
 
-    let keyboard_selection_expander_row_viewport_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
+    let keyboard_selection_expander_row_viewport_box = gtk::ListBox::builder()
         .build();
+    keyboard_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     let keyboard_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(SelectionMode::None)
@@ -187,10 +189,17 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         let keyboard_layout = keyboard_layout.unwrap();
         let keyboard_layout_clone = keyboard_layout.clone();
         let keyboard_layout_checkbutton = gtk::CheckButton::builder()
-            .label(keyboard_layout.clone())
+            .valign(Align::Center)
+            .can_focus(false)
             .build();
+        let keyboard_layout_row = adw::ActionRow::builder()
+            .activatable_widget(&keyboard_layout_checkbutton)
+            .title(gnome_desktop::XkbInfo::new().layout_info(&keyboard_layout).unwrap().0.unwrap())
+            .subtitle(keyboard_layout.clone())
+            .build();
+        keyboard_layout_row.add_prefix(&keyboard_layout_checkbutton);
         keyboard_layout_checkbutton.set_group(Some(&null_checkbutton));
-        keyboard_selection_expander_row_viewport_box.append(&keyboard_layout_checkbutton);
+        keyboard_selection_expander_row_viewport_box.append(&keyboard_layout_row);
         keyboard_layout_checkbutton.connect_toggled(clone!(@weak keyboard_layout_checkbutton, @weak keyboard_selection_expander_row, @weak bottom_next_button, @weak keyboard_data_buffer => move |_| {
             if keyboard_layout_checkbutton.is_active() == true {
                 keyboard_selection_expander_row.set_title(&keyboard_layout);

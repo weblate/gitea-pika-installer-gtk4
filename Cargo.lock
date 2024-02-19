@@ -424,6 +424,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d2fabcfbdc87f4758337ca535fb41a6d701b65693ce38287d856d1674551ec9b"
 
 [[package]]
+name = "gnome-desktop"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a7207b3f81001aa7db2f5f130c2999ba4917c096968a7d078d550c4c83ee674"
+dependencies = [
+ "gdk-pixbuf",
+ "gio",
+ "glib",
+ "gnome-desktop-sys",
+ "gsettings-desktop-schemas",
+ "libc",
+]
+
+[[package]]
+name = "gnome-desktop-sys"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87b888414e3a79ebfb9488414beb4f8e7a2794889925e507ebebe83f24cb36f1"
+dependencies = [
+ "gdk-pixbuf-sys",
+ "gio-sys",
+ "glib-sys",
+ "gobject-sys",
+ "gsettings-desktop-schemas-sys",
+ "libc",
+ "system-deps",
+]
+
+[[package]]
 name = "gobject-sys"
 version = "0.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -454,6 +483,29 @@ dependencies = [
  "glib-sys",
  "libc",
  "pkg-config",
+ "system-deps",
+]
+
+[[package]]
+name = "gsettings-desktop-schemas"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "875c5582b4695e2de7bf763bedd3e4b610adcaa08c13028d38cc421c4e5857b5"
+dependencies = [
+ "bitflags 2.4.1",
+ "glib",
+ "gsettings-desktop-schemas-sys",
+ "libc",
+]
+
+[[package]]
+name = "gsettings-desktop-schemas-sys"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3badaaef1ab8bd74d009abde5694c2713178b0ee6f7c9bf70af986a8ed7cee58"
+dependencies = [
+ "glib-sys",
+ "libc",
  "system-deps",
 ]
 
@@ -763,6 +815,7 @@ dependencies = [
  "gettext-rs",
  "glib",
  "glob",
+ "gnome-desktop",
  "gtk4",
  "libadwaita",
  "pretty-bytes",
