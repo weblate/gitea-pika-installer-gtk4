@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 15:38+0000\n"
-"Last-Translator: YourPepsiDrink <kreekisanls@gmail.com>\n"
+"PO-Revision-Date: 2024-02-19 15:59+0000\n"
+"Last-Translator: piaf <jujuf851@hotmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/pikaos/"
 "gui-applications/pika-installer-gtk4/fr/>\n"
 "Language: fr\n"
@@ -21,10 +21,11 @@ msgid "welcome_to_pikaos"
 msgstr "Bienvenue chez PikaOS"
 
 msgid "use_pikaos_in_live_media"
-msgstr "Utiliser PikaOS sur une clé bootable"
+msgstr ""
 
+#, fuzzy
 msgid "install_distro_to_system"
-msgstr "Installer cette distribution sur le système"
+msgstr "Installer la distribution sur le système"
 
 msgid "welcome"
 msgstr "Bienvenue"
@@ -41,8 +42,9 @@ msgstr "Sélectionner un fuseau horaire"
 msgid "please_select_timezone"
 msgstr "Veuillez choisir un fuseau horaire à utiliser"
 
+#, fuzzy
 msgid "no_timezone_select"
-msgstr "Aucun fuseau horaire a été sélectionné"
+msgstr "Aucun fuseau horaire sélectionné"
 
 msgid "timezone"
 msgstr "Fuseau horaire"
@@ -53,15 +55,18 @@ msgstr "Choisir la méthode d'installation"
 msgid "manual_partition_drive"
 msgstr "Partitionner manuellement le lecteur"
 
+#, fuzzy
 msgid "auto_partition_drive"
-msgstr "Partitionner automatiquement le lecteur"
+msgstr ""
+"Partitionner automatiquement\n"
+"le lecteur"
 
 msgid "manual_part_installer"
 msgstr "Installateur de partitionnement manuelle"
 
+#, fuzzy
 msgid "use_utility_manual"
-msgstr ""
-"Utilise cette utilité pour partitionner, monter ou formatter vos lecteurs."
+msgstr "Utilisez cet utilitaire pour partitionner/monter/formater vos disques."
 
 msgid "open_gparted"
 msgstr "Ouvrir GPARTED"
@@ -160,29 +165,34 @@ msgstr "Table de Système de Fichiers: Point de montage invalide: ("
 msgid "fstab_bad_mountpoint_msg"
 msgstr ") n'est pas un point de montage valide!"
 
+#, fuzzy
 msgid "select_a_language"
-msgstr "Séléctionner une langue"
+msgstr "Sélectionner une langue"
 
+#, fuzzy
 msgid "please_select_locale"
-msgstr "Veuillez séléctionner une locale pour le système à utiliser"
+msgstr "Veuillez sélectionner une locale pour le système à utiliser"
 
+#, fuzzy
 msgid "no_locale_selected"
-msgstr "Pas de locale séléctionné"
+msgstr "Pas de locale sélectionné"
 
 msgid "language"
 msgstr "Langue"
 
 msgid "select_a_keyboard"
-msgstr "Séléctionner un clavier"
+msgstr "Sélectionner un clavier"
 
 msgid "please_select_keyboard"
-msgstr "Veuillez séléctionner un clavier"
+msgstr "Veuillez sélectionner un clavier"
 
+#, fuzzy
 msgid "no_keyboard_selected"
-msgstr "Pas de clavier séléctionné"
+msgstr "Aucune disposition de clavier sélectionnée"
 
+#, fuzzy
 msgid "test_your_keyboard"
-msgstr "Tester votre clavier ici!"
+msgstr "Testez votre clavier ici!"
 
 msgid "keyboard"
 msgstr "Clavier"
