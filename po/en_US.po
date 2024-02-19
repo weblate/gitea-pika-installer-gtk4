@@ -1,0 +1,323 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2024-02-09 17:48+0300\n"
+"PO-Revision-Date: 2024-02-19 00:21+0300\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.4\n"
+"X-Poedit-Basepath: .\n"
+
+msgid "pikaos_installer"
+msgstr "PikaOS Installer"
+
+msgid "welcome_to_pikaos"
+msgstr "Welcome to PikaOS"
+
+msgid "use_pikaos_in_live_media"
+msgstr "Use PikaOS in Live media"
+
+msgid "install_distro_to_system"
+msgstr "Install Distro to System"
+
+msgid "welcome"
+msgstr "Welcome"
+
+msgid "back"
+msgstr "Back"
+
+msgid "next"
+msgstr "Next"
+
+msgid "select_a_timezone"
+msgstr "Select a timezone"
+
+msgid "please_select_timezone"
+msgstr "Please select a Time Zone for the system to use"
+
+msgid "no_timezone_select"
+msgstr "No Time Zone selected"
+
+msgid "timezone"
+msgstr "Time Zone"
+
+msgid "choose_install_method"
+msgstr "Choose an install method"
+
+msgid "manual_partition_drive"
+msgstr "Manually Partition The Drive"
+
+msgid "auto_partition_drive"
+msgstr ""
+"Automatically Partition\n"
+"The Drive"
+
+msgid "manual_part_installer"
+msgstr "Manual Partitioning Installer"
+
+msgid "use_utility_manual"
+msgstr "Use this utility to partition/mount/format your drives."
+
+msgid "open_gparted"
+msgstr "Open GPARTED"
+
+msgid "manual_part_note"
+msgstr ""
+" - Press the plus button below to begin adding filesystem entries.\n"
+"Notes:\n"
+" - This installer doesn't erase any data automatically, format your drives manually via gparted.\n"
+" - To Add a linux-swap partition set mountpoint to [SWAP]\n"
+" - We recommend the following partitions as a base layout:\n"
+" /boot ~ 1000mb ext4.\n"
+" /boot/efi ~ 512mb vfat/fat32.\n"
+" / >= 25GB btrfs.\n"
+" "
+
+msgid "refresh_part_table"
+msgstr "Refresh Partition Table"
+
+msgid "validate_fs_table"
+msgstr "Validate Filesystem Table"
+
+msgid "fstab_status_valid"
+msgstr "Filesystem Table Status: All entries are valid!"
+
+msgid "part_need_mapper"
+msgstr "This partition needs a mapper!"
+
+msgid "fstab_subvol_warn"
+msgstr "Filesystem Table Warning: Partition reuse check will be skipped due to subvol usage."
+
+msgid "fstab_multiple_part_mountpoint_err"
+msgstr "Filesystem Table Error: Multiple partitions are configured to the same mountpoint!"
+
+msgid "fstab_no_mountpoint_err"
+msgstr "Filesystem Table Error: One or more partitions don't have a mountpoint configured!"
+
+msgid "fstab_no_partition_err"
+msgstr "Filesystem Table Error: One or more entries don't have a partition configured!"
+
+msgid "fstab_badfs"
+msgstr "Filesystem Table Error: Invalid filesystem: (/dev/"
+
+msgid "fstab_small_efi_size"
+msgstr ") Must at least be 512MBs!"
+
+msgid "fstab_badfs_efi"
+msgstr ") Must be FAT32/vFAT to be mounted at /boot/efi!"
+
+msgid "fstab_small_boot_size"
+msgstr ") Must at least be 1GBs!"
+
+msgid "fstab_badfs_boot"
+msgstr ") Must not be FAT32/vFAT to be mounted at /boot!"
+
+msgid "fstab_small_root_size"
+msgstr ") Must at least be 26GBs!"
+
+msgid "fstab_badfs_root"
+msgstr ""
+") Must be a Linux* compatible filesystem such as:\n"
+" ext4/btrfs/xfs/f2fs to be mounted at /!"
+
+msgid "fstab_small_home_size"
+msgstr ") Must at least be 11GBs!"
+
+msgid "fstab_badfs_home"
+msgstr ""
+") Must be a Linux* compatible filesystem such as:\n"
+" ext4/btrfs/xfs/f2fs to be mounted at /home!"
+
+msgid "fstab_badfs_swap"
+msgstr ") Must not be swap to be used as [SWAP]!"
+
+msgid "fstab_bad_mountpoint"
+msgstr "Filesystem Table Error: Invalid mountpoint: ("
+
+msgid "fstab_bad_mountpoint_msg"
+msgstr ") Is not a valid mountpoint!"
+
+msgid "select_a_language"
+msgstr "Select a language"
+
+msgid "please_select_locale"
+msgstr "Please select a locale for the system to use"
+
+msgid "no_locale_selected"
+msgstr "No locale selected"
+
+msgid "language"
+msgstr "Language"
+
+msgid "select_a_keyboard"
+msgstr "Select a keyboard"
+
+msgid "please_select_keyboard"
+msgstr "Please select a Keyboard layout for the system to use"
+
+msgid "no_keyboard_selected"
+msgstr "No Keyboard Layout selected"
+
+msgid "test_your_keyboard"
+msgstr "Test Your Keyboard here!"
+
+msgid "keyboard"
+msgstr "Keyboard"
+
+msgid "luks_password_for"
+msgstr "LUKS Password for "
+
+msgid "luks_how_should"
+msgstr "How should "
+
+msgid "be_added_crypttab"
+msgstr " be added to /etc/crypttab?"
+
+msgid "unlock_boot_manually"
+msgstr "Unlock on boot manually"
+
+msgid "unlock_boot_manual"
+msgstr "Automatic Unlock with root unlock"
+
+msgid "sit_back_relax"
+msgstr "Sit back, Relax, and watch the show."
+
+msgid "language_detail"
+msgstr "Language:"
+
+msgid "timezone_detail"
+msgstr "Timezone:"
+
+msgid "keyboard_detail"
+msgstr "Keyboard layout:"
+
+msgid "mounted_on_detail"
+msgstr " mounted on "
+
+msgid "install_target_detail"
+msgstr "Install Target:"
+
+msgid "confirm_install_pika"
+msgstr "Confirm & Install PikaOS"
+
+msgid "view_logs"
+msgstr "View Logs"
+
+msgid "parting_status_text"
+msgstr "Partitioning The Target Drives."
+
+msgid "image_status_text"
+msgstr "Writing image to target."
+
+msgid "flag1_status_text"
+msgstr "Enabling bls_boot flag on /boot."
+
+msgid "flag2_status_text"
+msgstr "Enabling efi flag on /boot/efi."
+
+msgid "crypt_status_text"
+msgstr "Setting up encryption crypttab."
+
+msgid "lang_status_text"
+msgstr "Setting Up Language and Keyboard."
+
+msgid "boot_status_status_text"
+msgstr "Configuring bootloader."
+
+msgid "post_status_text"
+msgstr "Running post installation script."
+
+msgid "pikaos_eula_agreement"
+msgstr "PikaOS User license Agreement"
+
+msgid "please_read_eula"
+msgstr "Please carefully read and make sure you consent to the following before installing PikaOS:"
+
+msgid "eula_buffer"
+msgstr ""
+"There are a few things to keep in mind: \n"
+"        1 - You understand that this distribution is -NOT- to be considered an ‘Ubuntu Flavor’. \n"
+"        2 - This is a hobby distribution, so we will try our best to provide formal support but it will -NOT- be guaranteed. \n"
+"        3 - Although PikaOS might provide identical patches and user experience to the Nobara project, we are -NOT- directly a part of them so questions and bug reports should not be sent directly to them (they dont have to deal with it!) \n"
+"        4 - While the installer is running DO NOT INTERRUPT IT! or you will end up with a corrupted system. \n"
+"        5 - Try to use pikman instead of apt when using the terminal, it is much faster! \n"
+"        6 - You understand the xone driver downloads needed binaries locally and does not directly package or distribute any copyrighted firmware or other related data. \n"
+"        7 - Automatic partitioning will format all partitons on a drive, so if you want to dualboot make a separate EFI partition for PikaOS and use manual partitioning  \n"
+"        8 - In case you need the login info for this session: \n"
+"         - username: pikaos \n"
+"         - password: \n"
+"        MEANING: JUST PRESS ENTER"
+
+msgid "i_agree_eula"
+msgstr "I Agree and Accept the User license Agreement"
+
+msgid "eula"
+msgstr "EULA"
+
+msgid "pika_nowork_csm"
+msgstr "PikaOS Only works on GPT UEFI Systems, this machine is booted in CSM/LEGACY mode."
+
+msgid "exit"
+msgstr "Exit"
+
+msgid "subtitle_partition"
+msgstr "Partition"
+
+msgid "title_mountpoint"
+msgstr "Mountpoint"
+
+msgid "title_mountopt"
+msgstr "Additional Mount Options"
+
+msgid "pika_install_good"
+msgstr "The installation of PikaOS has been completed sucessfully."
+
+msgid "reboot"
+msgstr "Reboot"
+
+msgid "pika_install_bad"
+msgstr ""
+"PikaOS has Failed!\n"
+"Check logs for further info."
+
+msgid "logs"
+msgstr "Log"
+
+msgid "auto_part_installer"
+msgstr "Automatic Partitioning Installer"
+
+msgid "choose_drive_auto"
+msgstr ""
+"Choose the Drive you want to install PikaOS on\n"
+"Note: This will erase the entire drive backup your data!"
+
+msgid "no_drive_auto_selected"
+msgstr "No disk selected for installation"
+
+msgid "no_disk_specified"
+msgstr "No Disk specified."
+
+msgid "luks_yes_but_empty"
+msgstr "LUKS Encryption Enabled but no password provided."
+
+msgid "enable_luks2_enc"
+msgstr "Enable LUKS2 Disk Encryption"
+
+msgid "luks2_password"
+msgstr "LUKS Password"
+
+msgid "disk_auto_target_small"
+msgstr "Disk Size too small, PikaOS needs 40GB Disk"
+
+msgid "installation"
+msgstr "Installation"
+
+msgid "done"
+msgstr "Done"
+
+msgid "partitioning"
+msgstr "Partitioning"

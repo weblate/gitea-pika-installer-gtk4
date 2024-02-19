@@ -3,6 +3,16 @@
     color: red;
 }
 
+.small_warn_text {
+    font-size: 14px;
+    color: orange;
+}
+
+.small_valid_text {
+    font-size: 14px;
+    color: green;
+}
+
 .big_error_text {
     font-size: 32px;
     color: red;
@@ -14,4 +24,9 @@
 
 .medium_sized_text {
     font-size: 18px;
+}
+
+.valid-action {
+    background-color:green;
+    color: white;
 }

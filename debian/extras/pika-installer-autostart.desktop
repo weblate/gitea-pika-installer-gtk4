@@ -1,0 +1,14 @@
+[Desktop Entry]
+Icon=calamares
+Name=Install PikaOS Linux
+Exec=pika-installer
+Icon=calamares
+Terminal=false
+Type=Application
+Terminal=false
+StartupNotify=true
+X-GNOME-Autostart-enabled=true
+X-KDE-AutostartScript=true
+Categories=GNOME;GTK;Utility;
+Keywords=Gnome;GTK
+NoDisplay=true

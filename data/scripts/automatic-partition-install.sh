@@ -1,5 +1,7 @@
 #! /bin/bash
 
+export LANG=en_US.UTF8
+
 set -e
 
 DISK="$(cat "/tmp/pika-installer-gtk4-target-auto.txt")"
@@ -7,17 +9,23 @@ LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
 KEYBOARD="$(cat "/tmp/pika-installer-gtk4-keyboard.txt")"
 TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
+p3_size=$(echo "scale=2 ; $(cat /tmp/pika-installer-p3-size.txt) / 1024 / 1024" | bc | cut -f1 -d".")
+
 touch "/tmp/pika-installer-gtk4-status-parting.txt"
 
 if [[ ! -f "/tmp/pika-installer-gtk4-target-automatic-luks.txt" ]]
 then
-    wipefs -a /dev/${DISK}
+    for part in $(sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions | grep ${DISK}); do
+    	PARTITION="/dev/$part"
+    	sudo swapoff $PARTITION || true
+    done
+    wipefs -af /dev/${DISK}
     # Partition the drives
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
         mkpart "linux-boot" 513Mib 1537Mib \
-        mkpart "linux-root" 1537Mib  42497Mib \
-        mkpart "linux-home" 42497Mib  100% \
+        mkpart "linux-root" 1537Mib  "$p3_size"Mib \
+        mkpart "linux-home" "$p3_size"Mib  100% \
         print
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"
@@ -39,7 +47,7 @@ then
         mount /dev/${DISK}p2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi
         mount /dev/${DISK}p1 /media/pika-install-mount/boot/efi
-        pikainstall -r /media/pika-install-mount/ -c ${LUKS_KEY} -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
+        pikainstall -r /media/pika-install-mount/ -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
     else
         sleep 10
         # Add filesystems
@@ -57,17 +65,21 @@ then
         mount /dev/${DISK}2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi
         mount /dev/${DISK}1 /media/pika-install-mount/boot/efi
-        pikainstall -r /media/pika-install-mount/ -c ${LUKS_KEY} -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
+        pikainstall -r /media/pika-install-mount/ -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
     fi
 else
     LUKS_KEY="$(cat "/tmp/pika-installer-gtk4-target-automatic-luks.txt")"
-    wipefs -a /dev/${DISK}
+    for part in $(sudo /usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions | grep ${DISK}); do
+    	PARTITION="/dev/$part"
+    	sudo swapoff $PARTITION || true
+    done
+    wipefs -af /dev/${DISK}
     # Partition the drives
     parted -s -a optimal /dev/${DISK} mklabel gpt \
         mkpart "linux-efi"  1MiB 513Mib \
         mkpart "linux-boot" 513Mib 1537Mib \
-        mkpart "linux-root" 1537Mib  42497Mib \
-        mkpart "linux-home" 42497Mib  100% \
+        mkpart "linux-root" 1537Mib  "$p3_size"Mib \
+        mkpart "linux-home" "$p3_size"Mib  100% \
         print
     # add p to partition if it's nvme
     if echo ${DISK} | grep -i "nvme"

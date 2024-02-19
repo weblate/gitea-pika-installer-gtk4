@@ -1,37 +1,33 @@
 // Use libraries
-/// Use all gtk4 libraries (gtk4 -> gtk because cargo)
-/// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::prelude::*;
-use gtk::*;
 use adw::prelude::*;
 use adw::*;
 use glib::*;
-use gdk::Display;
-use gtk::subclass::layout_child;
+/// Use all gtk4 libraries (gtk4 -> gtk because cargo)
+/// Use all libadwaita libraries (libadwaita -> adw because cargo)
+use gtk::*;
 
+use gettextrs::{gettext, LocaleCategory};
+
+use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
-use std::time::Instant;
-use std::env;
 
 use std::fs;
 use std::path::Path;
 
-
 pub fn language_page(content_stack: &gtk::Stack) {
-
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
         .valign(gtk::Align::End)
         .vexpand(true)
         .build();
-    
+
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label("Back")
+        .label(gettext("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -40,7 +36,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label("Next")
+        .label(gettext("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -49,59 +45,59 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .hexpand(true)
         .sensitive(false)
         .build();
-    
+
     // Start Applying css classes
     bottom_next_button.add_css_class("suggested-action");
-    
+
     // / bottom_box appends
     //// Add the next and back buttons
     bottom_box.append(&bottom_back_button);
     bottom_box.append(&bottom_next_button);
 
-   // the header box for the language page
-   let language_main_box = gtk::Box::builder()
-       .orientation(Orientation::Vertical)
-       .build();
+    // the header box for the language page
+    let language_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
 
-   // the header box for the language page
-   let language_header_box = gtk::Box::builder()
-       .orientation(Orientation::Horizontal)
-       .build();
+    // the header box for the language page
+    let language_header_box = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .build();
 
-   // the header text for the language page
-   let language_header_text = gtk::Label::builder()
-       .label("Select a language")
-       .halign(gtk::Align::End)
-       .hexpand(true)
-       .margin_top(15)
-       .margin_bottom(15)
-       .margin_start(15)
-       .margin_end(5)
-       .build();
+    // the header text for the language page
+    let language_header_text = gtk::Label::builder()
+        .label(gettext("select_a_language"))
+        .halign(gtk::Align::End)
+        .hexpand(true)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(5)
+        .build();
     language_header_text.add_css_class("header_sized_text");
 
-   // the header icon for the language icon
-   let language_header_icon = gtk::Image::builder()
-       .icon_name("locale")
-       .halign(gtk::Align::Start)
-       .hexpand(true)
-       .pixel_size(78)
-       .margin_top(15)
-       .margin_bottom(15)
-       .margin_start(0)
-       .margin_end(15)
-       .build();
+    // the header icon for the language icon
+    let language_header_icon = gtk::Image::builder()
+        .icon_name("locale")
+        .halign(gtk::Align::Start)
+        .hexpand(true)
+        .pixel_size(78)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(0)
+        .margin_end(15)
+        .build();
 
-   // make language selection box for choosing installation or live media 
-   let language_selection_box = gtk::Box::builder()
-       .orientation(Orientation::Vertical)
-       .build();
+    // make language selection box for choosing installation or live media
+    let language_selection_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
 
     // / language_header_box appends
     //// Add the language page header text and icon
     language_header_box.append(&language_header_text);
     language_header_box.append(&language_header_icon);
-    
+
     // / language_main_box appends
     //// Add the language header to language main box
     language_main_box.append(&language_header_box);
@@ -110,7 +106,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     // text above language selection box
     let language_selection_text = gtk::Label::builder()
-        .label("Please select a locale for the system to use")
+        .label(gettext("please_select_locale"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -121,30 +117,30 @@ pub fn language_page(content_stack: &gtk::Stack) {
     language_selection_text.add_css_class("medium_sized_text");
 
     let language_selection_expander_row = adw::ExpanderRow::builder()
-        .title("No locale selected")
+        .title(gettext("no_locale_selected"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label("No locale selected")
+        .label(gettext("no_locale_selected"))
         .build();
 
-    let language_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
-        .height_request(200)
-        .build();
+    let language_selection_expander_row_viewport =
+        gtk::ScrolledWindow::builder().height_request(200).build();
 
     let language_selection_expander_row_viewport_box = gtk::Box::builder()
-            .orientation(Orientation::Vertical)
-            .build();
+        .orientation(Orientation::Vertical)
+        .build();
 
-    language_selection_expander_row_viewport.set_child(Some(&language_selection_expander_row_viewport_box));
+    language_selection_expander_row_viewport
+        .set_child(Some(&language_selection_expander_row_viewport_box));
 
     let language_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
-            .selection_mode(SelectionMode::None)
-            .margin_top(15)
-            .margin_bottom(15)
-            .margin_start(15)
-            .margin_end(15)
-            .build();
+        .selection_mode(SelectionMode::None)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
     language_selection_expander_row_viewport_listbox.add_css_class("boxed-list");
     language_selection_expander_row_viewport_listbox.append(&language_selection_expander_row);
 
@@ -152,7 +148,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     let current_locale = match env::var_os("LANG") {
         Some(v) => v.into_string().unwrap(),
-        None => panic!("$LANG is not set")
+        None => panic!("$LANG is not set"),
     };
 
     let locale_cli = Command::new("locale")
@@ -177,17 +173,14 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     let locale_reader = BufReader::new(locale_cli_sort.stdout.expect("could not get stdout"));
 
-    let lang_data_buffer = gtk::TextBuffer::builder()
-        .build();
+    let lang_data_buffer = gtk::TextBuffer::builder().build();
 
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();
         let locale_clone = locale.clone();
-        let locale_checkbutton = gtk::CheckButton::builder()
-            .label(locale.clone())
-            .build();
+        let locale_checkbutton = gtk::CheckButton::builder().label(locale.clone()).build();
         locale_checkbutton.set_group(Some(&null_checkbutton));
-        language_selection_expander_row_viewport_box.append(&locale_checkbutton); 
+        language_selection_expander_row_viewport_box.append(&locale_checkbutton);
         locale_checkbutton.connect_toggled(clone!(@weak locale_checkbutton, @weak language_selection_expander_row, @weak bottom_next_button, @weak lang_data_buffer => move |_| {
             if locale_checkbutton.is_active() == true {
                 language_selection_expander_row.set_title(&locale);
@@ -204,12 +197,12 @@ pub fn language_page(content_stack: &gtk::Stack) {
     //// add text and and entry to language page selections
     language_selection_box.append(&language_selection_text);
     language_selection_box.append(&language_selection_expander_row_viewport_listbox);
-    
+
     // / language_header_box appends
     //// Add the language page header text and icon
     language_header_box.append(&language_header_text);
     language_header_box.append(&language_header_icon);
-    
+
     // / language_main_box appends
     //// Add the language header to language main box
     language_main_box.append(&language_header_box);
@@ -217,10 +210,10 @@ pub fn language_page(content_stack: &gtk::Stack) {
     language_main_box.append(&language_selection_box);
 
     language_main_box.append(&bottom_box);
-    
+
     // / Content stack appends
     //// Add the language_main_box as page: language_page, Give it nice title
-    content_stack.add_titled(&language_main_box, Some("language_page"), "Language");
+    content_stack.add_titled(&language_main_box, Some("language_page"), &gettext("language"));
 
     let lang_data_buffer_clone = lang_data_buffer.clone();
 
@@ -229,6 +222,17 @@ pub fn language_page(content_stack: &gtk::Stack) {
             fs::remove_file("/tmp/pika-installer-gtk4-lang.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-lang.txt");
         }
         fs::write("/tmp/pika-installer-gtk4-lang.txt", lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string()).expect("Unable to write file");
+        Command::new("sudo")
+        .arg("localectl")
+        .arg("set-locale")
+        .arg("LANG=".to_owned() + &lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string() + ".UTF-8")
+        .spawn()
+        .expect("locale failed to start");
+        gettextrs::setlocale(LocaleCategory::LcAll, lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string() + ".UTF-8");
+        if gettext("pikaos_installer") == "pikaos_installer" {
+            println!("Warning: Current LANG is not supported, using fallback Locale.");
+            gettextrs::setlocale(LocaleCategory::LcAll, "en_US.UTF8");
+        }
         content_stack.set_visible_child_name("eula_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
