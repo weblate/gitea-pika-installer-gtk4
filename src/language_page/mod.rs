@@ -17,6 +17,8 @@ use std::process::Stdio;
 use std::fs;
 use std::path::Path;
 
+use gnome_desktop::*;
+
 pub fn language_page(content_stack: &gtk::Stack) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -179,6 +181,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
         let locale = locale.unwrap();
         let locale_clone = locale.clone();
         let locale_checkbutton = gtk::CheckButton::builder().label(locale.clone()).build();
+        println!("{}", gnome_desktop::XkbInfo::new().languages_for_layout(&locale));
         locale_checkbutton.set_group(Some(&null_checkbutton));
         language_selection_expander_row_viewport_box.append(&locale_checkbutton);
         locale_checkbutton.connect_toggled(clone!(@weak locale_checkbutton, @weak language_selection_expander_row, @weak bottom_next_button, @weak lang_data_buffer => move |_| {

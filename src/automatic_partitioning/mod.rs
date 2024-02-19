@@ -78,9 +78,9 @@ pub fn automatic_partitioning(
     let devices_selection_expander_row_viewport =
         gtk::ScrolledWindow::builder().height_request(200).build();
 
-    let devices_selection_expander_row_viewport_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
+    let devices_selection_expander_row_viewport_box = gtk::ListBox::builder()
         .build();
+    devices_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     devices_selection_expander_row_viewport
         .set_child(Some(&devices_selection_expander_row_viewport_box));

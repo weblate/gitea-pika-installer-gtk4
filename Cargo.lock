@@ -807,7 +807,7 @@ checksum = "bb813b8af86854136c6922af0598d719255ecb2179515e6e7730d468f05c9cae"
 
 [[package]]
 name = "pika-installer-gtk4"
-version = "1.0.0"
+version = "1.0.1"
 dependencies = [
  "async-channel",
  "duct",

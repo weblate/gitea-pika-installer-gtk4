@@ -202,7 +202,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         keyboard_selection_expander_row_viewport_box.append(&keyboard_layout_row);
         keyboard_layout_checkbutton.connect_toggled(clone!(@weak keyboard_layout_checkbutton, @weak keyboard_selection_expander_row, @weak bottom_next_button, @weak keyboard_data_buffer => move |_| {
             if keyboard_layout_checkbutton.is_active() == true {
-                keyboard_selection_expander_row.set_title(&keyboard_layout);
+                keyboard_selection_expander_row.set_title(&keyboard_layout_row.title());
                 bottom_next_button.set_sensitive(true);
                 keyboard_data_buffer.set_text(&keyboard_layout);
                 Command::new("setxkbmap")

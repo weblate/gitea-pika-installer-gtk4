@@ -127,9 +127,9 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     let timezone_selection_expander_row_viewport =
         gtk::ScrolledWindow::builder().height_request(200).build();
 
-    let timezone_selection_expander_row_viewport_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
+    let timezone_selection_expander_row_viewport_box = gtk::ListBox::builder()
         .build();
+    timezone_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     let timezone_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(SelectionMode::None)
@@ -177,10 +177,16 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
         let timezone_layout = timezone_layout.unwrap();
         let timezone_layout_clone = timezone_layout.clone();
         let timezone_layout_checkbutton = gtk::CheckButton::builder()
-            .label(timezone_layout.clone())
+            .valign(Align::Center)
+            .can_focus(false)
             .build();
+        let timezone_layout_row = adw::ActionRow::builder()
+            .activatable_widget(&timezone_layout_checkbutton)
+            .title(timezone_layout.clone())
+            .build();
+        timezone_layout_row.add_prefix(&timezone_layout_checkbutton);
         timezone_layout_checkbutton.set_group(Some(&null_checkbutton));
-        timezone_selection_expander_row_viewport_box.append(&timezone_layout_checkbutton);
+        timezone_selection_expander_row_viewport_box.append(&timezone_layout_row);
         timezone_layout_checkbutton.connect_toggled(clone!(@weak timezone_layout_checkbutton, @weak timezone_selection_expander_row, @weak bottom_next_button, @weak timezone_data_buffer => move |_| {
             if timezone_layout_checkbutton.is_active() == true {
                 timezone_selection_expander_row.set_title(&timezone_layout);

@@ -9,7 +9,8 @@ Build-Depends: build-essential,
                libgtk-4-dev,
                desktop-file-utils,
                make,
-               libvte-2.91-gtk4-dev
+               libvte-2.91-gtk4-dev,
+               libgnome-desktop-4-dev,
 Rules-Requires-Root: no
 
 Package: pika-installer-gtk4
