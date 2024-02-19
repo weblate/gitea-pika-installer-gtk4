@@ -17,8 +17,6 @@ use std::process::Stdio;
 use std::fs;
 use std::path::Path;
 
-use gnome_desktop::*;
-
 pub fn language_page(content_stack: &gtk::Stack) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
@@ -179,14 +177,27 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();
+        let locale_name_cli = Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/locale-name.py")
+            .arg(locale.clone())
+            .output()
+            .expect("failed to execute process");
+        let locale_name = String::from_utf8(locale_name_cli.stdout).unwrap();
         let locale_clone = locale.clone();
-        let locale_checkbutton = gtk::CheckButton::builder().label(locale.clone()).build();
-        println!("{}", gnome_desktop::XkbInfo::new().languages_for_layout(&locale));
+        let locale_checkbutton = gtk::CheckButton::builder()
+            .valign(Align::Center)
+            .can_focus(false)
+            .build();
+        let locale_row = adw::ActionRow::builder()
+            .activatable_widget(&locale_checkbutton)
+            .title(locale_name)
+            .subtitle(locale.clone())
+            .build();
+        locale_row.add_prefix(&locale_checkbutton);
         locale_checkbutton.set_group(Some(&null_checkbutton));
-        language_selection_expander_row_viewport_box.append(&locale_checkbutton);
+        language_selection_expander_row_viewport_box.append(&locale_row);
         locale_checkbutton.connect_toggled(clone!(@weak locale_checkbutton, @weak language_selection_expander_row, @weak bottom_next_button, @weak lang_data_buffer => move |_| {
             if locale_checkbutton.is_active() == true {
-                language_selection_expander_row.set_title(&locale);
+                language_selection_expander_row.set_title(&locale_row.title());
                 bottom_next_button.set_sensitive(true);
                 lang_data_buffer.set_text(&locale);
             }
