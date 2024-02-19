@@ -213,7 +213,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the language_main_box as page: language_page, Give it nice title
-    content_stack.add_titled(&language_main_box, Some("language_page"), &gettext("language"));
+    content_stack.add_titled(
+        &language_main_box,
+        Some("language_page"),
+        &gettext("language"),
+    );
 
     let lang_data_buffer_clone = lang_data_buffer.clone();
 
