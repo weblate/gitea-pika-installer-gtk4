@@ -2,57 +2,69 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 00:21+0300\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-02-19 13:54+0000\n"
+"Last-Translator: piaf <jujuf851@hotmail.com>\n"
+"Language-Team: French <https://hosted.weblate.org/projects/pikaos/"
+"gui-applications/pika-installer-gtk4/fr/>\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4\n"
+"Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr ""
+msgstr "installateur_pikaos"
 
+#, fuzzy
 msgid "welcome_to_pikaos"
-msgstr ""
+msgstr "bienvenue_chez_pikaos"
 
 msgid "use_pikaos_in_live_media"
 msgstr ""
 
+#, fuzzy
 msgid "install_distro_to_system"
-msgstr ""
+msgstr "installer_la_distribution_sur_le_système"
 
 msgid "welcome"
-msgstr ""
+msgstr "bienvenue"
 
+#, fuzzy
 msgid "back"
-msgstr ""
+msgstr "retour"
 
+#, fuzzy
 msgid "next"
-msgstr ""
+msgstr "suivant"
 
+#, fuzzy
 msgid "select_a_timezone"
-msgstr ""
+msgstr "sélectionner_un_fuseau_horaire"
 
 msgid "please_select_timezone"
 msgstr ""
 
+#, fuzzy
 msgid "no_timezone_select"
-msgstr ""
+msgstr "aucun_fuseau_horaire_sélectionné"
 
+#, fuzzy
 msgid "timezone"
-msgstr ""
+msgstr "fuseau_horaire"
 
+#, fuzzy
 msgid "choose_install_method"
-msgstr ""
+msgstr "choisir_la_méthode_d'installation"
 
+#, fuzzy
 msgid "manual_partition_drive"
-msgstr ""
+msgstr "partitionner_manuellement_le_lecteur"
 
+#, fuzzy
 msgid "auto_partition_drive"
-msgstr ""
+msgstr "partitionner_automatiquement_le_lecteur"
 
 msgid "manual_part_installer"
 msgstr ""
@@ -60,8 +72,9 @@ msgstr ""
 msgid "use_utility_manual"
 msgstr ""
 
+#, fuzzy
 msgid "open_gparted"
-msgstr ""
+msgstr "ouvrir_gparted"
 
 msgid "manual_part_note"
 msgstr ""
