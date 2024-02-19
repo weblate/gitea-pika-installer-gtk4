@@ -4,9 +4,9 @@ export LANG=en_US.UTF8
 
 set -e
 
-LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
-KEYBOARD="$(cat "/tmp/pika-installer-gtk4-keyboard.txt")"
-TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
+S_LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
+S_KEYBOARD="$(cat "/tmp/pika-installer-gtk4-keyboard.txt")"
+S_TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
 touch "/tmp/pika-installer-gtk4-status-parting.txt"
 
@@ -57,7 +57,7 @@ done
 
 if [[ ! -f "/tmp/pika-installer-gtk4-crypttab" ]]
 then
-     pikainstall -r /media/pika-install-mount/ --manual 1 -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
+     pikainstall -r /media/pika-install-mount/ --manual 1 -l ${S_LOCALE} -k ${S_KEYBOARD} -t ${S_TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
 else
-    pikainstall -r /media/pika-install-mount/ --manual 2 -l ${LOCALE} -k ${KEYBOARD} -t ${TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
+    pikainstall -r /media/pika-install-mount/ --manual 2 -l ${S_LOCALE} -k ${S_KEYBOARD} -t ${S_TIMEZONE} && touch /tmp/pika-installer-gtk4-successful.txt || touch /tmp/pika-installer-gtk4-fail.txt && exit 1
 fi

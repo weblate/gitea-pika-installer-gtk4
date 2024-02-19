@@ -10,7 +10,7 @@ use gtk::*;
 use vte::prelude::*;
 use vte::*;
 
-use gettextrs::{gettext};
+use gettextrs::gettext;
 
 use crate::done_page::done_page;
 
@@ -21,8 +21,8 @@ use std::path::Path;
 use std::rc::Rc;
 
 use crate::manual_partitioning::DriveMount;
-use serde::*;
 use duct::*;
+use serde::*;
 
 #[derive(PartialEq, Debug, Eq, Hash, Clone, Serialize, Deserialize)]
 struct CrypttabEntry {
@@ -40,7 +40,9 @@ pub fn install_page(
     let mut _iter_count = 0;
     _iter_count = 0;
     let mut unlocked_array: Vec<String> = Default::default();
-    manual_drive_mount_array.borrow_mut().sort_by_key(|p| p.clone().mountpoint);
+    manual_drive_mount_array
+        .borrow_mut()
+        .sort_by_key(|p| p.clone().mountpoint);
     for partitions in manual_drive_mount_array.borrow_mut().iter() {
         let new_crypt = if partitions.mountpoint != "/"
             && !unlocked_array.contains(&partitions.partition)
@@ -78,8 +80,7 @@ pub fn install_page(
                 )
                 .build();
             crypttab_dialog.add_response("crypttab_dialog_boot", &gettext("unlock_boot_manually"));
-            crypttab_dialog
-                .add_response("crypttab_dialog_auto", &gettext("unlock_boot_manual"));
+            crypttab_dialog.add_response("crypttab_dialog_auto", &gettext("unlock_boot_manual"));
             crypttab_dialog.set_response_enabled("crypttab_dialog_auto", false);
             crypttab_password.connect_apply(clone!(@weak crypttab_password, @strong partitions, @weak crypttab_dialog => move |_| {
             let (luks_manual_password_sender, luks_manual_password_receiver) = async_channel::unbounded();
@@ -269,14 +270,15 @@ pub fn install_page(
                     "/dev/".to_owned()
                         + &partitions.partition
                         + &gettext("mounted_on_detail")
-                        + &partitions.mountpoint
+                        + &partitions.mountpoint,
                 )
                 .build();
             install_confirm_details_boxed_list.append(&confirm_row);
         }
     } else {
-        let install_confirm_detail_target =
-            adw::ActionRow::builder().title(gettext("install_target_detail")).build();
+        let install_confirm_detail_target = adw::ActionRow::builder()
+            .title(gettext("install_target_detail"))
+            .build();
         install_confirm_detail_target.set_subtitle(
             &fs::read_to_string("/tmp/pika-installer-gtk4-target-auto.txt")
                 .expect("Unable to read file"),
@@ -338,7 +340,8 @@ pub fn install_page(
         } else {
             _p1_row_text =
                 "512 MB ".to_owned() + target_block_device + "1" + " as fat32" + " on /boot/efi";
-            _p2_row_text = "1 GB ".to_owned() + target_block_device + "2" + " as ext4" + " on /boot";
+            _p2_row_text =
+                "1 GB ".to_owned() + target_block_device + "2" + " as ext4" + " on /boot";
             _p3_row_text = pretty_bytes::converter::convert(_target_p3_size)
                 + " "
                 + target_block_device
@@ -352,10 +355,18 @@ pub fn install_page(
                 + " as btrfs"
                 + " on /home";
         }
-        let install_confirm_p1 = adw::ActionRow::builder().title(_p1_row_text.clone()).build();
-        let install_confirm_p2 = adw::ActionRow::builder().title(_p2_row_text.clone()).build();
-        let install_confirm_p3 = adw::ActionRow::builder().title(_p3_row_text.clone()).build();
-        let install_confirm_p4 = adw::ActionRow::builder().title(_p4_row_text.clone()).build();
+        let install_confirm_p1 = adw::ActionRow::builder()
+            .title(_p1_row_text.clone())
+            .build();
+        let install_confirm_p2 = adw::ActionRow::builder()
+            .title(_p2_row_text.clone())
+            .build();
+        let install_confirm_p3 = adw::ActionRow::builder()
+            .title(_p3_row_text.clone())
+            .build();
+        let install_confirm_p4 = adw::ActionRow::builder()
+            .title(_p4_row_text.clone())
+            .build();
         // / install_confirm_selection_box appends
         //// add live and install media button to install page selections
         install_confirm_details_boxed_list.append(&install_confirm_detail_language);

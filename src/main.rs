@@ -8,8 +8,8 @@ use gdk::Display;
 use gtk::*;
 
 mod config;
+use config::{APP_ID, GETTEXT_PACKAGE, LOCALEDIR};
 use gettextrs::{gettext, LocaleCategory};
-use config::{GETTEXT_PACKAGE, LOCALEDIR, APP_ID};
 
 mod automatic_partitioning;
 mod build_ui;
@@ -28,10 +28,7 @@ mod welcome_page;
 
 /// main function
 fn main() {
-    let application = adw::Application::new(
-        Some(APP_ID),
-        Default::default(),
-    );
+    let application = adw::Application::new(Some(APP_ID), Default::default());
     application.connect_startup(|app| {
         // The CSS "magic" happens here.
         let provider = CssProvider::new();
@@ -45,7 +42,8 @@ fn main() {
         );
         // Prepare i18n
         gettextrs::setlocale(LocaleCategory::LcAll, "");
-        gettextrs::bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR).expect("Unable to bind the text domain");
+        gettextrs::bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR)
+            .expect("Unable to bind the text domain");
         gettextrs::textdomain(GETTEXT_PACKAGE).expect("Unable to switch to the text domain");
         // Fallback if no translation present
         if gettext("pikaos_installer") == "pikaos_installer" {

@@ -7,19 +7,18 @@ use glib::*;
 use gtk::*;
 use std::thread;
 
-use gettextrs::{gettext};
+use gettextrs::gettext;
 
-use std::cell::{RefCell};
+use std::cell::RefCell;
 use std::rc::Rc;
-
 
 use duct::cmd;
 use std::{
     collections::HashSet,
     hash::Hash,
     io::{BufRead, BufReader},
-    process::{Command},
-    time::{Duration},
+    process::Command,
+    time::Duration,
 };
 
 use crate::drive_mount_row::DriveMountRow;
@@ -132,7 +131,7 @@ pub fn manual_partitioning(
     partitioning_stack: &gtk::Stack,
     bottom_next_button: &gtk::Button,
     manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
-) {
+) -> gtk::Button {
     let part_table_array: Rc<RefCell<Vec<String>>> = Default::default();
 
     let check_part_unique = Rc::new(RefCell::new(true));
@@ -216,14 +215,14 @@ pub fn manual_partitioning(
         .build();
 
     let partition_method_manual_selection_text = gtk::Label::builder()
-            .label(gettext("manual_part_note"))
-            .halign(gtk::Align::Center)
-            .hexpand(true)
-            .margin_top(15)
-            .margin_bottom(15)
-            .margin_start(15)
-            .margin_end(15)
-            .build();
+        .label(gettext("manual_part_note"))
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
     partition_method_manual_selection_text.add_css_class("medium_sized_text");
 
     let partition_refresh_button = gtk::Button::builder()
@@ -257,7 +256,6 @@ pub fn manual_partitioning(
         .valign(Align::End)
         .vexpand(true)
         .visible(false)
-        .label(gettext("fstab_status_valid"))
         .build();
     partition_method_manual_valid_label.add_css_class("small_valid_text");
 
@@ -291,7 +289,12 @@ pub fn manual_partitioning(
         partition_err_check(&partition_method_manual_error_label, &partition_method_manual_valid_label, &manual_drive_mount_array);
     }));
 
-    partition_refresh_button.connect_clicked(clone!(@weak drive_mounts_adw_listbox,@strong part_table_array, @strong manual_drive_mount_array => move |_| {
+    partition_refresh_button.connect_clicked(clone!(@weak partition_method_manual_error_label, @weak partition_method_manual_valid_label,@weak drive_mounts_adw_listbox,@strong part_table_array, @strong manual_drive_mount_array => move |_| {
+        partition_method_manual_error_label.set_label("");
+        partition_method_manual_error_label.set_widget_name("");
+        partition_method_manual_error_label.set_visible(false);
+        partition_method_manual_valid_label.set_label("");
+        partition_method_manual_valid_label.set_visible(false);
         while let Some(row) = drive_mounts_adw_listbox.last_child() {
                 if row.widget_name() == "DriveMountRow" {
                     drive_mounts_adw_listbox.remove(&row);
@@ -423,7 +426,7 @@ pub fn manual_partitioning(
         "partition_method_manual_page",
     );
 
-    //return(partition_method_manual_target_buffer, partition_method_manual_luks_buffer, partition_method_manual_luks_password_entry)
+    return partition_refresh_button;
 }
 
 fn partition_err_check(
@@ -459,9 +462,7 @@ fn partition_err_check(
     }
 
     if empty_mountpoint == false {
-        if &partition_method_manual_error_label.widget_name()
-            == "err1"
-        {
+        if &partition_method_manual_error_label.widget_name() == "err1" {
             partition_method_manual_error_label.set_visible(false);
         }
         if manual_drive_mount_array_ref.len()
@@ -485,8 +486,7 @@ fn partition_err_check(
         }
     } else {
         if !partition_method_manual_error_label.is_visible() {
-            partition_method_manual_error_label
-                .set_label(&gettext("fstab_no_mountpoint_err"));
+            partition_method_manual_error_label.set_label(&gettext("fstab_no_mountpoint_err"));
             partition_method_manual_error_label.set_widget_name("err1");
             partition_method_manual_error_label.set_visible(true);
         }
@@ -494,14 +494,12 @@ fn partition_err_check(
 
     if empty_partition == true {
         if !partition_method_manual_error_label.is_visible() {
-            partition_method_manual_error_label
-                .set_label(&gettext("fstab_no_partition_err"));
+            partition_method_manual_error_label.set_label(&gettext("fstab_no_partition_err"));
             partition_method_manual_error_label.set_widget_name("err2");
             partition_method_manual_error_label.set_visible(true);
         }
     } else {
-        if partition_method_manual_error_label.widget_name() == "err2"
-        {
+        if partition_method_manual_error_label.widget_name() == "err2" {
             partition_method_manual_error_label.set_visible(false);
         }
     }
@@ -614,7 +612,11 @@ fn partition_err_check(
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
-                if partition_fs == "vfat" || partition_fs == "ntfs" || partition_fs == "swap" || partition_fs == "exfat" {
+                if partition_fs == "vfat"
+                    || partition_fs == "ntfs"
+                    || partition_fs == "swap"
+                    || partition_fs == "exfat"
+                {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
                             &(gettext("fstab_badfs")
@@ -646,7 +648,11 @@ fn partition_err_check(
                         partition_method_manual_error_label.set_visible(false);
                     }
                 }
-                if partition_fs == "vfat" || partition_fs == "ntfs" || partition_fs == "swap" || partition_fs == "exfat" {
+                if partition_fs == "vfat"
+                    || partition_fs == "ntfs"
+                    || partition_fs == "swap"
+                    || partition_fs == "exfat"
+                {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
                             &(gettext("fstab_badfs")
@@ -699,6 +705,7 @@ fn partition_err_check(
                 }
             }
             if !partition_method_manual_error_label.is_visible() {
+                partition_method_manual_valid_label.set_label(&gettext("fstab_status_valid"));
                 partition_method_manual_valid_label.set_visible(true)
             } else {
                 partition_method_manual_valid_label.set_visible(false)

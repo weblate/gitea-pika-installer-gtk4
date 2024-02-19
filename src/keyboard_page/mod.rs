@@ -6,7 +6,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext};
+use gettextrs::gettext;
 
 use std::io::BufRead;
 use std::io::BufReader;
@@ -242,7 +242,11 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the keyboard_main_box as page: keyboard_page, Give it nice title
-    content_stack.add_titled(&keyboard_main_box, Some("keyboard_page"), &gettext("keyboard"));
+    content_stack.add_titled(
+        &keyboard_main_box,
+        Some("keyboard_page"),
+        &gettext("keyboard"),
+    );
 
     let keyboard_data_buffer_clone = keyboard_data_buffer.clone();
 

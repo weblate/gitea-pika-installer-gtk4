@@ -6,7 +6,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext};
+use gettextrs::gettext;
 
 use std::path::Path;
 
@@ -128,7 +128,11 @@ pub fn build_ui(app: &adw::Application) {
     partitioning_page(&done_main_box, &install_main_box, &content_stack, &window);
 
     //// Add the install_main_box as page: install_page, Give it nice title
-    content_stack.add_titled(&install_main_box, Some("install_page"), &gettext("installation"));
+    content_stack.add_titled(
+        &install_main_box,
+        Some("install_page"),
+        &gettext("installation"),
+    );
 
     // Add done_page.rs as a page for content_stack
     content_stack.add_titled(&done_main_box, Some("done_page"), &gettext("done"));

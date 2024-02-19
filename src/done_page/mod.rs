@@ -6,16 +6,13 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use crate::config::{DISTRO_ICON};
-use gettextrs::{gettext};
+use crate::config::DISTRO_ICON;
+use gettextrs::gettext;
 
 use std::path::Path;
 use std::process::Command;
 
-pub fn done_page(
-    done_main_box: &gtk::Box,
-    window: &adw::ApplicationWindow,
-) {
+pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
     // the header box for the installation_successful page
     let done_header_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)

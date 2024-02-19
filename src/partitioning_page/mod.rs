@@ -7,7 +7,7 @@ use glob::glob;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext};
+use gettextrs::gettext;
 
 use crate::automatic_partitioning::automatic_partitioning;
 use crate::install_page::install_page;
@@ -21,7 +21,7 @@ use std::rc::Rc;
 
 use duct::*;
 
-use crate::{manual_partitioning};
+use crate::manual_partitioning;
 
 use manual_partitioning::DriveMount;
 
@@ -216,7 +216,7 @@ pub fn partitioning_page(
     );
     let partitioning_page_automatic_partitioning =
         automatic_partitioning(&partitioning_stack, &bottom_next_button);
-    let _partitioning_page_manual_partitioning = manual_partitioning(
+    let partitioning_page_manual_partitioning = manual_partitioning(
         &partitioning_stack,
         &bottom_next_button,
         &manual_drive_mount_array,
@@ -250,6 +250,7 @@ pub fn partitioning_page(
         content_stack.set_visible_child_name("keyboard_page");
         partitioning_stack.set_visible_child_name("partition_method_select_page");
         bottom_next_button.set_sensitive(false);
+        partitioning_page_manual_partitioning.emit_clicked();
     }));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak partitioning_stack, @weak install_main_box, @weak window, @weak done_main_box => move |_| {

@@ -321,3 +321,10 @@ msgstr "Done"
 
 msgid "partitioning"
 msgstr "Partitioning"
+
+msgid "luks2_password_confirm"
+msgstr "Confirm LUKS Password"
+
+msgid "luks_not_match"
+msgstr "The LUKS Passwords do not match!"
+

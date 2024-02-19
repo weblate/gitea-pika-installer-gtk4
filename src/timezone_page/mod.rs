@@ -6,7 +6,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext};
+use gettextrs::gettext;
 
 use std::io::BufRead;
 use std::io::BufReader;
@@ -213,7 +213,11 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     // / Content stack appends
     //// Add the timezone_main_box as page: timezone_page, Give it nice title
-    content_stack.add_titled(&timezone_main_box, Some("timezone_page"), &gettext("timezone"));
+    content_stack.add_titled(
+        &timezone_main_box,
+        Some("timezone_page"),
+        &gettext("timezone"),
+    );
 
     let timezone_data_buffer_clone = timezone_data_buffer.clone();
 
