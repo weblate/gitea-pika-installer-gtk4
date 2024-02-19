@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 13:54+0000\n"
+"PO-Revision-Date: 2024-02-19 15:38+0000\n"
 "Last-Translator: YourPepsiDrink <kreekisanls@gmail.com>\n"
 "Language-Team: French <https://hosted.weblate.org/projects/pikaos/"
 "gui-applications/pika-installer-gtk4/fr/>\n"
@@ -15,227 +15,255 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr "installateur_pikaos"
+msgstr "Installateur PikaOS"
 
-#, fuzzy
 msgid "welcome_to_pikaos"
-msgstr "bienvenue_chez_pikaos"
+msgstr "Bienvenue chez PikaOS"
 
-#, fuzzy
 msgid "use_pikaos_in_live_media"
-msgstr "utiliser_pikaos_sur_la_clé_bootable"
+msgstr "Utiliser PikaOS sur une clé bootable"
 
-#, fuzzy
 msgid "install_distro_to_system"
-msgstr "installer_la_distribution_sur_le_système"
+msgstr "Installer cette distribution sur le système"
 
 msgid "welcome"
-msgstr "bienvenue"
+msgstr "Bienvenue"
 
-#, fuzzy
 msgid "back"
-msgstr "retour"
+msgstr "Retour"
 
-#, fuzzy
 msgid "next"
-msgstr "suivant"
+msgstr "Suivant"
 
-#, fuzzy
 msgid "select_a_timezone"
-msgstr "sélectionner_un_fuseau_horaire"
+msgstr "Sélectionner un fuseau horaire"
 
 msgid "please_select_timezone"
-msgstr "veuillez_choisir_un_fuseau_horaire"
+msgstr "Veuillez choisir un fuseau horaire à utiliser"
 
-#, fuzzy
 msgid "no_timezone_select"
-msgstr "aucun_fuseau_horaire_sélectionné"
+msgstr "Aucun fuseau horaire a été sélectionné"
 
-#, fuzzy
 msgid "timezone"
-msgstr "fuseau_horaire"
+msgstr "Fuseau horaire"
 
-#, fuzzy
 msgid "choose_install_method"
-msgstr "choisir_la_méthode_d'installation"
+msgstr "Choisir la méthode d'installation"
 
-#, fuzzy
 msgid "manual_partition_drive"
-msgstr "partitionner_manuellement_le_lecteur"
+msgstr "Partitionner manuellement le lecteur"
 
-#, fuzzy
 msgid "auto_partition_drive"
-msgstr "partitionner_automatiquement_le_lecteur"
+msgstr "Partitionner automatiquement le lecteur"
 
 msgid "manual_part_installer"
-msgstr ""
+msgstr "Installateur de partitionnement manuelle"
 
-#, fuzzy
 msgid "use_utility_manual"
-msgstr "utiliser_le_manuel_d'utilité"
+msgstr ""
+"Utilise cette utilité pour partitionner, monter ou formatter vos lecteurs."
 
-#, fuzzy
 msgid "open_gparted"
-msgstr "ouvrir_gparted"
+msgstr "Ouvrir GPARTED"
 
 msgid "manual_part_note"
 msgstr ""
+"- Appuyer le bouton plus en dessous pour commencer à ajouter les entrées de "
+"système de fichiers.\n"
+"Notes:\n"
+" - Cette installateur n'enlève pas automatiquement votre data, formatter vos "
+"lecteurs manuellement avec gparted.\n"
+" - Pour ajouter une partition linux-swap, mettez le point de montage à [SWAP]"
+"\n"
+" - On recommande ces partitions comme une (layout) de base:\n"
+" /boot~1000 Mo ext4\n"
+" /boot/efi ~ 512 Mo vfat ou fat32\n"
+" / >= 25Go brtfs.\n"
+" PETITE NOTE DU TRANSLATEUR: / sera votre partition root, ou vos "
+"applications seront installé sur le partition root avec Pikman (APT de "
+"PikaOS). On recommende l'autre partition comme /home pour que vos fichiers "
+"personnels seront pas enlevé par une corruption ou réinstallation."
 
 msgid "refresh_part_table"
-msgstr ""
+msgstr "Rafraîchir les tables de partition"
 
 msgid "validate_fs_table"
-msgstr ""
+msgstr "Valider les Tables de Système de Fichiers"
 
 msgid "fstab_status_valid"
 msgstr ""
+"Statut de Table de Système de Fichiers: Toutes ces entrées sont valides!"
 
 msgid "part_need_mapper"
-msgstr ""
+msgstr "Cette partition a besoin d'un mappeur!"
 
+#, fuzzy
 msgid "fstab_subvol_warn"
 msgstr ""
+"Avertissement du Table de Système de Fichiers: La vérification de "
+"réutilisation du partition sera (skip) à cause de l'usage du subvolume."
 
 msgid "fstab_multiple_part_mountpoint_err"
 msgstr ""
+"Erreur du Table de Système de Fichiers: Plusieurs partitions sont configuré "
+"sur le même point de montage!"
 
 msgid "fstab_no_mountpoint_err"
 msgstr ""
+"Erreur du Table de Système de Fichiers: Un ou plusieurs partitions n'ont pas "
+"un point de montage configuré!"
 
 msgid "fstab_no_partition_err"
 msgstr ""
+"Erreur du Table de Système de Fichiers: Un ou deux entrées n'ont pas de "
+"partitions configurés!"
 
 msgid "fstab_badfs"
 msgstr ""
+"Erreur du Table de Système de Fichiers: Système de Fichiers invalide: (/dev/"
 
 msgid "fstab_small_efi_size"
-msgstr ""
+msgstr ") Il faut qu'il soit être à 512Mo ou plus!"
 
 msgid "fstab_badfs_efi"
-msgstr ""
+msgstr ") Il faut que FAT32 ou vFAT soit monté vers /boot/efi!"
 
 msgid "fstab_small_boot_size"
-msgstr ""
+msgstr ") Il faut qu'il soit être à 1Go ou plus!"
 
 msgid "fstab_badfs_boot"
-msgstr ""
+msgstr ") Il faut que FAT32 ou vFAT ne soit pas monté vers /boot!"
 
 msgid "fstab_small_root_size"
-msgstr ""
+msgstr ") Il faut qu'il soit être à 26Go ou plus!"
 
 msgid "fstab_badfs_root"
 msgstr ""
+") Il faut qu'il soit être un système de fichiers compatible Linux* comme:\n"
+"*ext4/btrfs/xfs/f2fs à monter vers /! \n"
+" (ATTENTION : / signifie la partition root, ou votre système sera installée!)"
 
 msgid "fstab_small_home_size"
-msgstr ""
+msgstr ") Il faut qu'il soit être à 11Go ou plus!"
 
 msgid "fstab_badfs_home"
 msgstr ""
+") Il faut qu'il soit être un système de fichiers compatible Linux* comme:\n"
+"*ext4/btrfs/xfs/f2fs à monter vers /home!"
 
 msgid "fstab_badfs_swap"
-msgstr ""
+msgstr ") Il fauit qu'il soit pas utilisé pour [SWAP]!"
 
 msgid "fstab_bad_mountpoint"
-msgstr ""
+msgstr "Table de Système de Fichiers: Point de montage invalide: ("
 
 msgid "fstab_bad_mountpoint_msg"
-msgstr ""
+msgstr ") n'est pas un point de montage valide!"
 
 msgid "select_a_language"
-msgstr ""
+msgstr "Séléctionner une langue"
 
 msgid "please_select_locale"
-msgstr ""
+msgstr "Veuillez séléctionner une locale pour le système à utiliser"
 
 msgid "no_locale_selected"
-msgstr ""
+msgstr "Pas de locale séléctionné"
 
 msgid "language"
-msgstr ""
+msgstr "Langue"
 
 msgid "select_a_keyboard"
-msgstr ""
+msgstr "Séléctionner un clavier"
 
 msgid "please_select_keyboard"
-msgstr ""
+msgstr "Veuillez séléctionner un clavier"
 
 msgid "no_keyboard_selected"
-msgstr ""
+msgstr "Pas de clavier séléctionné"
 
 msgid "test_your_keyboard"
-msgstr ""
+msgstr "Tester votre clavier ici!"
 
 msgid "keyboard"
-msgstr ""
+msgstr "Clavier"
 
 msgid "luks_password_for"
-msgstr ""
+msgstr "Mot de passe LUKS pour"
 
 msgid "luks_how_should"
-msgstr ""
+msgstr "Comment voulez-vous"
 
 msgid "be_added_crypttab"
-msgstr ""
+msgstr "à ajouter sur /etc/crypttab?"
 
 msgid "unlock_boot_manually"
-msgstr ""
+msgstr "Déverouiller le boot manuellemnt"
 
+#, fuzzy
 msgid "unlock_boot_manual"
-msgstr ""
+msgstr "Déverouillement automatique avec le dévérouillement root"
 
+#, fuzzy
 msgid "sit_back_relax"
-msgstr ""
+msgstr "Assoyez-vous, relaxez-vous et regarde le show."
 
 msgid "language_detail"
-msgstr ""
+msgstr "Langue:"
 
 msgid "timezone_detail"
-msgstr ""
+msgstr "Fuseau horaire:"
 
 msgid "keyboard_detail"
-msgstr ""
+msgstr "Disposition de clavier:"
 
 msgid "mounted_on_detail"
-msgstr ""
+msgstr "montée sur:"
 
 msgid "install_target_detail"
-msgstr ""
+msgstr "Cible d'installation:"
 
 msgid "confirm_install_pika"
-msgstr ""
+msgstr "Confirmer et Installer PikaOS"
 
 msgid "view_logs"
-msgstr ""
+msgstr "Voir les logs"
 
+#, fuzzy
 msgid "parting_status_text"
-msgstr ""
+msgstr "Partitionement les cibles de lecteurs."
 
+#, fuzzy
 msgid "image_status_text"
-msgstr ""
+msgstr "Écrire l'image vers la cible."
 
 msgid "flag1_status_text"
-msgstr ""
+msgstr "Activation du flag bls_boot vers /boot."
 
+#, fuzzy
 msgid "flag2_status_text"
-msgstr ""
+msgstr "Activation du flag efi vers /boot/efi."
 
+#, fuzzy
 msgid "crypt_status_text"
-msgstr ""
+msgstr "Configuration l'encryption crypttab."
 
 msgid "lang_status_text"
-msgstr ""
+msgstr "Configuration de le langue et du clavier."
 
 msgid "boot_status_status_text"
-msgstr ""
+msgstr "Configuration du bootloader."
 
 msgid "post_status_text"
-msgstr ""
+msgstr "Éxecution du script du post-installation."
 
 msgid "pikaos_eula_agreement"
-msgstr ""
+msgstr "L'Accord de License Utilisateur PikaOS"
 
+#, fuzzy
 msgid "please_read_eula"
 msgstr ""
+"Veuillez lire consciousement et soyez-sûr que vous acceptez (the following) "
+"avant d'installer PikaOS: (NEEDS EDITING)"
 
 msgid "eula_buffer"
 msgstr ""
