@@ -2,66 +2,71 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 00:21+0300\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2024-02-19 18:43+0000\n"
+"Last-Translator: Folktro <Folktro@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Swedish <https://hosted.weblate.org/projects/pikaos/"
+"gui-applications/pika-installer-gtk4/sv/>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 3.4\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr ""
+msgstr "PikaOS Installerare"
 
 msgid "welcome_to_pikaos"
-msgstr ""
+msgstr "Välkommen till PikaOS"
 
 msgid "use_pikaos_in_live_media"
-msgstr ""
+msgstr "Använd PikaOS i en Live media"
 
 msgid "install_distro_to_system"
-msgstr ""
+msgstr "Installera Distro till Systemet"
 
 msgid "welcome"
-msgstr ""
+msgstr "Välkommen"
 
 msgid "back"
-msgstr ""
+msgstr "Tillbaka"
 
 msgid "next"
-msgstr ""
+msgstr "Nästa"
 
 msgid "select_a_timezone"
-msgstr ""
+msgstr "Välj en tidszon"
 
 msgid "please_select_timezone"
-msgstr ""
+msgstr "Vänligen välj en Tidszon för systemet att använda"
 
 msgid "no_timezone_select"
-msgstr ""
+msgstr "Ingen Tidszon vald"
 
 msgid "timezone"
-msgstr ""
+msgstr "Tidszon"
 
 msgid "choose_install_method"
-msgstr ""
+msgstr "Välj en installationsmetod"
 
 msgid "manual_partition_drive"
-msgstr ""
+msgstr "Manuellt Partitionera Disken"
 
 msgid "auto_partition_drive"
 msgstr ""
+"Automatiskt Partitionera\n"
+"Disken"
 
 msgid "manual_part_installer"
-msgstr ""
+msgstr "Manuell Partitionerings-Installerare"
 
 msgid "use_utility_manual"
 msgstr ""
+"Använd detta verktyg för att partitionera/montera/formatera dina diskar."
 
 msgid "open_gparted"
-msgstr ""
+msgstr "Öppna GParted"
 
 msgid "manual_part_note"
 msgstr ""
