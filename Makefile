@@ -1,4 +1,4 @@
-export PATH := "/root/.cargo/bin:$(PWD):$(PATH)"
+export PATH := "$(PWD):$(PATH)"
 
 all:
 	true
