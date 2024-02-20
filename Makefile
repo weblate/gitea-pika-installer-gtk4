@@ -5,6 +5,7 @@ all:
 
 install:
 	#mkdir -p $(DESTDIR)/usr/bin/
+	cargo update -p normpath --precise ver
 	cargo fetch
 	cargo build --release
 	#cp -vf target/release/pika-installer-gtk4 $(DESTDIR)/usr/bin/
