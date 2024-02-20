@@ -5,6 +5,7 @@ cd ./pika-installer-gtk4
 
 # Get build deps
 apt-get build-dep ./ -y
+apt-get install curl -y
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
 # Build package
