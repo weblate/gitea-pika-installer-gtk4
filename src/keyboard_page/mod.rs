@@ -19,7 +19,9 @@ use std::path::Path;
 
 use gnome_desktop::*;
 
-pub fn keyboard_page(content_stack: &gtk::Stack) {
+pub fn keyboard_page(content_stack: &gtk::Stack,
+                     keyboard_main_box: &gtk::Box,
+) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -55,11 +57,6 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     //// Add the next and back buttons
     bottom_box.append(&bottom_back_button);
     bottom_box.append(&bottom_next_button);
-
-    // the header box for the keyboard page
-    let keyboard_main_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
-        .build();
 
     // the header box for the keyboard page
     let keyboard_header_box = gtk::Box::builder()
@@ -264,14 +261,6 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     );
 
     keyboard_main_box.append(&bottom_box);
-
-    // / Content stack appends
-    //// Add the keyboard_main_box as page: keyboard_page, Give it nice title
-    content_stack.add_titled(
-        &keyboard_main_box,
-        Some("keyboard_page"),
-        &gettext("keyboard"),
-    );
 
     let keyboard_data_buffer_clone = keyboard_data_buffer.clone();
 

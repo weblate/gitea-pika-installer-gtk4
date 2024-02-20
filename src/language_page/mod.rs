@@ -16,8 +16,12 @@ use std::process::Stdio;
 
 use std::fs;
 use std::path::Path;
+use crate::eula_page::eula_page;
+use crate::keyboard_page::keyboard_page;
+use crate::partitioning_page::partitioning_page;
+use crate::timezone_page::timezone_page;
 
-pub fn language_page(content_stack: &gtk::Stack) {
+pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -241,14 +245,6 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     language_main_box.append(&bottom_box);
 
-    // / Content stack appends
-    //// Add the language_main_box as page: language_page, Give it nice title
-    content_stack.add_titled(
-        &language_main_box,
-        Some("language_page"),
-        &gettext("language"),
-    );
-
     let lang_data_buffer_clone = lang_data_buffer.clone();
 
     language_search_bar.connect_search_changed(clone!(@weak language_search_bar, @weak language_selection_expander_row_viewport_box => move |_| {
@@ -273,7 +269,83 @@ pub fn language_page(content_stack: &gtk::Stack) {
         }
     }));
 
-    bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
+
+    // / Content stack appends
+    //// Add the language_main_box as page: language_page, Give it nice title
+    content_stack.add_titled(
+        &language_main_box,
+        Some("language_page"),
+        &gettext("language"),
+    );
+
+    // the header box for the eula page
+    let eula_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    // / Content stack appends
+    //// Add the eula_main_box as page: eula_page, Give it nice title
+    content_stack.add_titled(&eula_main_box, Some("eula_page"), &gettext("eula"));
+
+    // the header box for the timezone page
+    let timezone_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    // / Content stack appends
+    //// Add the keyboard_main_box as page: keyboard_page, Give it nice title
+    content_stack.add_titled(
+        &timezone_main_box,
+        Some("timezone_page"),
+        &gettext("timezone"),
+    );
+
+    // the header box for the keyboard page
+    let keyboard_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    // / Content stack appends
+    //// Add the keyboard_main_box as page: keyboard_page, Give it nice title
+    content_stack.add_titled(
+        &keyboard_main_box,
+        Some("keyboard_page"),
+        &gettext("keyboard"),
+    );
+
+    // Add install_page.rs as a page for content_stack
+    let install_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    let done_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    // the header box for the partitioning page
+    let partitioning_main_box = gtk::Box::builder()
+        .orientation(Orientation::Vertical)
+        .build();
+
+    // / Content stack appends
+    //// Add the partitioning_main_box as page: partitioning_page, Give it nice title
+    content_stack.add_titled(
+        &partitioning_main_box,
+        Some("partitioning_page"),
+        &gettext("partitioning"),
+    );
+
+    //// Add the install_main_box as page: install_page, Give it nice title
+    content_stack.add_titled(
+        &install_main_box,
+        Some("install_page"),
+        &gettext("installation"),
+    );
+
+    // Add done_page.rs as a page for content_stack
+    content_stack.add_titled(&done_main_box, Some("done_page"), &gettext("done"));
+
+    bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak window => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-lang.txt").exists() {
             fs::remove_file("/tmp/pika-installer-gtk4-lang.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-lang.txt");
         }
@@ -289,6 +361,27 @@ pub fn language_page(content_stack: &gtk::Stack) {
             println!("Warning: Current LANG is not supported, using fallback Locale.");
             gettextrs::setlocale(LocaleCategory::LcAll, "en_US.UTF8");
         }
+        // Add eula_page.rs as a page for content_stack
+        while let Some(widget) = eula_main_box.last_child() {
+                eula_main_box.remove(&widget);
+        }
+        eula_page(&content_stack, &eula_main_box);
+        // Add timezone_page.rs as a page for content_stack
+        while let Some(widget) = timezone_main_box.last_child() {
+                timezone_main_box.remove(&widget);
+        }
+        timezone_page(&content_stack, &timezone_main_box);
+        // Add keyboard_page.rs as a page for content_stack
+        while let Some(widget) = keyboard_main_box.last_child() {
+                keyboard_main_box.remove(&widget);
+        }
+        keyboard_page(&content_stack, &keyboard_main_box);
+        // Add partitioning_page.rs as a page for content_stack
+        while let Some(widget) = partitioning_main_box.last_child() {
+                partitioning_main_box.remove(&widget);
+        }
+        partitioning_page(&partitioning_main_box, &done_main_box, &install_main_box, &content_stack, &window);
+        //
         content_stack.set_visible_child_name("eula_page")
     }));
     bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {

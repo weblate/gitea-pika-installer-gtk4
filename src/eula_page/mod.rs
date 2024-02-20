@@ -8,7 +8,9 @@ use gtk::*;
 
 use gettextrs::gettext;
 
-pub fn eula_page(content_stack: &gtk::Stack) {
+pub fn eula_page(content_stack: &gtk::Stack,
+                 eula_main_box: &gtk::Box,
+) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -44,11 +46,6 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     //// Add the next and back buttons
     bottom_box.append(&bottom_back_button);
     bottom_box.append(&bottom_next_button);
-
-    // the header box for the eula page
-    let eula_main_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
-        .build();
 
     // the header box for the eula page
     let eula_header_box = gtk::Box::builder()
@@ -153,10 +150,6 @@ pub fn eula_page(content_stack: &gtk::Stack) {
     eula_main_box.append(&eula_selection_box);
 
     eula_main_box.append(&bottom_box);
-
-    // / Content stack appends
-    //// Add the eula_main_box as page: eula_page, Give it nice title
-    content_stack.add_titled(&eula_main_box, Some("eula_page"), &gettext("eula"));
 
     eula_accept_checkbutton.connect_toggled(
         clone!(@weak eula_accept_checkbutton, @weak bottom_next_button => move |_| {

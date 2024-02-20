@@ -17,7 +17,9 @@ use std::str;
 use std::fs;
 use std::path::Path;
 
-pub fn timezone_page(content_stack: &gtk::Stack) {
+pub fn timezone_page(content_stack: &gtk::Stack,
+                     timezone_main_box: &gtk::Box,
+) {
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -53,11 +55,6 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     //// Add the next and back buttons
     bottom_box.append(&bottom_back_button);
     bottom_box.append(&bottom_next_button);
-
-    // the header box for the timezone page
-    let timezone_main_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
-        .build();
 
     // the header box for the timezone page
     let timezone_header_box = gtk::Box::builder()
@@ -227,14 +224,6 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     timezone_main_box.append(&bottom_box);
 
-    // / Content stack appends
-    //// Add the timezone_main_box as page: timezone_page, Give it nice title
-    content_stack.add_titled(
-        &timezone_main_box,
-        Some("timezone_page"),
-        &gettext("timezone"),
-    );
-
     let timezone_data_buffer_clone = timezone_data_buffer.clone();
 
     timezone_search_bar.connect_search_changed(clone!(@weak timezone_search_bar, @weak timezone_selection_expander_row_viewport_box => move |_| {
@@ -272,7 +261,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
         .expect("timezone failed to start");
         content_stack.set_visible_child_name("keyboard_page")
     }));
-    bottom_back_button.connect_clicked(clone!(@weak content_stack => move |_| {
-        content_stack.set_visible_child_name("eula_page")
+    bottom_back_button.connect_clicked(clone!(@weak content_stack, @weak timezone_main_box => move |_| {
+        content_stack.set_visible_child_name("eula_page");
     }));
 }

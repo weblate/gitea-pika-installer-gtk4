@@ -26,6 +26,7 @@ use crate::manual_partitioning;
 use manual_partitioning::DriveMount;
 
 pub fn partitioning_page(
+    partitioning_main_box: &gtk::Box,
     done_main_box: &gtk::Box,
     install_main_box: &gtk::Box,
     content_stack: &gtk::Stack,
@@ -68,11 +69,6 @@ pub fn partitioning_page(
     //// Add the next and back buttons
     bottom_box.append(&bottom_back_button);
     bottom_box.append(&bottom_next_button);
-
-    // the header box for the partitioning page
-    let partitioning_main_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
-        .build();
 
     // the header box for the partitioning page
     let partitioning_header_box = gtk::Box::builder()
@@ -225,14 +221,6 @@ pub fn partitioning_page(
     // add everything to the main box
     partitioning_main_box.append(&partitioning_stack);
     partitioning_main_box.append(&bottom_box);
-
-    // / Content stack appends
-    //// Add the partitioning_main_box as page: partitioning_page, Give it nice title
-    content_stack.add_titled(
-        &partitioning_main_box,
-        Some("partitioning_page"),
-        &gettext("partitioning"),
-    );
 
     automatic_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_automatic_page")));
     manual_method_button.connect_clicked(clone!(@weak partitioning_stack => move |_| partitioning_stack.set_visible_child_name("partition_method_manual_page")));

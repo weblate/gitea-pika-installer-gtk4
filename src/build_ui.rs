@@ -18,14 +18,6 @@ use crate::efi_error_page::efi_error_page;
 
 use crate::language_page::language_page;
 
-use crate::eula_page::eula_page;
-
-use crate::timezone_page::timezone_page;
-
-use crate::keyboard_page::keyboard_page;
-
-use crate::partitioning_page::partitioning_page;
-
 // build ui function linked to app startup above
 pub fn build_ui(app: &adw::Application) {
     // setup glib
@@ -104,38 +96,7 @@ pub fn build_ui(app: &adw::Application) {
     //  }));
 
     // Add language_page.rs as a page for content_stack
-    language_page(&content_stack);
-
-    // Add eula_page.rs as a page for content_stack
-    eula_page(&content_stack);
-
-    // Add timezone_page.rs as a page for content_stack
-    timezone_page(&content_stack);
-
-    // Add keyboard_page.rs as a page for content_stack
-    keyboard_page(&content_stack);
-
-    // Add install_page.rs as a page for content_stack
-    let install_main_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
-        .build();
-
-    let done_main_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
-        .build();
-
-    // Add partitioning_page.rs as a page for content_stack
-    partitioning_page(&done_main_box, &install_main_box, &content_stack, &window);
-
-    //// Add the install_main_box as page: install_page, Give it nice title
-    content_stack.add_titled(
-        &install_main_box,
-        Some("install_page"),
-        &gettext("installation"),
-    );
-
-    // Add done_page.rs as a page for content_stack
-    content_stack.add_titled(&done_main_box, Some("done_page"), &gettext("done"));
+    language_page(&content_stack, &window);
 
     // glib maximization
     if glib_settings.boolean("is-maximized") == true {
