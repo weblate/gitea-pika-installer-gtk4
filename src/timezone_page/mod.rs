@@ -127,8 +127,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     let timezone_selection_expander_row_viewport =
         gtk::ScrolledWindow::builder().height_request(420).build();
 
-    let timezone_selection_expander_row_viewport_box = gtk::ListBox::builder()
-        .build();
+    let timezone_selection_expander_row_viewport_box = gtk::ListBox::builder().build();
     timezone_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     let timezone_selection_expander_row_viewport_listbox = gtk::ListBox::builder()

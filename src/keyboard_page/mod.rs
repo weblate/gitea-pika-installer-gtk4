@@ -129,8 +129,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     let keyboard_selection_expander_row_viewport =
         gtk::ScrolledWindow::builder().height_request(355).build();
 
-    let keyboard_selection_expander_row_viewport_box = gtk::ListBox::builder()
-        .build();
+    let keyboard_selection_expander_row_viewport_box = gtk::ListBox::builder().build();
     keyboard_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     let keyboard_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
@@ -204,7 +203,13 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
             .build();
         let keyboard_layout_row = adw::ActionRow::builder()
             .activatable_widget(&keyboard_layout_checkbutton)
-            .title(gnome_desktop::XkbInfo::new().layout_info(&keyboard_layout).unwrap().0.unwrap())
+            .title(
+                gnome_desktop::XkbInfo::new()
+                    .layout_info(&keyboard_layout)
+                    .unwrap()
+                    .0
+                    .unwrap(),
+            )
             .subtitle(keyboard_layout.clone())
             .build();
         keyboard_layout_row.add_prefix(&keyboard_layout_checkbutton);

@@ -127,8 +127,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
     let language_selection_expander_row_viewport =
         gtk::ScrolledWindow::builder().height_request(420).build();
 
-    let language_selection_expander_row_viewport_box = gtk::ListBox::builder()
-        .build();
+    let language_selection_expander_row_viewport_box = gtk::ListBox::builder().build();
     language_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     language_selection_expander_row_viewport
@@ -187,10 +186,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
 
     for locale in locale_reader.lines() {
         let locale = locale.unwrap();
-        let locale_name_cli = Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/locale-name.py")
-            .arg(locale.clone())
-            .output()
-            .expect("failed to execute process");
+        let locale_name_cli =
+            Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/locale-name.py")
+                .arg(locale.clone())
+                .output()
+                .expect("failed to execute process");
         let locale_name = String::from_utf8(locale_name_cli.stdout).unwrap();
         let locale_clone = locale.clone();
         let locale_checkbutton = gtk::CheckButton::builder()
@@ -212,7 +212,12 @@ pub fn language_page(content_stack: &gtk::Stack) {
                 lang_data_buffer.set_text(&locale);
             }
         }));
-        if current_locale.contains(&(locale_clone)) && current_locale != "C.UTF-8" && current_locale != "C" && current_locale != "C.utf8" && current_locale != "POSIX" {
+        if current_locale.contains(&(locale_clone))
+            && current_locale != "C.UTF-8"
+            && current_locale != "C"
+            && current_locale != "C.utf8"
+            && current_locale != "POSIX"
+        {
             locale_checkbutton.set_active(true);
         }
     }

@@ -78,8 +78,7 @@ pub fn automatic_partitioning(
     let devices_selection_expander_row_viewport =
         gtk::ScrolledWindow::builder().height_request(200).build();
 
-    let devices_selection_expander_row_viewport_box = gtk::ListBox::builder()
-        .build();
+    let devices_selection_expander_row_viewport_box = gtk::ListBox::builder().build();
     devices_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     devices_selection_expander_row_viewport
@@ -241,12 +240,15 @@ pub fn automatic_partitioning(
                 }
                 if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
                     partition_method_automatic_luks_error_label.set_visible(true);
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 } else {
                     partition_method_automatic_luks_error_label.set_visible(false);
                 if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(true);
                 } else {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 }
                 }
@@ -255,8 +257,10 @@ pub fn automatic_partitioning(
                 partition_method_automatic_luks_error_label.set_visible(false);
                 partition_method_automatic_luks_error2_label.set_visible(false);
                 if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(true);
                 } else {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 }
             }
@@ -272,12 +276,15 @@ pub fn automatic_partitioning(
                 }
                 if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
                     partition_method_automatic_luks_error_label.set_visible(true);
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 } else {
                     partition_method_automatic_luks_error_label.set_visible(false);
                 if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(true);
                 } else {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 }
                 }
@@ -286,8 +293,10 @@ pub fn automatic_partitioning(
                 partition_method_automatic_luks_error_label.set_visible(false);
                 partition_method_automatic_luks_error2_label.set_visible(false);
                 if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(true);
                 } else {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 }
             }
@@ -303,12 +312,15 @@ pub fn automatic_partitioning(
                 }
                 if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
                     partition_method_automatic_luks_error_label.set_visible(true);
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 } else {
                     partition_method_automatic_luks_error_label.set_visible(false);
                 if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(true);
                 } else {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 }
                 }
@@ -317,8 +329,10 @@ pub fn automatic_partitioning(
                 partition_method_automatic_luks_error_label.set_visible(false);
                 partition_method_automatic_luks_error2_label.set_visible(false);
                 if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(true);
                 } else {
+                    partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
                     bottom_next_button.set_sensitive(false);
                 }
             }
