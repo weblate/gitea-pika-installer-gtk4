@@ -2,293 +2,353 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2024-02-09 17:48+0300\n"
-"PO-Revision-Date: 2024-02-19 11:46+0000\n"
+"PO-Revision-Date: 2024-02-19 18:43+0000\n"
 "Last-Translator: Peter Tsvetkov <me4odefy@gmail.com>\n"
 "Language-Team: Bulgarian <https://hosted.weblate.org/projects/pikaos/"
-"pika-installer-gtk4-old/bg/>\n"
+"gui-applications/pika-installer-gtk4/bg/>\n"
 "Language: bg\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.4\n"
+"X-Generator: Weblate 5.5-dev\n"
 "X-Poedit-Basepath: .\n"
 
 msgid "pikaos_installer"
-msgstr "pikaos_инсталатор"
+msgstr "PikaOS инсталатор"
 
 msgid "welcome_to_pikaos"
-msgstr "добре_дошли_в_pikaos"
+msgstr "Добре Дошли в PikaOS"
 
 msgid "use_pikaos_in_live_media"
-msgstr "използвай_pikaos_без_да_инсталираш"
+msgstr "Използвай PikaOS без да Инсталираш"
 
 msgid "install_distro_to_system"
-msgstr "инсталирай_дистрибуцията"
+msgstr "Инсталирай Дистрибуцията"
 
 msgid "welcome"
-msgstr "добре_дошли"
+msgstr "Добре Дошли"
 
 msgid "back"
-msgstr "върни"
+msgstr "Назад"
 
 msgid "next"
-msgstr "следващ"
+msgstr "Следващ"
 
 msgid "select_a_timezone"
-msgstr "изберте_часова_зона"
+msgstr "Изберте часова зона"
 
 msgid "please_select_timezone"
-msgstr "Моля, изберете времева зона"
+msgstr "Моля, изберете часова зона за вашата система"
 
 msgid "no_timezone_select"
-msgstr "Не е избрава времева зона"
+msgstr "Не е избрана часова зона"
 
 msgid "timezone"
-msgstr "Времева зона"
+msgstr "Часова Зона"
 
 msgid "choose_install_method"
 msgstr "Изберете метод на инсталиране"
 
 msgid "manual_partition_drive"
-msgstr "ръчно_разделяне_на_диска"
+msgstr "Ръчно Разделяне на Диска"
 
 msgid "auto_partition_drive"
-msgstr "автоматично_разделяне_на_диска"
+msgstr ""
+"Автоматично Разделяне\n"
+"Дискът"
 
 msgid "manual_part_installer"
-msgstr "ръчно_"
+msgstr "Инсталиране с ръчно разделяне на дискове"
 
 msgid "use_utility_manual"
 msgstr ""
+"Използвайте тази помощна програма, за да разделите/монтирате/форматирате "
+"вашите дискове."
 
 msgid "open_gparted"
-msgstr "отвори_gparter"
+msgstr "Отвори GPARTED"
 
 msgid "manual_part_note"
 msgstr ""
+"- Натиснете бутона плюс по-долу, за да започнете да добавяте записи във "
+"файловата система.\n"
+"Забележки:\n"
+" - Този инсталатор не изтрива никакви данни автоматично, форматирайте "
+"дисковете си ръчно с GParter.\n"
+" - За да добавите linux-swap дял, задайте точка на монтиране на [SWAP]\n"
+" - Ние препоръчваме следните дялове на диска, като основно оформление:\n"
+" /boot ~ 1000МВ ext4\n"
+" /boot/efi ~ 512MB vfat/fat32\n"
+" />=25GB btrfs."
 
 msgid "refresh_part_table"
-msgstr "обнови_таблица_на_дяловете"
+msgstr "Обновяване на Таблицата с дялове"
 
 msgid "validate_fs_table"
-msgstr "валидиране_таблица_на_файлова_система"
+msgstr "Проверка на Таблицата на Файловата Система"
 
 msgid "fstab_status_valid"
-msgstr "таблицата_на_файловата_система_е_валидна"
+msgstr "Състояние на Таблица на Файловата Система: Всички записи са валидни!"
 
 msgid "part_need_mapper"
-msgstr ""
+msgstr "Този дял се нуждае от настройка с mapper!"
 
 msgid "fstab_subvol_warn"
 msgstr ""
+"Предупреждение за Таблица на Файловата Система: Проверката за повторно "
+"използване на дяла ще бъде пропусната поради използване на subvol."
 
 msgid "fstab_multiple_part_mountpoint_err"
 msgstr ""
+"Грешка в Таблица на Файловата Система: Множество дялове са конфигурирани към "
+"една и съща точка на монтиране!"
 
 msgid "fstab_no_mountpoint_err"
 msgstr ""
+"Грешка в Таблица на Файловата Система: един или повече дялове нямам зададена "
+"точка за монтиране!"
 
 msgid "fstab_no_partition_err"
 msgstr ""
+"Грешка в Таблица на Файловата Система: Един или повече записи нямат "
+"конфигуриран дял!"
 
 msgid "fstab_badfs"
 msgstr ""
+"Грешка в Таблица на Файловата Система: Невалидна файлова система: (/dev/"
 
 msgid "fstab_small_efi_size"
-msgstr "размерът_на_EFI_дялът_е_малък"
+msgstr ") Размерът трябва да е поне 512MB!"
 
 msgid "fstab_badfs_efi"
-msgstr ""
+msgstr ") Трябва да е FAT32/vFAT формат, за да бъде монтиран в /boot/efi!"
 
 msgid "fstab_small_boot_size"
-msgstr ""
+msgstr ") Трябва да е поне 1GB!"
 
 msgid "fstab_badfs_boot"
-msgstr ""
+msgstr ") Не трябва да е FAT32/vFAT формат, за да се монтира в /boot!"
 
 msgid "fstab_small_root_size"
-msgstr ""
+msgstr ") Трябва да е поне 26 GB!"
 
 msgid "fstab_badfs_root"
 msgstr ""
+") Трябва да е Linux* съвместима файлова система, като:\n"
+" ext4/btrfs/xfs/f2fs за да се монтира в /!"
 
 msgid "fstab_small_home_size"
-msgstr ""
+msgstr ") Трябва да е поне 11 GB!"
 
 msgid "fstab_badfs_home"
 msgstr ""
+") Трябва да е Linux* съвместива файлова система, като:\n"
+" ext4/btrfs/xfs/f2fs за да се монтира в /home!"
 
+#, fuzzy
 msgid "fstab_badfs_swap"
-msgstr ""
+msgstr ") Не трябва да бъде swap, за да се използва като [SWAP]!"
 
 msgid "fstab_bad_mountpoint"
-msgstr ""
+msgstr "Грешка в Таблица на Файловата Система: Невалидна точка за монтиране: ("
 
 msgid "fstab_bad_mountpoint_msg"
-msgstr ""
+msgstr ") Не е валидна точка за монтиране!"
 
 msgid "select_a_language"
-msgstr ""
+msgstr "Изберете език"
 
 msgid "please_select_locale"
-msgstr ""
+msgstr "Моля, изберете локална зона за използване от системата"
 
 msgid "no_locale_selected"
-msgstr ""
+msgstr "Не е избрана локална зона"
 
 msgid "language"
-msgstr ""
+msgstr "Език"
 
 msgid "select_a_keyboard"
-msgstr ""
+msgstr "Изберете клавиатура"
 
 msgid "please_select_keyboard"
-msgstr ""
+msgstr "Моля, избере подредба на клавиатурата, която системата да използва"
 
 msgid "no_keyboard_selected"
-msgstr ""
+msgstr "Не е избрана подредба на клавиатурата"
 
 msgid "test_your_keyboard"
-msgstr ""
+msgstr "Изпробвайте клавиатурата си тук!"
 
 msgid "keyboard"
-msgstr ""
+msgstr "Клавиатура"
 
 msgid "luks_password_for"
-msgstr ""
+msgstr "LUKS парола за"
 
 msgid "luks_how_should"
-msgstr ""
+msgstr "Как трябва"
 
 msgid "be_added_crypttab"
-msgstr ""
+msgstr "да се добави в /etc/crypttab?"
 
 msgid "unlock_boot_manually"
-msgstr ""
+msgstr "Отключи ръчно при зареждане"
 
 msgid "unlock_boot_manual"
-msgstr ""
+msgstr "Автоматично отключване с root отключване"
 
 msgid "sit_back_relax"
-msgstr ""
+msgstr "Седнете, Отпуснете се и гледайте шоуто."
 
 msgid "language_detail"
-msgstr ""
+msgstr "Език:"
 
 msgid "timezone_detail"
-msgstr ""
+msgstr "Часова зона:"
 
 msgid "keyboard_detail"
-msgstr ""
+msgstr "Подредба на клавиатурата:"
 
 msgid "mounted_on_detail"
-msgstr ""
+msgstr "монтиран в"
 
 msgid "install_target_detail"
-msgstr ""
+msgstr "Цел за Инсталиране:"
 
 msgid "confirm_install_pika"
-msgstr ""
+msgstr "Потвърди и Инсталирай PikaOS"
 
 msgid "view_logs"
-msgstr ""
+msgstr "Прегледай логовете"
 
 msgid "parting_status_text"
-msgstr ""
+msgstr "Разделяне на Целевите Дискове."
 
 msgid "image_status_text"
-msgstr ""
+msgstr "Писане на изображение към целта."
 
 msgid "flag1_status_text"
-msgstr ""
+msgstr "Активиране на bls_boot флага на /boot."
 
 msgid "flag2_status_text"
-msgstr ""
+msgstr "Активиране на efi флага на /boot/efi."
 
 msgid "crypt_status_text"
-msgstr ""
+msgstr "Настройване на криптирането crypttab."
 
 msgid "lang_status_text"
-msgstr ""
+msgstr "Настройване на Език и Клавиатура."
 
 msgid "boot_status_status_text"
-msgstr ""
+msgstr "Конфигуриране на bootloader."
 
 msgid "post_status_text"
-msgstr ""
+msgstr "Изпълнение на скрипт след инсталация."
 
 msgid "pikaos_eula_agreement"
-msgstr ""
+msgstr "PikaOS Лицензионно споразумение с потребителя"
 
 msgid "please_read_eula"
 msgstr ""
+"Моля, прочетете внимателно и се уверете, че сте съгласни със следното, преди "
+"да инсталирате PikaOS:"
 
 msgid "eula_buffer"
 msgstr ""
+"Трябва да имате предвид няколко неща: \n"
+"        1 - Вие разбирате, че тази дистрибуция НЕ Е \"С Вкус на Убунту\". \n"
+"        2 - Това е хоби дистрибуция, затова даваме всичко от себе си, за да "
+"предоставим официална поддръжка, но тя -НЯМА- да бъде гарантирана. \n"
+"        3 - Въпреки че PikaOS може да предостави идентични корекции и "
+"потребителско изживяване като проекта Nobara, ние НЕ сме пряка част от тях, "
+"така че въпроси и доклади за грешки не трябва да се изпращат директно до тях "
+"(те не трябва да се справят с това!) \n"
+"        4 - Докато инсталаторът работи, НЕ ГО ПРЕКЪСВАЙТЕ! защото в противен "
+"случай, ще имате повредена система. \n"
+"        5 - Опитайте да ползвате pikman вместо apt, когато използвате "
+"терминал - МНОГО по-бърз е! \n"
+"        6 - Вие разбирате, че xone драйверът изтегля необходимите двоични "
+"файлове локално и не пакетира и не разпространява директно фърмуер, защитен "
+"с авторски права, или други свързани данни. \n"
+"        7 - Автоматичното разделяне на дяловете ще форматира всички дялове "
+"на диска, така че ако искате да направите двойно зареждане, направете "
+"отделен EFI дял за PikaOS и използвайте ръчно разделяне на дяловете.  \n"
+"        8 - В случай, че ви трябва информация за вход в тази сесия: \n"
+"         - потребителско име: pikaos \n"
+"         - парола: \n"
+"        ОЗНАЧАВА: ПРОСТО НАТИСНЕТЕ ENTER"
 
 msgid "i_agree_eula"
-msgstr ""
+msgstr "Съгласен съм и приемам лицензионното споразумение с потребителя"
 
 msgid "eula"
-msgstr ""
+msgstr "ЛСКП"
 
 msgid "pika_nowork_csm"
 msgstr ""
+"PikaOS работи само на GPT UEFI системи, тази машина е стартирана в CSM/"
+"Legacy режим."
 
 msgid "exit"
-msgstr ""
+msgstr "Изход"
 
 msgid "subtitle_partition"
-msgstr ""
+msgstr "Дял"
 
 msgid "title_mountpoint"
-msgstr ""
+msgstr "Точка за монтиране"
 
 msgid "title_mountopt"
-msgstr ""
+msgstr "Допълнителни Точки за Монтиране"
 
 msgid "pika_install_good"
-msgstr ""
+msgstr "Инсталацията на PikaOS беше завършена успешно."
 
 msgid "reboot"
-msgstr ""
+msgstr "Рестартирай"
 
 msgid "pika_install_bad"
 msgstr ""
+"PikaOS се провали!\n"
+"Проверете логовете за повече информация."
 
 msgid "logs"
-msgstr ""
+msgstr "Лог"
 
 msgid "auto_part_installer"
-msgstr "Автоматичен дялов инсталатор"
+msgstr "Инсталатор за автоматично разделяне на дялове"
 
 msgid "choose_drive_auto"
-msgstr "Автоматичо избери диск"
+msgstr ""
+"Изберете устройството, на което искате да инсталирате PikaOS\n"
+"Забележка: Това ще изтрие целия диск! Направете резервно копие на данните ви!"
 
 msgid "no_drive_auto_selected"
-msgstr ""
+msgstr "Не е избран диск за инсталиране"
 
 msgid "no_disk_specified"
-msgstr "Не е избран диск"
+msgstr "Не е посочен диск."
 
 msgid "luks_yes_but_empty"
-msgstr ""
+msgstr "LUKS криптирането е Активирано, но не е предоставена парола."
 
 msgid "enable_luks2_enc"
-msgstr "Активирайте Luks2 криптиране"
+msgstr "Активиране на LUKS2 криптиране на дискове"
 
 msgid "luks2_password"
-msgstr "Luks2 парола"
+msgstr "LUKS Парола"
 
 msgid "disk_auto_target_small"
 msgstr ""
+"Размерът на диска е прекалено малък, PikaOS се нуждае от 40BG дисково "
+"пространство"
 
 msgid "installation"
 msgstr "Инсталация"
 
 msgid "done"
-msgstr "Завършено"
+msgstr "Готово"
 
 msgid "partitioning"
-msgstr ""
+msgstr "Разделяне на дялове"
