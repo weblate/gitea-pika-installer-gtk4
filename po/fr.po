@@ -365,3 +365,9 @@ msgstr "Fini"
 
 msgid "partitioning"
 msgstr "Partitionnement"
+
+msgid "luks2_password_confirm"
+msgstr "Confirm LUKS Password"
+
+msgid "luks_not_match"
+msgstr "The LUKS Passwords do not match!"
