@@ -30,3 +30,8 @@
     background-color:green;
     color: white;
 }
+
+.highlight-widget {
+    background-color: @success_bg_color;
+    color: @success_fg_color;
+}

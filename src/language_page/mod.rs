@@ -125,11 +125,11 @@ pub fn language_page(content_stack: &gtk::Stack) {
         .build();
 
     let language_selection_expander_row_viewport =
-        gtk::ScrolledWindow::builder().height_request(200).build();
+        gtk::ScrolledWindow::builder().height_request(420).build();
 
-    let language_selection_expander_row_viewport_box = gtk::Box::builder()
-        .orientation(Orientation::Vertical)
+    let language_selection_expander_row_viewport_box = gtk::ListBox::builder()
         .build();
+    language_selection_expander_row_viewport_box.add_css_class("boxed-list");
 
     language_selection_expander_row_viewport
         .set_child(Some(&language_selection_expander_row_viewport_box));
@@ -145,6 +145,16 @@ pub fn language_page(content_stack: &gtk::Stack) {
     language_selection_expander_row_viewport_listbox.append(&language_selection_expander_row);
 
     language_selection_expander_row.add_row(&language_selection_expander_row_viewport);
+
+    let language_search_bar = gtk::SearchEntry::builder()
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .search_delay(500)
+        .build();
 
     let current_locale = match env::var_os("LANG") {
         Some(v) => v.into_string().unwrap(),
@@ -202,7 +212,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
                 lang_data_buffer.set_text(&locale);
             }
         }));
-        if current_locale.contains(&(locale_clone)) {
+        if current_locale.contains(&(locale_clone)) && current_locale != "C.UTF-8" && current_locale != "C" && current_locale != "C.utf8" && current_locale != "POSIX" {
             locale_checkbutton.set_active(true);
         }
     }
@@ -210,6 +220,7 @@ pub fn language_page(content_stack: &gtk::Stack) {
     // / language_selection_box appends
     //// add text and and entry to language page selections
     language_selection_box.append(&language_selection_text);
+    language_selection_box.append(&language_search_bar);
     language_selection_box.append(&language_selection_expander_row_viewport_listbox);
 
     // / language_header_box appends
@@ -234,6 +245,28 @@ pub fn language_page(content_stack: &gtk::Stack) {
     );
 
     let lang_data_buffer_clone = lang_data_buffer.clone();
+
+    language_search_bar.connect_search_changed(clone!(@weak language_search_bar, @weak language_selection_expander_row_viewport_box => move |_| {
+        let mut counter = language_selection_expander_row_viewport_box.first_child();
+        while let Some(row) = counter {
+            if row.widget_name() == "AdwActionRow" {
+                if !language_search_bar.text().is_empty() {
+                    if row.property::<String>("subtitle").to_lowercase().contains(&language_search_bar.text().to_string().to_lowercase()) || row.property::<String>("title").to_lowercase().contains(&language_search_bar.text().to_string().to_lowercase()) {
+                        language_selection_expander_row.set_expanded(true);
+                        //row.grab_focus();
+                        //row.add_css_class("highlight-widget");
+                        row.set_property("visible", true);
+                        language_search_bar.grab_focus();
+                    } else {
+                        row.set_property("visible", false);
+                    }
+                } else {
+                    row.set_property("visible", true);
+                }
+            }
+            counter = row.next_sibling();
+        }
+    }));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-lang.txt").exists() {

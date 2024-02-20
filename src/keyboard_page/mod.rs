@@ -127,7 +127,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         .build();
 
     let keyboard_selection_expander_row_viewport =
-        gtk::ScrolledWindow::builder().height_request(450).build();
+        gtk::ScrolledWindow::builder().height_request(355).build();
 
     let keyboard_selection_expander_row_viewport_box = gtk::ListBox::builder()
         .build();
@@ -147,6 +147,16 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
         .set_child(Some(&keyboard_selection_expander_row_viewport_box));
 
     keyboard_selection_expander_row.add_row(&keyboard_selection_expander_row_viewport);
+
+    let keyboard_search_bar = gtk::SearchEntry::builder()
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .search_delay(500)
+        .build();
 
     let current_keyboard_cli = Command::new("localectl")
         .arg("status")
@@ -220,6 +230,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     // / keyboard_selection_box appends
     //// add text and and entry to keyboard page selections
     keyboard_selection_box.append(&keyboard_selection_text);
+    keyboard_selection_box.append(&keyboard_search_bar);
     keyboard_selection_box.append(&keyboard_selection_expander_row_viewport_listbox);
 
     // / keyboard_header_box appends
@@ -258,6 +269,28 @@ pub fn keyboard_page(content_stack: &gtk::Stack) {
     );
 
     let keyboard_data_buffer_clone = keyboard_data_buffer.clone();
+
+    keyboard_search_bar.connect_search_changed(clone!(@weak keyboard_search_bar, @weak keyboard_selection_expander_row_viewport_box => move |_| {
+        let mut counter = keyboard_selection_expander_row_viewport_box.first_child();
+        while let Some(row) = counter {
+            if row.widget_name() == "AdwActionRow" {
+                if !keyboard_search_bar.text().is_empty() {
+                    if row.property::<String>("subtitle").to_lowercase().contains(&keyboard_search_bar.text().to_string().to_lowercase()) || row.property::<String>("title").to_lowercase().contains(&keyboard_search_bar.text().to_string().to_lowercase()) {
+                        keyboard_selection_expander_row.set_expanded(true);
+                        //row.grab_focus();
+                        //row.add_css_class("highlight-widget");
+                        row.set_property("visible", true);
+                        keyboard_search_bar.grab_focus();
+                    } else {
+                        row.set_property("visible", false);
+                    }
+                } else {
+                    row.set_property("visible", true);
+                }
+            }
+            counter = row.next_sibling();
+        }
+    }));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-keyboard.txt").exists() {

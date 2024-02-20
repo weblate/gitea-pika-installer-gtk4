@@ -125,7 +125,7 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
         .build();
 
     let timezone_selection_expander_row_viewport =
-        gtk::ScrolledWindow::builder().height_request(200).build();
+        gtk::ScrolledWindow::builder().height_request(420).build();
 
     let timezone_selection_expander_row_viewport_box = gtk::ListBox::builder()
         .build();
@@ -146,6 +146,16 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
 
     timezone_selection_expander_row.add_row(&timezone_selection_expander_row_viewport);
 
+    let timezone_search_bar = gtk::SearchEntry::builder()
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .search_delay(500)
+        .build();
+
     let current_timezone_cli = Command::new("timedatectl")
         .arg("show")
         .arg("--va")
@@ -161,47 +171,48 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
         .unwrap()
         .trim();
 
-    let timezone_layout_cli = Command::new("timedatectl")
+    let timezone_cli = Command::new("timedatectl")
         .arg("list-timezones")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap_or_else(|e| panic!("failed {}", e));
 
-    let timezone_layout_stdout = timezone_layout_cli.stdout.expect("could not get stdout");
-    let timezone_layout_reader = BufReader::new(timezone_layout_stdout);
+    let timezone_stdout = timezone_cli.stdout.expect("could not get stdout");
+    let timezone_reader = BufReader::new(timezone_stdout);
 
     let timezone_data_buffer = gtk::TextBuffer::builder().build();
 
-    for timezone_layout in timezone_layout_reader.lines() {
-        let timezone_layout = timezone_layout.unwrap();
-        let timezone_layout_clone = timezone_layout.clone();
-        let timezone_layout_checkbutton = gtk::CheckButton::builder()
+    for timezone in timezone_reader.lines() {
+        let timezone = timezone.unwrap();
+        let timezone_clone = timezone.clone();
+        let timezone_checkbutton = gtk::CheckButton::builder()
             .valign(Align::Center)
             .can_focus(false)
             .build();
-        let timezone_layout_row = adw::ActionRow::builder()
-            .activatable_widget(&timezone_layout_checkbutton)
-            .title(timezone_layout.clone())
+        let timezone_row = adw::ActionRow::builder()
+            .activatable_widget(&timezone_checkbutton)
+            .title(timezone.clone())
             .build();
-        timezone_layout_row.add_prefix(&timezone_layout_checkbutton);
-        timezone_layout_checkbutton.set_group(Some(&null_checkbutton));
-        timezone_selection_expander_row_viewport_box.append(&timezone_layout_row);
-        timezone_layout_checkbutton.connect_toggled(clone!(@weak timezone_layout_checkbutton, @weak timezone_selection_expander_row, @weak bottom_next_button, @weak timezone_data_buffer => move |_| {
-            if timezone_layout_checkbutton.is_active() == true {
-                timezone_selection_expander_row.set_title(&timezone_layout);
+        timezone_row.add_prefix(&timezone_checkbutton);
+        timezone_checkbutton.set_group(Some(&null_checkbutton));
+        timezone_selection_expander_row_viewport_box.append(&timezone_row);
+        timezone_checkbutton.connect_toggled(clone!(@weak timezone_checkbutton, @weak timezone_selection_expander_row, @weak bottom_next_button, @weak timezone_data_buffer => move |_| {
+            if timezone_checkbutton.is_active() == true {
+                timezone_selection_expander_row.set_title(&timezone);
                 bottom_next_button.set_sensitive(true);
-                timezone_data_buffer.set_text(&timezone_layout);
+                timezone_data_buffer.set_text(&timezone);
             }
         }));
-        if current_timezone.contains(&(timezone_layout_clone)) {
-            timezone_layout_checkbutton.set_active(true);
+        if current_timezone.contains(&(timezone_clone)) {
+            timezone_checkbutton.set_active(true);
         }
     }
 
     // / timezone_selection_box appends
     //// add text and and entry to timezone page selections
     timezone_selection_box.append(&timezone_selection_text);
+    timezone_selection_box.append(&timezone_search_bar);
     timezone_selection_box.append(&timezone_selection_expander_row_viewport_listbox);
 
     // / timezone_header_box appends
@@ -226,6 +237,28 @@ pub fn timezone_page(content_stack: &gtk::Stack) {
     );
 
     let timezone_data_buffer_clone = timezone_data_buffer.clone();
+
+    timezone_search_bar.connect_search_changed(clone!(@weak timezone_search_bar, @weak timezone_selection_expander_row_viewport_box => move |_| {
+        let mut counter = timezone_selection_expander_row_viewport_box.first_child();
+        while let Some(row) = counter {
+            if row.widget_name() == "AdwActionRow" {
+                if !timezone_search_bar.text().is_empty() {
+                    if row.property::<String>("subtitle").to_lowercase().contains(&timezone_search_bar.text().to_string().to_lowercase()) || row.property::<String>("title").to_lowercase().contains(&timezone_search_bar.text().to_string().to_lowercase()) {
+                        timezone_selection_expander_row.set_expanded(true);
+                        //row.grab_focus();
+                        //row.add_css_class("highlight-widget");
+                        row.set_property("visible", true);
+                        timezone_search_bar.grab_focus();
+                    } else {
+                        row.set_property("visible", false);
+                    }
+                } else {
+                    row.set_property("visible", true);
+                }
+            }
+            counter = row.next_sibling();
+        }
+    }));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-timezone.txt").exists() {
