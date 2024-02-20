@@ -9,8 +9,31 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+export PATH := "/root/.cargo/bin:$(PWD):$(PATH)"
+
 %:
 	dh $@
+
+override_dh_auto_install:
+	/root/.cargo/bin/cargo fetch
+	/root/.cargo/bin/cargo build --release
+	#cp -vf target/release/pika-installer-gtk4 debian/pika-installer-gtk4/usr/bin/
+	#chmod 755 debian/pika-installer-gtk4/usr/bin/pika-installer-gtk4
+	mkdir -p debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/bin/
+	cp -vf target/release/pika-installer-gtk4 debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/bin/
+	chmod 755 debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/bin/pika-installer-gtk4
+	mkdir -p debian/pika-installer-gtk4)/usr/lib/pika/pika-installer-gtk4/scripts/
+	mkdir -p debian/pika-installer-gtk4/usr/share/glib-2.0/schemas/
+	cp -rvf data/scripts/*.sh debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/scripts/
+	cp -rvf data/scripts/*.py debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/scripts/
+	cp data/*.xml debian/pika-installer-gtk4/usr/share/glib-2.0/schemas/
+	chmod 755 debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/scripts/*.sh
+	chmod 755 debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/scripts/*.py
+	mkdir -p debian/pika-installer-gtk4/usr/share/applications
+	mkdir -p debian/pika-installer-gtk4/usr/share/icons/hicolor/scalable/apps
+	#cp -vf data/pika-drivers.svg debian/pika-installer-gtk4/usr/share/icons/hicolor/scalable/apps/
+	#cp -vf data/com.pika.drivers.desktop  debian/pika-installer-gtk4/usr/share/applications/
+	#makepot debian/pika-installer-gtk4/usr/share/locale
 
 
 override_dh_missing:
