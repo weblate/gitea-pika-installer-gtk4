@@ -1,3 +1,4 @@
+
 // Use libraries
 use adw::prelude::*;
 use adw::*;
@@ -7,12 +8,13 @@ use glib::*;
 use gtk::*;
 
 use crate::config::DISTRO_ICON;
-use gettextrs::gettext;
+
 
 use std::path::Path;
 use std::process::Command;
 
 pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
+
     // the header box for the installation_successful page
     let done_header_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -69,7 +71,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_successful_text = gtk::Label::builder()
-        .label(gettext("pika_install_good"))
+        .label(t!("pika_install_good"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
@@ -86,7 +88,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_successful_exit_button = gtk::Button::builder()
-        .label(gettext("exit"))
+        .label(t!("exit"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
@@ -94,7 +96,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_successful_reboot_button = gtk::Button::builder()
-        .label(gettext("reboot"))
+        .label(t!("reboot"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
@@ -159,7 +161,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_failed_text = gtk::Label::builder()
-        .label(gettext("pika_install_bad"))
+        .label(t!("pika_install_bad"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
@@ -176,7 +178,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_failed_exit_button = gtk::Button::builder()
-        .label(gettext("exit"))
+        .label(t!("exit"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
@@ -184,7 +186,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_failed_logs_button = gtk::Button::builder()
-        .label(gettext("logs"))
+        .label(t!("logs"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)

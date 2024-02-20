@@ -1,4 +1,5 @@
 // Use libraries
+use std::env;
 use adw::prelude::*;
 use adw::*;
 use glib::*;
@@ -6,9 +7,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::{gettext, LocaleCategory};
 
-use std::env;
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
@@ -31,7 +30,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label(gettext("back"))
+        .label(t!("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -40,7 +39,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label(gettext("next"))
+        .label(t!("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -70,7 +69,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
 
     // the header text for the language page
     let language_header_text = gtk::Label::builder()
-        .label(gettext("select_a_language"))
+        .label(t!("select_a_language"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -110,7 +109,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
 
     // text above language selection box
     let language_selection_text = gtk::Label::builder()
-        .label(gettext("please_select_locale"))
+        .label(t!("please_select_locale"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -121,11 +120,11 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
     language_selection_text.add_css_class("medium_sized_text");
 
     let language_selection_expander_row = adw::ExpanderRow::builder()
-        .title(gettext("no_locale_selected"))
+        .title(t!("no_locale_selected"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label(gettext("no_locale_selected"))
+        .label(t!("no_locale_selected"))
         .build();
 
     let language_selection_expander_row_viewport =
@@ -275,7 +274,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
     content_stack.add_titled(
         &language_main_box,
         Some("language_page"),
-        &gettext("language"),
+        &t!("language"),
     );
 
     // the header box for the eula page
@@ -285,7 +284,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
 
     // / Content stack appends
     //// Add the eula_main_box as page: eula_page, Give it nice title
-    content_stack.add_titled(&eula_main_box, Some("eula_page"), &gettext("eula"));
+    content_stack.add_titled(&eula_main_box, Some("eula_page"), &t!("eula"));
 
     // the header box for the timezone page
     let timezone_main_box = gtk::Box::builder()
@@ -297,7 +296,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
     content_stack.add_titled(
         &timezone_main_box,
         Some("timezone_page"),
-        &gettext("timezone"),
+        &t!("timezone"),
     );
 
     // the header box for the keyboard page
@@ -310,7 +309,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
     content_stack.add_titled(
         &keyboard_main_box,
         Some("keyboard_page"),
-        &gettext("keyboard"),
+        &t!("keyboard"),
     );
 
     // Add install_page.rs as a page for content_stack
@@ -332,18 +331,18 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
     content_stack.add_titled(
         &partitioning_main_box,
         Some("partitioning_page"),
-        &gettext("partitioning"),
+        &t!("partitioning"),
     );
 
     //// Add the install_main_box as page: install_page, Give it nice title
     content_stack.add_titled(
         &install_main_box,
         Some("install_page"),
-        &gettext("installation"),
+        &t!("installation"),
     );
 
     // Add done_page.rs as a page for content_stack
-    content_stack.add_titled(&done_main_box, Some("done_page"), &gettext("done"));
+    content_stack.add_titled(&done_main_box, Some("done_page"), &t!("done"));
 
     bottom_next_button.connect_clicked(clone!(@weak content_stack, @weak window => move |_| {
         if Path::new("/tmp/pika-installer-gtk4-lang.txt").exists() {
@@ -356,11 +355,7 @@ pub fn language_page(content_stack: &gtk::Stack, window: &adw::ApplicationWindow
         .arg("LANG=".to_owned() + &lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string() + ".UTF-8")
         .spawn()
         .expect("locale failed to start");
-        gettextrs::setlocale(LocaleCategory::LcAll, lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string() + ".UTF-8");
-        if gettext("pikaos_installer") == "pikaos_installer" {
-            println!("Warning: Current LANG is not supported, using fallback Locale.");
-            gettextrs::setlocale(LocaleCategory::LcAll, "en_US.UTF8");
-        }
+        rust_i18n::set_locale(&lang_data_buffer_clone.text(&lang_data_buffer_clone.bounds().0, &lang_data_buffer_clone.bounds().1, true).to_string());
         // Add eula_page.rs as a page for content_stack
         while let Some(widget) = eula_main_box.last_child() {
                 eula_main_box.remove(&widget);

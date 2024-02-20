@@ -1,3 +1,4 @@
+
 // Use libraries
 use adw::prelude::*;
 use adw::*;
@@ -6,11 +7,12 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::gettext;
+
 
 pub fn eula_page(content_stack: &gtk::Stack,
                  eula_main_box: &gtk::Box,
 ) {
+
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -20,7 +22,7 @@ pub fn eula_page(content_stack: &gtk::Stack,
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label(gettext("back"))
+        .label(t!("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -29,7 +31,7 @@ pub fn eula_page(content_stack: &gtk::Stack,
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label(gettext("next"))
+        .label(t!("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -54,7 +56,7 @@ pub fn eula_page(content_stack: &gtk::Stack,
 
     // the header text for the eula page
     let eula_header_text = gtk::Label::builder()
-        .label(gettext("pikaos_eula_agreement"))
+        .label(t!("pikaos_eula_agreement"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -94,7 +96,7 @@ pub fn eula_page(content_stack: &gtk::Stack,
 
     // text above eula selection box
     let eula_selection_text = gtk::Label::builder()
-        .label(gettext("please_read_eula"))
+        .label(t!("please_read_eula"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -105,7 +107,7 @@ pub fn eula_page(content_stack: &gtk::Stack,
     eula_selection_text.add_css_class("medium_sized_text");
 
     let eula_buffer = gtk::TextBuffer::builder()
-        .text(gettext("eula_buffer"))
+        .text(t!("eula_buffer"))
         .build();
 
     let eula_selection_text_view = gtk::TextView::builder()
@@ -125,7 +127,7 @@ pub fn eula_page(content_stack: &gtk::Stack,
         .build();
 
     let eula_accept_checkbutton = gtk::CheckButton::builder()
-        .label(gettext("i_agree_eula"))
+        .label(t!("i_agree_eula"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)

@@ -5,9 +5,9 @@ use glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
-use std::thread;
+use std::{thread};
 
-use gettextrs::gettext;
+
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -83,7 +83,7 @@ fn create_mount_row(
                     .activatable_widget(&partition_button)
                     .title(partition.clone())
                     .name(partition.clone())
-                    .subtitle(gettext("part_need_mapper"))
+                    .subtitle(t!("part_need_mapper"))
                     .build();
                 prow
             } else {
@@ -132,6 +132,7 @@ pub fn manual_partitioning(
     bottom_next_button: &gtk::Button,
     manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
 ) -> gtk::Button {
+
     let part_table_array: Rc<RefCell<Vec<String>>> = Default::default();
 
     let check_part_unique = Rc::new(RefCell::new(true));
@@ -150,7 +151,7 @@ pub fn manual_partitioning(
 
     // the header text for the partitioning page
     let partition_method_manual_header_text = gtk::Label::builder()
-        .label(gettext("manual_part_installer"))
+        .label(t!("manual_part_installer"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -181,11 +182,11 @@ pub fn manual_partitioning(
         .build();
 
     let partition_method_manual_gparted_button_content_text = gtk::Label::builder()
-        .label(gettext("use_utility_manual"))
+        .label(t!("use_utility_manual"))
         .build();
 
     let partition_method_manual_gparted_button_content = adw::ButtonContent::builder()
-        .label(gettext("open_gparted"))
+        .label(t!("open_gparted"))
         .icon_name("gparted")
         .build();
 
@@ -215,7 +216,7 @@ pub fn manual_partitioning(
         .build();
 
     let partition_method_manual_selection_text = gtk::Label::builder()
-        .label(gettext("manual_part_note"))
+        .label(t!("manual_part_note"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -226,13 +227,13 @@ pub fn manual_partitioning(
     partition_method_manual_selection_text.add_css_class("medium_sized_text");
 
     let partition_refresh_button = gtk::Button::builder()
-        .label(gettext("refresh_part_table"))
+        .label(t!("refresh_part_table"))
         .halign(gtk::Align::End)
         .build();
     partition_refresh_button.add_css_class("destructive-action");
 
     let fstab_valid_check = gtk::Button::builder()
-        .label(gettext("validate_fs_table"))
+        .label(t!("validate_fs_table"))
         .halign(gtk::Align::Start)
         .build();
     fstab_valid_check.add_css_class("valid-action");
@@ -369,13 +370,13 @@ pub fn manual_partitioning(
 
                             if *check_part_unique.borrow_mut() == true {
                                 row_scrw.set_sensitive(false)
-                            }  else if row_scrw.property::<String>("subtitle").contains(&gettext("part_need_mapper")) {
+                            }  else if row_scrw.property::<String>("subtitle").contains(&t!("part_need_mapper").to_string()) {
                                 row_scrw.set_sensitive(false)
                             } else {
                                 row_scrw.set_sensitive(true)
                             }
                         }
-                        else if row_scrw.property::<String>("subtitle").contains(&gettext("part_need_mapper")) {
+                        else if row_scrw.property::<String>("subtitle").contains(&t!("part_need_mapper").to_string()) {
                             row_scrw.set_sensitive(false)
                         } else {
                             row_scrw.set_sensitive(true)
@@ -400,7 +401,7 @@ pub fn manual_partitioning(
 
             if *check_part_unique.borrow_mut() == false {
                 partition_method_manual_warn_label
-                    .set_label(&gettext("fstab_subvol_warn"));
+                    .set_label(&t!("fstab_subvol_warn"));
                 partition_method_manual_warn_label.set_visible(true);
             } else {
                 partition_method_manual_warn_label.set_visible(false);
@@ -475,7 +476,7 @@ fn partition_err_check(
         {
             if !partition_method_manual_error_label.is_visible() {
                 partition_method_manual_error_label
-                    .set_label(&gettext("fstab_multiple_part_mountpoint_err"));
+                    .set_label(&t!("fstab_multiple_part_mountpoint_err"));
                 partition_method_manual_error_label.set_visible(true);
                 partition_method_manual_error_label.set_widget_name("err0");
             }
@@ -486,7 +487,7 @@ fn partition_err_check(
         }
     } else {
         if !partition_method_manual_error_label.is_visible() {
-            partition_method_manual_error_label.set_label(&gettext("fstab_no_mountpoint_err"));
+            partition_method_manual_error_label.set_label(&t!("fstab_no_mountpoint_err"));
             partition_method_manual_error_label.set_widget_name("err1");
             partition_method_manual_error_label.set_visible(true);
         }
@@ -494,7 +495,7 @@ fn partition_err_check(
 
     if empty_partition == true {
         if !partition_method_manual_error_label.is_visible() {
-            partition_method_manual_error_label.set_label(&gettext("fstab_no_partition_err"));
+            partition_method_manual_error_label.set_label(&t!("fstab_no_partition_err"));
             partition_method_manual_error_label.set_widget_name("err2");
             partition_method_manual_error_label.set_visible(true);
         }
@@ -536,9 +537,9 @@ fn partition_err_check(
                 if partition_size < 500000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_small_efi_err")
+                            &(t!("fstab_small_efi_err").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_small_efi_size")),
+                                + &t!("fstab_small_efi_size").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err3");
@@ -551,9 +552,9 @@ fn partition_err_check(
                 if partition_fs != "vfat" {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_badfs")
+                            &(t!("fstab_badfs").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_badfs_efi")),
+                                + &t!("fstab_badfs_efi").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err4");
@@ -568,9 +569,9 @@ fn partition_err_check(
                 if partition_size < 1000000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_small_boot_err")
+                            &(t!("fstab_small_boot_err").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_small_boot_size")),
+                                + &t!("fstab_small_boot_size").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err5");
@@ -583,9 +584,9 @@ fn partition_err_check(
                 if partition_fs == "vfat" {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_badfs")
+                            &(t!("fstab_badfs").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_badfs_boot")),
+                                + &t!("fstab_badfs_boot").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err6");
@@ -600,9 +601,9 @@ fn partition_err_check(
                 if partition_size < 25000000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_small_root_err")
+                            &(t!("fstab_small_root_err").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_small_root_size")),
+                                + &t!("fstab_small_root_size").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err7")
@@ -619,9 +620,9 @@ fn partition_err_check(
                 {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_badfs")
+                            &(t!("fstab_badfs").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_badfs_root")),
+                                + &t!("fstab_badfs_root").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err8");
@@ -636,9 +637,9 @@ fn partition_err_check(
                 if partition_size < 10000000000.0 {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_small_home_err")
+                            &(t!("fstab_small_home_err").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_small_home_size")),
+                                + &t!("fstab_small_home_size").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err9");
@@ -655,9 +656,9 @@ fn partition_err_check(
                 {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_badfs")
+                            &(t!("fstab_badfs").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_badfs_home")),
+                                + &t!("fstab_badfs_home").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err10");
@@ -672,9 +673,9 @@ fn partition_err_check(
                 if partition_fs != "swap" {
                     if !partition_method_manual_error_label.is_visible() {
                         partition_method_manual_error_label.set_label(
-                            &(gettext("fstab_badfs")
+                            &(t!("fstab_badfs").to_string()
                                 + &drivemounts.partition
-                                + &gettext("fstab_badfs_swap")),
+                                + &t!("fstab_badfs_swap").to_string()),
                         );
                         partition_method_manual_error_label.set_visible(true);
                         partition_method_manual_error_label.set_widget_name("err11");
@@ -692,9 +693,9 @@ fn partition_err_check(
             {
                 if !partition_method_manual_error_label.is_visible() {
                     partition_method_manual_error_label.set_label(
-                        &(gettext("fstab_bad_mountpoint")
+                        &(t!("fstab_bad_mountpoint").to_string()
                             + &drivemounts.mountpoint
-                            + &gettext("fstab_bad_mountpoint_msg")),
+                            + &t!("fstab_bad_mountpoint_msg").to_string()),
                     );
                     partition_method_manual_error_label.set_visible(true);
                     partition_method_manual_error_label.set_widget_name("err12");
@@ -705,7 +706,7 @@ fn partition_err_check(
                 }
             }
             if !partition_method_manual_error_label.is_visible() {
-                partition_method_manual_valid_label.set_label(&gettext("fstab_status_valid"));
+                partition_method_manual_valid_label.set_label(&t!("fstab_status_valid"));
                 partition_method_manual_valid_label.set_visible(true)
             } else {
                 partition_method_manual_valid_label.set_visible(false)

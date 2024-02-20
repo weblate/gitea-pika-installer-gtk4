@@ -7,13 +7,13 @@ use glob::glob;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::gettext;
+
 
 use crate::automatic_partitioning::automatic_partitioning;
 use crate::install_page::install_page;
 use crate::manual_partitioning::manual_partitioning;
 
-use std::fs;
+use std::{fs};
 use std::path::Path;
 
 use std::cell::RefCell;
@@ -32,6 +32,7 @@ pub fn partitioning_page(
     content_stack: &gtk::Stack,
     window: &adw::ApplicationWindow,
 ) {
+
     let manual_drive_mount_array: Rc<RefCell<Vec<DriveMount>>> = Default::default();
 
     // create the bottom box for next and back buttons
@@ -43,7 +44,7 @@ pub fn partitioning_page(
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label(gettext("back"))
+        .label(t!("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -52,7 +53,7 @@ pub fn partitioning_page(
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label(gettext("next"))
+        .label(t!("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -77,7 +78,7 @@ pub fn partitioning_page(
 
     // the header text for the partitioning page
     let partitioning_header_text = gtk::Label::builder()
-        .label(gettext("choose_install_method"))
+        .label(t!("choose_install_method"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -130,7 +131,7 @@ pub fn partitioning_page(
         .build();
 
     let manual_method_button_content_text = gtk::Label::builder()
-        .label(gettext("manual_partition_drive"))
+        .label(t!("manual_partition_drive"))
         .margin_top(0)
         .margin_bottom(15)
         .margin_start(15)
@@ -156,7 +157,7 @@ pub fn partitioning_page(
         .build();
 
     let automatic_method_button_content_text = gtk::Label::builder()
-        .label(gettext("auto_partition_drive"))
+        .label(t!("auto_partition_drive"))
         .margin_top(0)
         .margin_bottom(15)
         .margin_start(15)

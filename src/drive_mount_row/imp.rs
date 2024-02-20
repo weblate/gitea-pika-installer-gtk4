@@ -1,10 +1,10 @@
-use std::{cell::RefCell, rc::Rc, sync::OnceLock};
+use std::{cell::RefCell, env, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
 use gtk::{glib, Orientation::Horizontal};
 
-use gettextrs::gettext;
+
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -39,6 +39,12 @@ impl ObjectImpl for DriveMountRow {
         SIGNALS.get_or_init(|| vec![Signal::builder("row-deleted").build()])
     }
     fn constructed(&self) {
+        let current_locale = match env::var_os("LANG") {
+            Some(v) => v.into_string().unwrap(),
+            None => panic!("$LANG is not set"),
+        };
+        rust_i18n::set_locale(current_locale.strip_suffix(".UTF-8").unwrap());
+
         self.parent_constructed();
 
         // Bind label to number
@@ -62,7 +68,7 @@ impl ObjectImpl for DriveMountRow {
         partition_row_expander_adw_listbox.add_css_class("boxed-list");
 
         let partition_row_expander = adw::ExpanderRow::builder()
-            .subtitle(gettext("subtitle_partition"))
+            .subtitle(t!("subtitle_partition"))
             .vexpand(true)
             .hexpand(true)
             .width_request(300)
@@ -83,7 +89,7 @@ impl ObjectImpl for DriveMountRow {
         mountpoint_entry_adw_listbox.add_css_class("boxed-list");
 
         let mountpoint_entry_row = adw::EntryRow::builder()
-            .title(gettext("title_mountpoint"))
+            .title(t!("title_mountpoint"))
             .hexpand(true)
             .valign(gtk::Align::Start)
             .width_request(300)
@@ -105,7 +111,7 @@ impl ObjectImpl for DriveMountRow {
         mountopt_entry_adw_listbox.add_css_class("boxed-list");
 
         let mountopt_entry_row = adw::EntryRow::builder()
-            .title(gettext("title_mountopt"))
+            .title(t!("title_mountopt"))
             .hexpand(true)
             .valign(gtk::Align::Start)
             .width_request(300)

@@ -10,13 +10,13 @@ use gtk::*;
 use vte::prelude::*;
 use vte::*;
 
-use gettextrs::gettext;
+use gnome_desktop::*;
 
 use crate::done_page::done_page;
 
 use std::process::Command;
 
-use std::fs;
+use std::{fs};
 use std::path::Path;
 use std::rc::Rc;
 
@@ -37,6 +37,7 @@ pub fn install_page(
     window: &adw::ApplicationWindow,
     manual_drive_mount_array: &Rc<RefCell<Vec<DriveMount>>>,
 ) {
+
     let mut _iter_count = 0;
     _iter_count = 0;
     let mut unlocked_array: Vec<String> = Default::default();
@@ -63,7 +64,7 @@ pub fn install_page(
                 .build();
             crypttab_password_listbox.add_css_class("boxed-list");
             let crypttab_password = adw::PasswordEntryRow::builder()
-                .title(gettext("luks_password_for") + &partitions.partition)
+                .title(t!("luks_password_for").to_string() + &partitions.partition)
                 .build();
             crypttab_password.set_show_apply_button(true);
             crypttab_password_listbox.append(&crypttab_password);
@@ -74,13 +75,13 @@ pub fn install_page(
                 .width_request(400)
                 .height_request(200)
                 .heading(
-                    gettext("luks_how_should")
+                    t!("luks_how_should").to_string()
                         + &partitions.partition
-                        + &gettext("be_added_crypttab"),
+                        + &t!("be_added_crypttab"),
                 )
                 .build();
-            crypttab_dialog.add_response("crypttab_dialog_boot", &gettext("unlock_boot_manually"));
-            crypttab_dialog.add_response("crypttab_dialog_auto", &gettext("unlock_boot_manual"));
+            crypttab_dialog.add_response("crypttab_dialog_boot", &t!("unlock_boot_manually"));
+            crypttab_dialog.add_response("crypttab_dialog_auto", &t!("unlock_boot_manual"));
             crypttab_dialog.set_response_enabled("crypttab_dialog_auto", false);
             crypttab_password.connect_apply(clone!(@weak crypttab_password, @strong partitions, @weak crypttab_dialog => move |_| {
             let (luks_manual_password_sender, luks_manual_password_receiver) = async_channel::unbounded();
@@ -164,7 +165,7 @@ pub fn install_page(
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label(gettext("back"))
+        .label(t!("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -192,7 +193,7 @@ pub fn install_page(
 
     // the header text for the install page
     let install_confirm_header_text = gtk::Label::builder()
-        .label(gettext("sit_back_relax"))
+        .label(t!("sit_back_relax"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -233,16 +234,21 @@ pub fn install_page(
         .build();
     install_confirm_details_boxed_list.add_css_class("boxed-list");
 
+    let locale_name_cli =
+        Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/locale-name.py")
+            .arg(fs::read_to_string("/tmp/pika-installer-gtk4-lang.txt").expect("Unable to read file"))
+            .output()
+            .expect("failed to execute process");
+    let locale_name = String::from_utf8(locale_name_cli.stdout).unwrap();
+
     let install_confirm_detail_language = adw::ActionRow::builder()
-        .title(gettext("language_detail"))
-        .subtitle(
-            fs::read_to_string("/tmp/pika-installer-gtk4-lang.txt").expect("Unable to read file"),
-        )
+        .title(t!("language_detail"))
+        .subtitle(&locale_name)
         .build();
     install_confirm_detail_language.add_css_class("property");
 
     let install_confirm_detail_timezone = adw::ActionRow::builder()
-        .title(gettext("timezone_detail"))
+        .title(t!("timezone_detail"))
         .subtitle(
             fs::read_to_string("/tmp/pika-installer-gtk4-timezone.txt")
                 .expect("Unable to read file"),
@@ -251,10 +257,14 @@ pub fn install_page(
     install_confirm_detail_timezone.add_css_class("property");
 
     let install_confirm_detail_keyboard = adw::ActionRow::builder()
-        .title(gettext("keyboard_detail"))
+        .title(t!("keyboard_detail"))
         .subtitle(
-            fs::read_to_string("/tmp/pika-installer-gtk4-keyboard.txt")
-                .expect("Unable to read file"),
+            gnome_desktop::XkbInfo::new()
+                .layout_info(&fs::read_to_string("/tmp/pika-installer-gtk4-keyboard.txt")
+                    .expect("Unable to read file"))
+                .unwrap()
+                .0
+                .unwrap(),
         )
         .build();
     install_confirm_detail_keyboard.add_css_class("property");
@@ -269,7 +279,7 @@ pub fn install_page(
                 .title(
                     "/dev/".to_owned()
                         + &partitions.partition
-                        + &gettext("mounted_on_detail")
+                        + &t!("mounted_on_detail")
                         + &partitions.mountpoint,
                 )
                 .build();
@@ -277,7 +287,7 @@ pub fn install_page(
         }
     } else {
         let install_confirm_detail_target = adw::ActionRow::builder()
-            .title(gettext("install_target_detail"))
+            .title(t!("install_target_detail"))
             .build();
         install_confirm_detail_target.set_subtitle(
             &fs::read_to_string("/tmp/pika-installer-gtk4-target-auto.txt")
@@ -380,7 +390,7 @@ pub fn install_page(
     }
 
     let install_confirm_button = gtk::Button::builder()
-        .label(gettext("confirm_install_pika"))
+        .label(t!("confirm_install_pika"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
@@ -463,9 +473,10 @@ pub fn install_page(
         .margin_bottom(15)
         .show_text(true)
         .build();
+    install_progress_bar.add_css_class("small_fg_text");
 
     let progress_log_button_content = adw::ButtonContent::builder()
-        .label(gettext("view_logs"))
+        .label(t!("view_logs"))
         .icon_name("terminal")
         .build();
 
@@ -575,7 +586,7 @@ fn begin_install(
             if parting_status_state == true {
                 println!("Installation status: Parting");
                 install_progress_bar.set_fraction(0.20);
-                install_progress_bar.set_text(Some(&gettext("parting_status_text")));
+                install_progress_bar.set_text(Some(&t!("parting_status_text")));
             }
         }
     }));
@@ -602,7 +613,7 @@ fn begin_install(
             if image_status_state == true {
                 println!("Installation status: Imaging");
                 install_progress_bar.set_fraction(0.60);
-                install_progress_bar.set_text(Some(&gettext("image_status_text")));
+                install_progress_bar.set_text(Some(&t!("image_status_text")));
             }
         }
     }));
@@ -629,7 +640,7 @@ fn begin_install(
             if flag1_status_state == true {
                 println!("Installation status: Flag1");
                 install_progress_bar.set_fraction(0.65);
-                install_progress_bar.set_text(Some(&gettext("flag1_status_text")));
+                install_progress_bar.set_text(Some(&t!("flag1_status_text")));
             }
         }
     }));
@@ -656,7 +667,7 @@ fn begin_install(
             if flag2_status_state == true {
                 println!("Installation status: Flag2");
                 install_progress_bar.set_fraction(0.70);
-                install_progress_bar.set_text(Some(&gettext("flag2_status_text")));
+                install_progress_bar.set_text(Some(&t!("flag2_status_text")));
             }
         }
     }));
@@ -683,7 +694,7 @@ fn begin_install(
             if crypt_status_state == true {
                 println!("Installation status: Crypttab");
                 install_progress_bar.set_fraction(0.75);
-                install_progress_bar.set_text(Some(&gettext("crypt_status_text")));
+                install_progress_bar.set_text(Some(&t!("crypt_status_text")));
             }
         }
     }));
@@ -710,7 +721,7 @@ fn begin_install(
             if lang_status_state == true {
                 println!("Installation status: Language");
                 install_progress_bar.set_fraction(0.80);
-                install_progress_bar.set_text(Some(&gettext("lang_status_text")));
+                install_progress_bar.set_text(Some(&t!("lang_status_text")));
             }
         }
     }));
@@ -737,7 +748,7 @@ fn begin_install(
             if boot_status_state == true {
                 println!("Installation status: Bootloader");
                 install_progress_bar.set_fraction(0.85);
-                install_progress_bar.set_text(Some(&gettext("boot_status_status_text")));
+                install_progress_bar.set_text(Some(&t!("boot_status_status_text")));
             }
         }
     }));
@@ -764,7 +775,7 @@ fn begin_install(
             if post_status_state == true {
                 println!("Installation status: Post Install");
                 install_progress_bar.set_fraction(0.90);
-                install_progress_bar.set_text(Some(&gettext("post_status_text")));
+                install_progress_bar.set_text(Some(&t!("post_status_text")));
             }
         }
     }));

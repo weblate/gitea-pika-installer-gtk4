@@ -1,15 +1,22 @@
+
 // Use libraries
+use std::env;
 use crate::build_ui::build_ui;
 use adw::prelude::*;
 use adw::*;
 use gdk::Display;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
-use gtk::*;
+use gtk::{CssProvider, STYLE_PROVIDER_PRIORITY_APPLICATION};
 
 mod config;
-use config::{APP_ID, GETTEXT_PACKAGE, LOCALEDIR};
-use gettextrs::{gettext, LocaleCategory};
+use config::{APP_ID};
+
+// Init translations for current crate.
+#[macro_use]
+extern crate rust_i18n;
+i18n!("locales", fallback = "en_US");
+
 
 mod automatic_partitioning;
 mod build_ui;
@@ -28,6 +35,11 @@ mod welcome_page;
 
 /// main function
 fn main() {
+    let current_locale = match env::var_os("LANG") {
+        Some(v) => v.into_string().unwrap(),
+        None => panic!("$LANG is not set"),
+    };
+    rust_i18n::set_locale(current_locale.strip_suffix(".UTF-8").unwrap());
     let application = adw::Application::new(Some(APP_ID), Default::default());
     application.connect_startup(|app| {
         // The CSS "magic" happens here.
@@ -40,17 +52,6 @@ fn main() {
             &provider,
             STYLE_PROVIDER_PRIORITY_APPLICATION,
         );
-        // Prepare i18n
-        gettextrs::setlocale(LocaleCategory::LcAll, "");
-        gettextrs::bindtextdomain(GETTEXT_PACKAGE, LOCALEDIR)
-            .expect("Unable to bind the text domain");
-        gettextrs::textdomain(GETTEXT_PACKAGE).expect("Unable to switch to the text domain");
-        // Fallback if no translation present
-        if gettext("pikaos_installer") == "pikaos_installer" {
-            println!("Warning: Current LANG is not supported, using fallback Locale.");
-            gettextrs::setlocale(LocaleCategory::LcAll, "en_US.UTF8");
-        }
-
         app.connect_activate(build_ui);
     });
 

@@ -6,13 +6,13 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::gettext;
+
 
 use std::io::BufRead;
 use std::io::BufReader;
 use std::process::Command;
 use std::process::Stdio;
-use std::str;
+use std::{str};
 
 use std::fs;
 use std::path::Path;
@@ -20,6 +20,7 @@ use std::path::Path;
 pub fn timezone_page(content_stack: &gtk::Stack,
                      timezone_main_box: &gtk::Box,
 ) {
+
     // create the bottom box for next and back buttons
     let bottom_box = gtk::Box::builder()
         .orientation(Orientation::Horizontal)
@@ -29,7 +30,7 @@ pub fn timezone_page(content_stack: &gtk::Stack,
 
     // Next and back button
     let bottom_back_button = gtk::Button::builder()
-        .label(gettext("back"))
+        .label(t!("back"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -38,7 +39,7 @@ pub fn timezone_page(content_stack: &gtk::Stack,
         .hexpand(true)
         .build();
     let bottom_next_button = gtk::Button::builder()
-        .label(gettext("next"))
+        .label(t!("next"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -63,7 +64,7 @@ pub fn timezone_page(content_stack: &gtk::Stack,
 
     // the header text for the timezone page
     let timezone_header_text = gtk::Label::builder()
-        .label(gettext("select_a_timezone"))
+        .label(t!("select_a_timezone"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -103,7 +104,7 @@ pub fn timezone_page(content_stack: &gtk::Stack,
 
     // text above timezone selection box
     let timezone_selection_text = gtk::Label::builder()
-        .label(gettext("please_select_timezone"))
+        .label(t!("please_select_timezone"))
         .halign(gtk::Align::Center)
         .hexpand(true)
         .margin_top(15)
@@ -114,11 +115,11 @@ pub fn timezone_page(content_stack: &gtk::Stack,
     timezone_selection_text.add_css_class("medium_sized_text");
 
     let timezone_selection_expander_row = adw::ExpanderRow::builder()
-        .title(gettext("no_timezone_select"))
+        .title(t!("no_timezone_select"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label(gettext("no_timezone_select"))
+        .label(t!("no_timezone_select"))
         .build();
 
     let timezone_selection_expander_row_viewport =

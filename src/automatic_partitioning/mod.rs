@@ -1,3 +1,4 @@
+
 // Use libraries
 use adw::prelude::*;
 use adw::*;
@@ -6,7 +7,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::gettext;
+
 
 use std::io::BufRead;
 use std::io::BufReader;
@@ -31,7 +32,7 @@ pub fn automatic_partitioning(
 
     // the header text for the partitioning page
     let partition_method_automatic_header_text = gtk::Label::builder()
-        .label(gettext("auto_part_installer"))
+        .label(t!("auto_part_installer"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -58,7 +59,7 @@ pub fn automatic_partitioning(
         .build();
 
     let partition_method_automatic_selection_text = gtk::Label::builder()
-        .label(gettext("choose_drive_auto"))
+        .label(t!("choose_drive_auto"))
         .justify(Justification::Center)
         .halign(gtk::Align::Center)
         .hexpand(true)
@@ -70,7 +71,7 @@ pub fn automatic_partitioning(
     partition_method_automatic_selection_text.add_css_class("medium_sized_text");
 
     let devices_selection_expander_row = adw::ExpanderRow::builder()
-        .title(gettext("no_drive_auto_selected"))
+        .title(t!("no_drive_auto_selected"))
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder().build();
@@ -111,7 +112,7 @@ pub fn automatic_partitioning(
     );
 
     let partition_method_automatic_disk_error_label = gtk::Label::builder()
-        .label(gettext("no_disk_specified"))
+        .label(t!("no_disk_specified"))
         .halign(Align::Start)
         .valign(Align::End)
         .vexpand(true)
@@ -119,7 +120,7 @@ pub fn automatic_partitioning(
     partition_method_automatic_disk_error_label.add_css_class("small_error_text");
 
     let partition_method_automatic_luks_error_label = gtk::Label::builder()
-        .label(gettext("luks_yes_but_empty"))
+        .label(t!("luks_yes_but_empty"))
         .halign(Align::Start)
         .valign(Align::End)
         .vexpand(true)
@@ -128,7 +129,7 @@ pub fn automatic_partitioning(
     partition_method_automatic_luks_error_label.add_css_class("small_error_text");
 
     let partition_method_automatic_luks_error2_label = gtk::Label::builder()
-        .label(gettext("luks_not_match"))
+        .label(t!("luks_not_match"))
         .halign(Align::Start)
         .valign(Align::End)
         .vexpand(true)
@@ -141,7 +142,7 @@ pub fn automatic_partitioning(
         .build();
 
     let partition_method_automatic_luks_checkbutton = gtk::CheckButton::builder()
-        .label(gettext("enable_luks2_enc"))
+        .label(t!("enable_luks2_enc"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
@@ -157,13 +158,13 @@ pub fn automatic_partitioning(
     partition_method_automatic_luks_listbox.add_css_class("boxed-list");
 
     let partition_method_automatic_luks_password_entry = adw::PasswordEntryRow::builder()
-        .title(gettext("luks2_password"))
+        .title(t!("luks2_password"))
         .hexpand(true)
         .sensitive(false)
         .build();
 
     let partition_method_automatic_luks_password_confirm_entry = adw::PasswordEntryRow::builder()
-        .title(gettext("luks2_password_confirm"))
+        .title(t!("luks2_password_confirm"))
         .hexpand(true)
         .sensitive(true)
         .visible(false)
@@ -224,7 +225,7 @@ pub fn automatic_partitioning(
                     }
                 } else {
                     partition_method_automatic_disk_error_label.set_visible(true);
-                    partition_method_automatic_disk_error_label.set_label(&gettext("disk_auto_target_small"));
+                    partition_method_automatic_disk_error_label.set_label(&t!("disk_auto_target_small"));
                     bottom_next_button.set_sensitive(false);
                 }
             }

@@ -1,3 +1,4 @@
+
 // Use libraries
 use adw::prelude::*;
 use adw::*;
@@ -6,9 +7,10 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-use gettextrs::gettext;
+
 
 pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stack) {
+
     // the header box for the efi_error page
     let efi_error_main_box = gtk::Box::builder()
         .orientation(Orientation::Vertical)
@@ -21,7 +23,7 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
 
     // the header text for the efi_error page
     let efi_error_header_text = gtk::Label::builder()
-        .label(gettext("bad_boot_platfrom"))
+        .label(t!("bad_boot_platfrom"))
         .halign(gtk::Align::End)
         .hexpand(true)
         .margin_top(15)
@@ -55,14 +57,14 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
     let efi_error_text = gtk::Label::builder()
         .vexpand(true)
         .hexpand(true)
-        .label(gettext("pika_nowork_csm"))
+        .label(t!("pika_nowork_csm"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
     efi_error_text.add_css_class("big_error_text");
 
     let exit_button = gtk::Button::builder()
-        .label(gettext("exit"))
+        .label(t!("exit"))
         .vexpand(true)
         .hexpand(true)
         .halign(gtk::Align::Center)
