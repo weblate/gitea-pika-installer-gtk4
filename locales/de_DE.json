@@ -21,7 +21,7 @@
     "validate_fs_table": "Überprüfe die Dateisystemtabelle",
     "fstab_status_valid": "Status der Dateisystemtabelle: Alle Einträge sind gültig!",
     "part_need_mapper": "Diese Partition muss als Mapper configuriert werden!",
-    "fstab_subvol_warn": "Warnung zur Dateisystemtabelle: Die Überprüfung der Partitionswiederverwendung wird aufgrund der Subvol-Nutzung übersprungen.",
+    "fstab_subvol_warn": "Warnung zur Dateisystemtabelle: Die Überprüfung der Partitionswiederverwendung wird aufgrund der Subvolumen-Nutzung übersprungen.",
     "fstab_multiple_part_mountpoint_err": "Fehler in der Dateisystemtabelle: Mehrere Partitionen sind für denselben EInhängepunkt konfiguriert!",
     "fstab_no_mountpoint_err": "Dateisystemtabellenfehler: Für eine oder mehrere Partitionen ist kein Einhängepunktkonfiguriert!",
     "fstab_no_partition_err": "Fehler in der Dateisystemtabelle: Für einen oder mehrere Einträge ist keine Partition konfiguriert!",
