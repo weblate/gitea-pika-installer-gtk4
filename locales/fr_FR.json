@@ -34,7 +34,7 @@
     "fstab_badfs_root": ") Il faut qu'il soit être un système de fichiers compatible Linux* comme:\n*ext4/btrfs/xfs/f2fs à monter vers /! \n (ATTENTION : / signifie le directoire root, ou votre système sera installée!)",
     "fstab_small_home_size": ") Il faut qu'il soit être à 11Go ou plus!",
     "fstab_badfs_home": ") Il faut qu'il soit être un système de fichiers compatible Linux* comme:\n*ext4/btrfs/xfs/f2fs à monter vers /home!",
-    "fstab_badfs_swap": ") Il fauit qu'il soit pas utilisé pour [SWAP]!",
+    "fstab_badfs_swap": ") Il faut qu'il soit pas utilisé pour [SWAP]!",
     "fstab_bad_mountpoint": "Table de Système de Fichiers: Point de montage invalide: (",
     "fstab_bad_mountpoint_msg": ") n'est pas un point de montage valide!",
     "select_a_language": "Sélectionner une langue",
