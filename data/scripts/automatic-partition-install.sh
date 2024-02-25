@@ -39,10 +39,18 @@ then
         yes | mkfs.btrfs -f /dev/${S_DISK}p4
         sleep 2
         # Begin Mounting
+        mkdir -p /var/cache/root-mnt
+        mount /dev/${S_DISK}p3 /var/cache/root-mnt
+        btrfs subvolume create /var/cache/root-mnt/@
+        #
+        mkdir -p /var/cache/home-mnt
+        mount /dev/${S_DISK}p4 /var/cache/home-mnt
+        btrfs subvolume create /var/cache/home-mnt/@
+        #
         mkdir -p /media/pika-install-mount
-        mount /dev/${S_DISK}p3 /media/pika-install-mount/
+        mount /dev/${S_DISK}p3 /media/pika-install-mount/ -o subvol=@
         mkdir -p /media/pika-install-mount/home
-        mount /dev/${S_DISK}p4 /media/pika-install-mount/home
+        mount /dev/${S_DISK}p4 /media/pika-install-mount/home -o subvol=@
         mkdir -p /media/pika-install-mount/boot
         mount /dev/${S_DISK}p2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi
@@ -57,10 +65,18 @@ then
         yes | mkfs.btrfs -f /dev/${S_DISK}4
         sleep 2
         # Begin Mounting
+        mkdir -p /var/cache/root-mnt
+        mount /dev/${S_DISK}3 /var/cache/root-mnt
+        btrfs subvolume create /var/cache/root-mnt/@
+        #
+        mkdir -p /var/cache/home-mnt
+        mount /dev/${S_DISK}4 /var/cache/home-mnt
+        btrfs subvolume create /var/cache/home-mnt/@
+        #
         mkdir -p /media/pika-install-mount
-        mount /dev/${S_DISK}3 /media/pika-install-mount/
+        mount /dev/${S_DISK}3 /media/pika-install-mount/ -o subvol=@
         mkdir -p /media/pika-install-mount/home
-        mount /dev/${S_DISK}4 /media/pika-install-mount/home
+        mount /dev/${S_DISK}4 /media/pika-install-mount/home -o subvol=@
         mkdir -p /media/pika-install-mount/boot
         mount /dev/${S_DISK}2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi
@@ -96,10 +112,18 @@ else
         yes | mkfs.btrfs -f /dev/mapper/crypt_home
         sleep 2
         # Begin Mounting
+        mkdir -p /var/cache/root-mnt
+        mount /dev/mapper/crypt_root /var/cache/root-mnt
+        btrfs subvolume create /var/cache/root-mnt/@
+        #
+        mkdir -p /var/cache/home-mnt
+        mount /dev/mapper/crypt_home /var/cache/home-mnt
+        btrfs subvolume create /var/cache/home-mnt/@
+        #
         mkdir -p /media/pika-install-mount
-        mount /dev/mapper/crypt_root /media/pika-install-mount/
+        mount /dev/mapper/crypt_root /media/pika-install-mount/ -o subvol=@
         mkdir -p /media/pika-install-mount/home
-        mount /dev/mapper/crypt_home /media/pika-install-mount/home
+        mount /dev/mapper/crypt_home /media/pika-install-mount/home -o subvol=@
         mkdir -p /media/pika-install-mount/boot
         mount /dev/${S_DISK}p2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi
@@ -118,10 +142,18 @@ else
         yes | mkfs.btrfs -f /dev/mapper/crypt_home
         sleep 2
         # Begin Mounting
+        mkdir -p /var/cache/root-mnt
+        mount /dev/mapper/crypt_root /var/cache/root-mnt
+        btrfs subvolume create /var/cache/root-mnt/@
+        #
+        mkdir -p /var/cache/home-mnt
+        mount /dev/mapper/crypt_home /var/cache/home-mnt
+        btrfs subvolume create /var/cache/home-mnt/@
+        #
         mkdir -p /media/pika-install-mount
-        mount /dev/mapper/crypt_root /media/pika-install-mount/
+        mount /dev/mapper/crypt_root /media/pika-install-mount/ -o subvol=@
         mkdir -p /media/pika-install-mount/home
-        mount /dev/mapper/crypt_home /media/pika-install-mount/home
+        mount /dev/mapper/crypt_home /media/pika-install-mount/home -o subvol=@
         mkdir -p /media/pika-install-mount/boot
         mount /dev/${S_DISK}2 /media/pika-install-mount/boot
         mkdir -p /media/pika-install-mount/boot/efi

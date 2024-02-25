@@ -74,52 +74,27 @@ impl ObjectImpl for DriveMountRow {
             .width_request(300)
             .build();
 
-        let mountpoint_entry_adw_box = gtk::Box::builder()
+        let mountpoint_entry_row = gtk::Entry::builder()
+            .placeholder_text(t!("title_mountpoint"))
             .hexpand(true)
-            .valign(gtk::Align::Start)
-            .homogeneous(true)
-            .build();
-
-        let mountpoint_entry_adw_listbox = gtk::ListBox::builder()
-            .margin_top(5)
+            .vexpand(true)
             .margin_bottom(5)
-            .hexpand(true)
-            .valign(gtk::Align::Start)
-            .build();
-        mountpoint_entry_adw_listbox.add_css_class("boxed-list");
-
-        let mountpoint_entry_row = adw::EntryRow::builder()
-            .title(t!("title_mountpoint"))
-            .hexpand(true)
-            .valign(gtk::Align::Start)
+            .margin_top(5)
             .width_request(300)
             .build();
 
-        let mountopt_entry_adw_box = gtk::Box::builder()
+        let mountopt_entry_row = gtk::Entry::builder()
+            .placeholder_text(t!("title_mountopt"))
             .hexpand(true)
-            .valign(gtk::Align::Start)
-            .homogeneous(true)
-            .build();
-
-        let mountopt_entry_adw_listbox = gtk::ListBox::builder()
-            .margin_top(5)
+            .vexpand(true)
+            .margin_start(10)
             .margin_bottom(5)
-            .margin_start(5)
-            .hexpand(true)
-            .valign(gtk::Align::Start)
-            .build();
-        mountopt_entry_adw_listbox.add_css_class("boxed-list");
-
-        let mountopt_entry_row = adw::EntryRow::builder()
-            .title(t!("title_mountopt"))
-            .hexpand(true)
-            .valign(gtk::Align::Start)
+            .margin_top(5)
             .width_request(300)
             .build();
 
         let partition_row_delete_button = gtk::Button::builder()
-            .margin_end(0)
-            .margin_start(5)
+            .margin_end(5)
             .margin_top(5)
             .margin_bottom(5)
             .width_request(53)
@@ -136,17 +111,13 @@ impl ObjectImpl for DriveMountRow {
         partition_row_expander_adw_listbox.append(&partition_row_expander);
         action_row_content_box.append(&partition_row_expander_adw_listbox);
 
-        mountpoint_entry_adw_listbox.append(&mountpoint_entry_row);
-        mountpoint_entry_adw_box.append(&mountpoint_entry_adw_listbox);
-        action_row_content_box.append(&mountpoint_entry_adw_box);
+        action_row_content_box.append(&mountpoint_entry_row);
 
-        mountopt_entry_adw_listbox.append(&mountopt_entry_row);
-        mountopt_entry_adw_box.append(&mountopt_entry_adw_listbox);
-        action_row_content_box.append(&mountopt_entry_adw_box);
-
-        action_row_content_box.append(&partition_row_delete_button);
+        action_row_content_box.append(&mountopt_entry_row);
 
         obj.add_prefix(&action_row_content_box);
+
+        obj.add_suffix(&partition_row_delete_button);
 
         // Bind label to number
         // `SYNC_CREATE` ensures that the label will be immediately set
