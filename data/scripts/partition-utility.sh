@@ -1,6 +1,6 @@
 #! /bin/bash
 
-export LANG=en_US.UTF8
+export LANG=en_US.UTF-8
 
 if [[ "$1" = "get_block_devices" ]]
 then
