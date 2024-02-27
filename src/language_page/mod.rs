@@ -7,11 +7,7 @@ use glib::*;
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
 
-
-use std::io::BufRead;
-use std::io::BufReader;
 use std::process::Command;
-use std::process::Stdio;
 
 use std::fs;
 use std::path::Path;
