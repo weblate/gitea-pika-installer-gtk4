@@ -1,10 +1,8 @@
 #! /bin/bash
 
-export LANG=en_US.UTF8
-
 set -e
 
-S_LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt")"
+S_LOCALE="$(cat "/tmp/pika-installer-gtk4-lang.txt").UTF-8"
 S_KEYBOARD="$(cat "/tmp/pika-installer-gtk4-keyboard.txt")"
 S_TIMEZONE="$(cat "/tmp/pika-installer-gtk4-timezone.txt")"
 
