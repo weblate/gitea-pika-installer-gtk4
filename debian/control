@@ -16,5 +16,6 @@ Rules-Requires-Root: no
 Package: pika-installer-gtk4
 Architecture: any
 Depends: ${shlibs:Depends},
-         pikainstall
+         pikainstall,
+         gir1.2-gnomedesktop-4.0
 Description: A frontend in GTK 4 and Libadwaita for pikainstall.
