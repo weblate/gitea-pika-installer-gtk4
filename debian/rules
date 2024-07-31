@@ -1,15 +1,19 @@
-#!/usr/bin/make -f
-# -*- makefile -*-
-# Sample debian/rules that uses debhelper.
-# This file was originally written by Joey Hess and Craig Small.
-# As a special exception, when this file is copied by dh-make into a
-# dh-make output file, you may use that output file without restriction.
-# This special exception was added by Craig Small in version 0.37 of dh-make.
+#! /usr/bin/make -f
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+## See debhelper(7) (uncomment to enable).
+## Output every command that modifies files on the build system.
+export DH_VERBOSE = 1
 
-export PATH := "/root/.cargo/bin:$(PWD):$(PATH)"
+export PIKA_BUILD_ARCH = $(shell cat ../pika-build-arch)
+export PATH := $(PATH):/root/.cargo/bin
+
+override_dh_prep:
+# amd64 build prep
+ifeq (amd64-v3,$(PIKA_BUILD_ARCH))
+# Does not support LTO due to dylib-lto
+#export RUSTFLAGS = -C target-cpu=x86-64-v3 -C lto=fat -C embed-bitcode -C codegen-units=1 -C opt-level=3 -Zdylib-lto
+export RUSTFLAGS = -C target-cpu=x86-64-v3 -C opt-level=3
+endif
 
 %:
 	dh $@
@@ -17,6 +21,9 @@ export PATH := "/root/.cargo/bin:$(PWD):$(PATH)"
 override_dh_auto_install:
 	/root/.cargo/bin/cargo fetch
 	/root/.cargo/bin/cargo build --release
+
+override_dh_install:
+	dh_install
 	#cp -vf target/release/pika-installer-gtk4 debian/pika-installer-gtk4/usr/bin/
 	#chmod 755 debian/pika-installer-gtk4/usr/bin/pika-installer-gtk4
 	mkdir -p debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/bin/
@@ -34,10 +41,6 @@ override_dh_auto_install:
 	#cp -vf data/pika-drivers.svg debian/pika-installer-gtk4/usr/share/icons/hicolor/scalable/apps/
 	#cp -vf data/com.pika.drivers.desktop  debian/pika-installer-gtk4/usr/share/applications/
 	#makepot debian/pika-installer-gtk4/usr/share/locale
-
-
-override_dh_missing:
-	dh_missing
 	mkdir -pv debian/pika-installer-gtk4/usr/share/applications/
 	mkdir -pv debian/pika-installer-gtk4/etc/xdg/autostart/
 	mkdir -pv debian/pika-installer-gtk4/usr/bin/

@@ -1,3 +1,9 @@
+pika-installer-gtk4 (1.0.2-101pika1) pika; urgency=low
+
+  * Just rebuild in OS 4
+
+ -- Ward Nakchbandi <hotrod.master@hotmail.com>  Thu, 20 Sep 2022 22:01:00 +0000
+
 pika-installer-gtk4 (1.0.2-100pika4) pikauwu; urgency=low
 
   * First release
