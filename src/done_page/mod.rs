@@ -2,7 +2,8 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use glib::*;
+use gtk::glib;
+use gtk::glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;

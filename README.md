@@ -1,6 +1,6 @@
 ### PikaOS installer
 A Rust based GTK4 + Libadwaita App
-for installing PikaOS.
+for installing PikaOS (Highly Inspired by vanilla-installer).
 
 ### Help Us
 

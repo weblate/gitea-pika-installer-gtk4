@@ -1,7 +1,8 @@
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use glib::*;
+use gtk::glib;
+use gtk::glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
@@ -206,7 +207,7 @@ pub fn keyboard_page(content_stack: &gtk::Stack,
                     .layout_info(&keyboard_layout)
                     .unwrap()
                     .0
-                    .unwrap(),
+                    .unwrap().to_string(),
             )
             .subtitle(keyboard_layout.clone())
             .build();

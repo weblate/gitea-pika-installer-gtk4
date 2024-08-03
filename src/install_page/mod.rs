@@ -3,7 +3,8 @@ use std::cell::RefCell;
 // Use libraries
 use adw::prelude::*;
 use adw::*;
-use glib::*;
+use gtk::glib;
+use gtk::glib::*;
 /// Use all gtk4 libraries (gtk4 -> gtk because cargo)
 /// Use all libadwaita libraries (libadwaita -> adw because cargo)
 use gtk::*;
@@ -264,7 +265,7 @@ pub fn install_page(
                     .expect("Unable to read file"))
                 .unwrap()
                 .0
-                .unwrap(),
+                .unwrap().to_string(),
         )
         .build();
     install_confirm_detail_keyboard.add_css_class("property");
