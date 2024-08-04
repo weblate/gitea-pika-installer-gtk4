@@ -1,8 +1,0 @@
-{
-    "css.lint.emptyRules": "ignore",
-    "scss.lint.emptyRules": "ignore",
-    "rust-analyzer.linkedProjects": [
-        "./Cargo.toml",
-        "./Cargo.toml"
-    ]
-}
