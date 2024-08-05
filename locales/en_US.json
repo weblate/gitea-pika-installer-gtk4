@@ -37,9 +37,9 @@
     "fstab_badfs_swap": ") Must not be swap to be used as [SWAP]!",
     "fstab_bad_mountpoint": "Filesystem Table Error: Invalid mountpoint: (",
     "fstab_bad_mountpoint_msg": ") Is not a valid mountpoint!",
-    "select_a_language": "Select a language",
-    "please_select_locale": "Please select a locale for the system to use",
-    "no_locale_selected": "No locale selected",
+    "select_a_language": "Select a Language",
+    "please_select_locale": "Please Select a Locale for The System to Use",
+    "no_locale_selected": "No Locale selected",
     "language": "Language",
     "select_a_keyboard": "Select a keyboard",
     "please_select_keyboard": "Please select a Keyboard layout for the system to use",
@@ -94,5 +94,6 @@
     "done": "Done",
     "partitioning": "Partitioning",
     "luks2_password_confirm": "Confirm LUKS Password",
-    "luks_not_match": "The LUKS Passwords do not match!"
+    "luks_not_match": "The LUKS Passwords do not match!",
+    "search_for_language": "Search for a Language"
 }

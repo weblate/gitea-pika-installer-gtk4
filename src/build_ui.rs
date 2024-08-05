@@ -1,8 +1,8 @@
 use std::path::Path;
 use gtk::{prelude::*, glib as glib};
-use vte::ffi::VTE_ALIGN_CENTER;
 use crate::efi_error_page;
-use crate::installer_stack_page;
+use crate::welcome_page;
+use crate::language_page;
 
 pub fn build_ui(app: &adw::Application) {
     glib::set_prgname(Some("pikaos_installer"));
@@ -47,20 +47,11 @@ pub fn build_ui(app: &adw::Application) {
         .build();
 
     match Path::new("/sys/firmware/efi/efivars").exists() {
-        true => {
-            let page = installer_stack_page::InstallerStackPage::new();
-            page.set_page_icon("pika-logo");
-            page.set_page_title("Title");
-            page.set_page_subtitle("Subtitle");
-            let gbox = gtk::Box::new(gtk::Orientation::Vertical, 0);
-            gbox.append(&gtk::Image::builder().icon_name("pika-logo").build());
-            page.set_child_widget(&gbox);
-            carousel.append(&page);
-        }
+        true => welcome_page::welcome_page(&window, &carousel),
         _ => efi_error_page::efi_error_page(&window, &carousel)
     }
-    //welcome_page(&window, &carousel),
-    //language_page(&window, &carousel);
+
+    language_page::language_page(&window, &carousel);
 
     window.present()
 }
