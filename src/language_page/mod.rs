@@ -1,10 +1,8 @@
 use crate::installer_stack_page;
-use crate::config;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use adw::{prelude::*};
 use glib::{clone, closure_local};
 use std::{process::Command, env, fs, path::Path};
-use gtk::ResponseType::No;
 
 pub fn language_page(
     main_carousel: &adw::Carousel,
@@ -62,7 +60,9 @@ pub fn language_page(
     language_search_bar.add_css_class("rounded-all-25");
 
     let current_locale = match env::var_os("LANG") {
-        Some(v) => v.into_string().unwrap(),
+        Some(v) => v.into_string().unwrap().chars()
+            .take_while(|&ch| ch != '.')
+            .collect::<String>(),
         None => panic!("$LANG is not set"),
     };
 
@@ -262,7 +262,7 @@ pub fn language_page(
                     }
                 }
         ));
-        if current_locale.contains(&(locale_clone))
+        if &current_locale == &locale_clone
             && current_locale != "C.UTF-8"
             && current_locale != "C"
             && current_locale != "C.utf8"

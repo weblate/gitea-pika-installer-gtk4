@@ -1,17 +1,16 @@
 use crate::installer_stack_page;
-use crate::config;
 use gnome_desktop::XkbInfoExt;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use adw::{prelude::*};
 use glib::{clone, closure_local};
-use std::{process::Command, env, fs, path::Path};
-use gtk::ResponseType::No;
+use std::{process::Command, fs, path::Path};
 
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction
 ) {
     let keyboard_page = installer_stack_page::InstallerStackPage::new();
+    keyboard_page.set_page_icon("keyboard-symbolic");
     keyboard_page.set_back_visible(true);
     keyboard_page.set_next_visible(true);
     keyboard_page.set_back_sensitive(true);
@@ -145,7 +144,7 @@ pub fn keyboard_page(
                     }
                 }
         ));
-        if current_keymap.contains(&(keymap_clone)) {
+        if current_keymap == keymap_clone {
             keymap_checkbutton.set_active(true);
         }
     }
@@ -196,7 +195,6 @@ pub fn keyboard_page(
             move |_, _| {
                 keyboard_page.set_page_title(t!("keyboard"));
                 keyboard_page.set_page_subtitle(t!("select_a_keyboard"));
-                keyboard_page.set_page_icon("keyboard-symbolic");
                 keyboard_page.set_back_tooltip_label(t!("back"));
                 keyboard_page.set_next_tooltip_label(t!("next"));
                 //
@@ -244,7 +242,7 @@ pub fn keyboard_page(
                     base_data_text
                 ).expect("Unable to write file");
                 if Path::new("/tmp/pika-installer-gtk4-keyboard-variant.txt").exists() {
-                    fs::remove_file("/tmp/pika-installer-gtk4-variant.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard-variant.txt");
+                    fs::remove_file("/tmp/pika-installer-gtk4-keyboard-variant.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard-variant.txt");
                 }
                 let varient_data_text = keymap_variant_data_buffer_clone0
                 .text(

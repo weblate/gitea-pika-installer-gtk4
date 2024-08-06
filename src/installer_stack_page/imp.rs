@@ -1,7 +1,7 @@
-use std::{cell::RefCell, env, rc::Rc, sync::OnceLock};
+use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 use gtk::{prelude::*, subclass::prelude::*, glib as glib, Justification};
 use adw::{prelude::*, subclass::prelude::*};
-use glib::{clone, subclass::prelude::*, subclass::Signal};
+use glib::{clone, subclass::Signal};
 
 // ANCHOR: custom_button
 // Object holding the state

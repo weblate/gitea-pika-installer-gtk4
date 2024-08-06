@@ -1,6 +1,5 @@
 use adw::gio;
 use crate::installer_stack_page;
-use crate::config;
 use gtk::{prelude::*, glib as glib};
 use glib::{clone, closure_local};
 
@@ -9,6 +8,7 @@ pub fn eula_page(
     language_changed_action: &gio::SimpleAction
 ) {
     let eula_page = installer_stack_page::InstallerStackPage::new();
+    eula_page.set_page_icon("error-correct-symbolic");
     eula_page.set_back_visible(true);
     eula_page.set_next_visible(true);
     eula_page.set_back_sensitive(true);
@@ -81,7 +81,6 @@ pub fn eula_page(
             move |_, _| {
                 eula_page.set_page_title(t!("eula"));
                 eula_page.set_page_subtitle(t!("pikaos_eula_agreement"));
-                eula_page.set_page_icon("error-correct-symbolic");
                 eula_page.set_back_tooltip_label(t!("back"));
                 eula_page.set_next_tooltip_label(t!("next"));
                 //
