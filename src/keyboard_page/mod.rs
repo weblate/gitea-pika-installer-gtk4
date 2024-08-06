@@ -57,10 +57,8 @@ pub fn keyboard_page(
     keyboard_search_bar.add_css_class("rounded-all-25");
 
     let keyboard_test_entry_boxed_list = gtk::ListBox::builder()
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
+        .margin_top(5)
+        .margin_bottom(5)
         .build();
 
     keyboard_test_entry_boxed_list.add_css_class("boxed-list");
@@ -70,40 +68,36 @@ pub fn keyboard_page(
 
     keyboard_test_entry_boxed_list.append(&keyboard_test_entry);
 
-    let current_keyboard_cli = Command::new("localectl")
-        .arg("status")
-        .stdin(std::process::Stdio::piped())
-        .stdout(std::process::Stdio::piped())
-        .spawn()
-        .unwrap_or_else(|e| panic!("failed {}", e));
-    let current_keyboard_grep = Command::new("grep")
-        .arg("X11 Layout")
-        .stdin(std::process::Stdio::from(current_keyboard_cli.stdout.unwrap())) // Pipe through.
-        .stdout(std::process::Stdio::piped())
-        .spawn()
-        .unwrap();
-    let current_keyboard_cut = Command::new("cut")
-        .arg("-d:")
-        .arg("-f2")
-        .stdin(std::process::Stdio::from(current_keyboard_grep.stdout.unwrap()))
-        .stdout(std::process::Stdio::piped())
-        .spawn()
-        .unwrap();
+    keyboard_test_entry_boxed_list.add_css_class("round-border-only-bottom");
 
-    let current_keyboard_output = current_keyboard_cut.wait_with_output().unwrap();
-    let current_keymap = String::from_utf8_lossy(&current_keyboard_output.stdout).trim().to_owned();
+    let current_keymap = "us";
 
     let xkbinfo = gnome_desktop::XkbInfo::new();
 
     let keymap_list = gnome_desktop::XkbInfo::all_layouts(&xkbinfo);
 
-    let keyboard_data_buffer = gtk::TextBuffer::builder().build();
+    let keymap_base_data_buffer = gtk::TextBuffer::builder().build();
 
-    let keyboard_data_buffer_clone0 = keyboard_data_buffer.clone();
+    let keymap_base_data_buffer_clone0 = keymap_base_data_buffer.clone();
+
+    let keymap_variant_data_buffer = gtk::TextBuffer::builder().build();
+
+    let keymap_variant_data_buffer_clone0 = keymap_variant_data_buffer.clone();
 
     for keymap in keymap_list.iter() {
         let keymap = keymap.to_string();
         let keymap_name = xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string();
+        let keymap_split: Vec<String> = keymap.split("+").map(|s|s.into()).collect();
+        let keymap_base = keymap_split.get(0).unwrap().clone();
+        let mut keymap_variant = String::new();
+        let mut split_index = 0;
+        for split in keymap_split {
+            split_index += 1;
+            if split_index == 1 {
+                continue;
+            }
+            keymap_variant.push_str(&split)
+        }
         let keymap_clone = keymap.clone();
         let keymap_checkbutton = gtk::CheckButton::builder()
             .valign(gtk::Align::Center)
@@ -121,19 +115,33 @@ pub fn keyboard_page(
             #[weak]
             keymap_checkbutton,
             #[weak]
-            keyboard_data_buffer_clone0,
+            keymap_base_data_buffer_clone0,
+            #[weak]
+            keymap_variant_data_buffer_clone0,
             #[weak]
             keyboard_page,
             move |_|
                 {
                     if keymap_checkbutton.is_active() == true {
                         keyboard_page.set_next_sensitive(true);
-                        keyboard_data_buffer_clone0.set_text(&keymap);
-                        Command::new("setxkbmap")
-                            .arg("-layout")
-                            .arg(keymap.clone())
-                            .spawn()
-                            .expect("keyboard failed to start");
+                        if keymap_variant.is_empty() {
+                            keymap_base_data_buffer_clone0.set_text(&keymap_base);
+                            Command::new("setxkbmap")
+                                .arg("-layout")
+                                .arg(keymap_base.clone())
+                                .spawn()
+                                .expect("keyboard failed to start");
+                        } else {
+                            keymap_base_data_buffer_clone0.set_text(&keymap_base);
+                            keymap_variant_data_buffer_clone0.set_text(&keymap_variant);
+                            Command::new("setxkbmap")
+                                .arg("-layout")
+                                .arg(keymap_base.clone())
+                                .arg("-variant")
+                                .arg(keymap_variant.clone())
+                                .spawn()
+                                .expect("keyboard failed to start");
+                        }
                     }
                 }
         ));
@@ -219,14 +227,37 @@ pub fn keyboard_page(
         closure_local!(
             #[weak]
             main_carousel,
-            #[strong]
-            language_changed_action,
             move |_keyboard_page: installer_stack_page::InstallerStackPage|
             {
-                if Path::new("/tmp/pika-installer-gtk4-keyboard.txt").exists() {
-                    fs::remove_file("/tmp/pika-installer-gtk4-keyboard.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard.txt");
+                if Path::new("/tmp/pika-installer-gtk4-keyboard-base.txt").exists() {
+                    fs::remove_file("/tmp/pika-installer-gtk4-keyboard-base.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard-base.txt");
                 }
-                fs::write("/tmp/pika-installer-gtk4-keyboard.txt", keyboard_data_buffer_clone0.text(&keyboard_data_buffer_clone0.bounds().0, &keyboard_data_buffer_clone0.bounds().1, true).to_string()).expect("Unable to write file");
+                let base_data_text = keymap_base_data_buffer_clone0
+                .text(
+                    &keymap_base_data_buffer_clone0.bounds().0,
+                    &keymap_base_data_buffer_clone0.bounds().1,
+                    true
+                )
+                .to_string();
+                fs::write(
+                    "/tmp/pika-installer-gtk4-keyboard-base.txt",
+                    base_data_text
+                ).expect("Unable to write file");
+                if Path::new("/tmp/pika-installer-gtk4-keyboard-variant.txt").exists() {
+                    fs::remove_file("/tmp/pika-installer-gtk4-variant.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard-variant.txt");
+                }
+                let varient_data_text = keymap_variant_data_buffer_clone0
+                .text(
+                    &keymap_variant_data_buffer_clone0.bounds().0,
+                    &keymap_variant_data_buffer_clone0.bounds().1,
+                    true
+                ).to_string();
+                if !varient_data_text.is_empty() {
+                    fs::write(
+                        "/tmp/pika-installer-gtk4-keyboard-variant.txt",
+                        varient_data_text
+                    ).expect("Unable to write file");
+                }
                 main_carousel.scroll_to(&main_carousel.nth_page(4), true)
             }
         )

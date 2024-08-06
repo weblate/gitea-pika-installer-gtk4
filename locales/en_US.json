@@ -95,5 +95,6 @@
     "partitioning": "Partitioning",
     "luks2_password_confirm": "Confirm LUKS Password",
     "luks_not_match": "The LUKS Passwords do not match!",
-    "search_for_language": "Search for a Language"
+    "search_for_language": "Search for a Language",
+    "search_for_keyboard": "Search for a Keyboard Layout"
 }
