@@ -69,34 +69,6 @@ pub fn eula_page(
     content_box.append(&eula_selection_text_scroll);
     content_box.append(&eula_accept_checkbutton);
 
-    eula_page.set_child_widget(&content_box);
-
-    eula_page.connect_closure(
-        "back-button-pressed",
-        false,
-        closure_local!(
-            #[weak]
-            main_carousel,
-            move |language_page: installer_stack_page::InstallerStackPage|
-            {
-                    main_carousel.scroll_to(&main_carousel.nth_page(1), true)
-            }
-        )
-    );
-
-    eula_page.connect_closure(
-        "next-button-pressed",
-        false,
-        closure_local!(
-            #[weak]
-            main_carousel,
-            move |language_page: installer_stack_page::InstallerStackPage|
-            {
-                main_carousel.scroll_to(&main_carousel.nth_page(3), true)
-            }
-        )
-    );
-
     //
     language_changed_action.connect_activate(
         clone!(
@@ -120,6 +92,34 @@ pub fn eula_page(
         )
     );
     //
+
+    eula_page.set_child_widget(&content_box);
+
+    eula_page.connect_closure(
+        "back-button-pressed",
+        false,
+        closure_local!(
+            #[weak]
+            main_carousel,
+            move |language_page: installer_stack_page::InstallerStackPage|
+            {
+                    main_carousel.scroll_to(&main_carousel.nth_page(1), true)
+            }
+        )
+    );
+
+    eula_page.connect_closure(
+        "next-button-pressed",
+        false,
+        closure_local!(
+            #[weak]
+            main_carousel,
+            move |_language_page: installer_stack_page::InstallerStackPage|
+            {
+                main_carousel.scroll_to(&main_carousel.nth_page(3), true)
+            }
+        )
+    );
 
     main_carousel.append(&eula_page);
 }

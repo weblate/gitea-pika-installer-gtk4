@@ -331,7 +331,7 @@ pub fn language_page(
             main_carousel,
             #[strong]
             language_changed_action,
-            move |language_page: installer_stack_page::InstallerStackPage|
+            move |_language_page: installer_stack_page::InstallerStackPage|
             {
                 if Path::new("/tmp/pika-installer-gtk4-lang.txt").exists() {
                     fs::remove_file("/tmp/pika-installer-gtk4-lang.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-lang.txt");
