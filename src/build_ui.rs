@@ -1,6 +1,6 @@
 use std::path::Path;
 use gtk::{prelude::*, glib as glib, gio as gio};
-use crate::{efi_error_page, welcome_page, language_page, eula_page};
+use crate::{efi_error_page, welcome_page, language_page, eula_page, keyboard_page};
 
 pub fn build_ui(app: &adw::Application) {
     glib::set_prgname(Some("pikaos_installer"));
@@ -54,6 +54,8 @@ pub fn build_ui(app: &adw::Application) {
     language_page::language_page(&carousel, &language_changed_action);
 
     eula_page::eula_page(&carousel, &language_changed_action);
+
+    keyboard_page::keyboard_page(&carousel, &language_changed_action);
 
     window.present()
 }

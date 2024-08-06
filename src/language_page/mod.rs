@@ -28,7 +28,6 @@ pub fn language_page(
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
-        .label(t!("no_locale_selected"))
         .build();
 
     let language_selection_row_viewport =

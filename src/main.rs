@@ -11,6 +11,7 @@ mod installer_stack_page;
 mod welcome_page;
 mod language_page;
 mod eula_page;
+mod keyboard_page;
 
 #[macro_use]
 extern crate rust_i18n;
