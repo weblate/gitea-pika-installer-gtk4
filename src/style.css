@@ -34,3 +34,12 @@
     background-color:green;
     color: white;
 }
+
+.rounded-all-25 {
+    border-radius: 25px;
+}
+
+.rounded-all-25-with-padding {
+    border-radius: 25px;
+    padding: 10px;
+}

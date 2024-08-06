@@ -1,10 +1,14 @@
 use crate::installer_stack_page;
 use crate::config;
-use gtk::{prelude::*, glib as glib, Justification};
+use gtk::{prelude::*, glib as glib, gio as gio};
 use adw::{prelude::*};
 use glib::{clone, closure_local};
-use std::{process::Command, env};
-pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carousel) {
+use std::{process::Command, env, fs, path::Path};
+pub fn language_page(
+    window: &adw::ApplicationWindow,
+    main_carousel: &adw::Carousel,
+    language_changed_action: &gio::SimpleAction
+) {
     let language_page = installer_stack_page::InstallerStackPage::new();
     language_page.set_page_title(t!("select_a_language"));
     language_page.set_page_subtitle(t!("please_select_locale"));
@@ -54,6 +58,8 @@ pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carou
         .placeholder_text(t!("search_for_language"))
         .search_delay(500)
         .build();
+
+    language_search_bar.add_css_class("rounded-all-25");
 
     let current_locale = match env::var_os("LANG") {
         Some(v) => v.into_string().unwrap(),
@@ -223,6 +229,8 @@ pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carou
 
     let lang_data_buffer = gtk::TextBuffer::builder().build();
 
+    let lang_data_buffer_clone0 = lang_data_buffer.clone();
+
     for locale in locale_list.iter() {
         let locale = locale.to_string();
         let locale_name_cli =
@@ -248,14 +256,14 @@ pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carou
             #[weak]
             locale_checkbutton,
             #[weak]
-            lang_data_buffer,
+            lang_data_buffer_clone0,
             #[weak]
             language_page,
             move |_|
                 {
                     if locale_checkbutton.is_active() == true {
                         language_page.set_next_sensitive(true);
-                        lang_data_buffer.set_text(&locale);
+                        lang_data_buffer_clone0.set_text(&locale);
                     }
                 }
         ));
@@ -273,8 +281,6 @@ pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carou
     //// add text and and entry to language page selections
     content_box.append(&language_search_bar);
     content_box.append(&language_selection_row_viewport);
-
-    let lang_data_buffer_clone = lang_data_buffer.clone();
 
     language_search_bar.connect_search_changed(clone!(
         #[weak]
@@ -323,9 +329,23 @@ pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carou
         closure_local!(
             #[weak]
             main_carousel,
+            #[strong]
+            language_changed_action,
             move |language_page: installer_stack_page::InstallerStackPage|
             {
-                    main_carousel.scroll_to(&main_carousel.nth_page(2), true)
+                if Path::new("/tmp/pika-installer-gtk4-lang.txt").exists() {
+                    fs::remove_file("/tmp/pika-installer-gtk4-lang.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-lang.txt");
+                }
+                fs::write("/tmp/pika-installer-gtk4-lang.txt", lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string()).expect("Unable to write file");
+//Command::new("sudo")
+//                    .arg("localectl")
+//                    .arg("set-locale")
+//                    .arg("LANG=".to_owned() + &lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string() + ".UTF-8")
+//                    .spawn()
+//                    .expect("locale failed to start");
+                rust_i18n::set_locale(&lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string());
+                language_changed_action.activate(None);
+                main_carousel.scroll_to(&main_carousel.nth_page(2), true)
             }
         )
     );

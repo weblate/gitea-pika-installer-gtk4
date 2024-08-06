@@ -1,8 +1,11 @@
 use crate::installer_stack_page;
 use crate::config;
-use gtk::{prelude::*, glib as glib, Justification};
+use gtk::{prelude::*, glib as glib};
 use glib::clone;
-pub fn welcome_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carousel) {
+pub fn welcome_page(
+    window: &adw::ApplicationWindow,
+    main_carousel: &adw::Carousel,
+) {
     let welcome_page = installer_stack_page::InstallerStackPage::new();
     welcome_page.set_page_title(t!("welcome"));
     welcome_page.set_page_subtitle(t!("welcome_to_pikaos"));

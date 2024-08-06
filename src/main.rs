@@ -5,8 +5,12 @@ mod config;
 mod build_ui;
 mod efi_error_page;
 mod installer_stack_page;
+
+//
+
 mod welcome_page;
 mod language_page;
+mod eula_page;
 
 #[macro_use]
 extern crate rust_i18n;

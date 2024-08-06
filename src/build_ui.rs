@@ -1,8 +1,6 @@
 use std::path::Path;
 use gtk::{prelude::*, glib as glib, gio as gio};
-use crate::efi_error_page;
-use crate::welcome_page;
-use crate::language_page;
+use crate::{efi_error_page, welcome_page, language_page, eula_page};
 
 pub fn build_ui(app: &adw::Application) {
     glib::set_prgname(Some("pikaos_installer"));
@@ -53,7 +51,9 @@ pub fn build_ui(app: &adw::Application) {
 
     let language_changed_action = gio::SimpleAction::new("lang-changed", None);
 
-    language_page::language_page(&window, &carousel);
+    language_page::language_page(&window, &carousel, &language_changed_action);
+
+    eula_page::eula_page(&carousel, &language_changed_action);
 
     window.present()
 }
