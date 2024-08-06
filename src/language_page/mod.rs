@@ -4,6 +4,8 @@ use gtk::{prelude::*, glib as glib, gio as gio};
 use adw::{prelude::*};
 use glib::{clone, closure_local};
 use std::{process::Command, env, fs, path::Path};
+use gtk::ResponseType::No;
+
 pub fn language_page(
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction
@@ -232,12 +234,7 @@ pub fn language_page(
 
     for locale in locale_list.iter() {
         let locale = locale.to_string();
-        let locale_name_cli =
-            Command::new("/usr/lib/pika/pika-installer-gtk4/scripts/locale-name.py")
-                .arg(locale.clone())
-                .output()
-                .expect("failed to execute process");
-        let locale_name = String::from_utf8(locale_name_cli.stdout).unwrap();
+        let locale_name = gnome_desktop::language_from_locale(&locale, None).unwrap_or(locale.clone().into()).to_string();
         let locale_clone = locale.clone();
         let locale_checkbutton = gtk::CheckButton::builder()
             .valign(gtk::Align::Center)
