@@ -12,14 +12,10 @@ pub fn welcome_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carous
 
     let content_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
-        .margin_start(15)
-        .margin_end(15)
-        .margin_top(15)
-        .margin_bottom(15)
-        .valign(gtk::Align::Center)
-        .halign(gtk::Align::Center)
         .vexpand(true)
         .hexpand(true)
+        .valign(gtk::Align::Center)
+        .halign(gtk::Align::Center)
         .build();
 
     content_box.add_css_class("linked");

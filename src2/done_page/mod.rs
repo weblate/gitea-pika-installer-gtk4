@@ -89,7 +89,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_successful_exit_button = gtk::Button::builder()
-        .label(t!("exit"))
+        .label(t!("exit_button_label"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
@@ -179,7 +179,7 @@ pub fn done_page(done_main_box: &gtk::Box, window: &adw::ApplicationWindow) {
         .build();
 
     let installation_failed_exit_button = gtk::Button::builder()
-        .label(t!("exit"))
+        .label(t!("exit_button_label"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)

@@ -58,14 +58,14 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, content_stack: &gtk::Stac
     let efi_error_text = gtk::Label::builder()
         .vexpand(true)
         .hexpand(true)
-        .label(t!("pika_nowork_csm"))
+        .label(t!("efi_error_text_label"))
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
     efi_error_text.add_css_class("big_error_text");
 
     let exit_button = gtk::Button::builder()
-        .label(t!("exit"))
+        .label(t!("exit_button_label"))
         .vexpand(true)
         .hexpand(true)
         .halign(gtk::Align::Center)

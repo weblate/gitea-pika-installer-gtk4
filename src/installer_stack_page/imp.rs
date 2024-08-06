@@ -15,6 +15,10 @@ pub struct InstallerStackPage {
     #[property(get, set)]
     page_subtitle: RefCell<String>,
     #[property(get, set)]
+    back_tooltip_label: RefCell<String>,
+    #[property(get, set)]
+    next_tooltip_label: RefCell<String>,
+    #[property(get, set)]
     back_sensitive: RefCell<bool>,
     #[property(get, set)]
     next_sensitive: RefCell<bool>,
@@ -66,8 +70,7 @@ impl ObjectImpl for InstallerStackPage {
             .sensitive(true)
             .visible(true)
             .margin_start(10)
-            .margin_end(5)
-            .tooltip_text(t!("back"))
+            .margin_end(11)
             .build();
 
         back_button.add_css_class("circular");
@@ -79,6 +82,11 @@ impl ObjectImpl for InstallerStackPage {
                 obj.emit_by_name::<()>("back-button-pressed", &[]);
             }
         ));
+
+        obj.bind_property("back_tooltip_label", &back_button, "tooltip_text")
+            .sync_create()
+            .bidirectional()
+            .build();
 
         obj.bind_property("back_sensitive", &back_button, "sensitive")
             .sync_create()
@@ -98,9 +106,8 @@ impl ObjectImpl for InstallerStackPage {
             .halign(gtk::Align::End)
             .sensitive(false)
             .visible(true)
-            .margin_start(5)
+            .margin_start(11)
             .margin_end(10)
-            .tooltip_text(t!("next"))
             .build();
 
         next_button.add_css_class("circular");
@@ -113,6 +120,11 @@ impl ObjectImpl for InstallerStackPage {
                 obj.emit_by_name::<()>("next-button-pressed", &[]);
             }
         ));
+
+        obj.bind_property("next_tooltip_label", &next_button, "tooltip_text")
+            .sync_create()
+            .bidirectional()
+            .build();
 
         obj.bind_property("next_sensitive", &next_button, "sensitive")
             .sync_create()
@@ -162,7 +174,6 @@ impl ObjectImpl for InstallerStackPage {
             .justify(Justification::Center)
             .width_chars(20)
             .margin_top(5)
-            .margin_bottom(5)
             .margin_start(5)
             .margin_end(5)
             .build();
@@ -185,6 +196,8 @@ impl ObjectImpl for InstallerStackPage {
         let child_bin = adw::Bin::builder()
             .vexpand(true)
             .hexpand(true)
+            .margin_top(5)
+            .margin_bottom(15)
             .build();
 
         content_box.append(&installer_page_icon);

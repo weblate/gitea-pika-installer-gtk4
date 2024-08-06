@@ -1,5 +1,5 @@
 use std::path::Path;
-use gtk::{prelude::*, glib as glib};
+use gtk::{prelude::*, glib as glib, gio as gio};
 use crate::efi_error_page;
 use crate::welcome_page;
 use crate::language_page;
@@ -50,6 +50,8 @@ pub fn build_ui(app: &adw::Application) {
         true => welcome_page::welcome_page(&window, &carousel),
         _ => efi_error_page::efi_error_page(&window, &carousel)
     }
+
+    let language_changed_action = gio::SimpleAction::new("lang-changed", None);
 
     language_page::language_page(&window, &carousel);
 

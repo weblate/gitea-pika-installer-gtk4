@@ -9,6 +9,8 @@ pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carou
     language_page.set_page_title(t!("select_a_language"));
     language_page.set_page_subtitle(t!("please_select_locale"));
     language_page.set_page_icon("preferences-desktop-locale-symbolic");
+    language_page.set_back_tooltip_label(t!("back"));
+    language_page.set_next_tooltip_label(t!("next"));
     language_page.set_back_visible(true);
     language_page.set_next_visible(true);
     language_page.set_back_sensitive(true);
@@ -18,10 +20,6 @@ pub fn language_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carou
         .orientation(gtk::Orientation::Vertical)
         .hexpand(true)
         .vexpand(true)
-        .margin_start(15)
-        .margin_end(15)
-        .margin_top(15)
-        .margin_bottom(15)
         .build();
 
     let null_checkbutton = gtk::CheckButton::builder()
