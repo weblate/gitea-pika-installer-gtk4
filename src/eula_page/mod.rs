@@ -101,7 +101,7 @@ pub fn eula_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |language_page: installer_stack_page::InstallerStackPage|
+            move |_language_page: installer_stack_page::InstallerStackPage|
             {
                     main_carousel.scroll_to(&main_carousel.nth_page(1), true)
             }

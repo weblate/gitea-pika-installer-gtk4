@@ -5,7 +5,6 @@ use adw::{prelude::*};
 use glib::{clone, closure_local};
 use std::{process::Command, env, fs, path::Path};
 pub fn language_page(
-    window: &adw::ApplicationWindow,
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction
 ) {
@@ -316,7 +315,7 @@ pub fn language_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |language_page: installer_stack_page::InstallerStackPage|
+            move |_language_page: installer_stack_page::InstallerStackPage|
             {
                     main_carousel.scroll_to(&main_carousel.nth_page(0), true)
             }

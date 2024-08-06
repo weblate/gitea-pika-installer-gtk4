@@ -51,7 +51,7 @@ pub fn build_ui(app: &adw::Application) {
 
     let language_changed_action = gio::SimpleAction::new("lang-changed", None);
 
-    language_page::language_page(&window, &carousel, &language_changed_action);
+    language_page::language_page(&carousel, &language_changed_action);
 
     eula_page::eula_page(&carousel, &language_changed_action);
 
