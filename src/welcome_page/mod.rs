@@ -19,6 +19,7 @@ pub fn welcome_page(
         .hexpand(true)
         .valign(gtk::Align::Center)
         .halign(gtk::Align::Center)
+        .homogeneous(true)
         .build();
 
     content_box.add_css_class("linked");
