@@ -28,26 +28,21 @@ pub fn language_page(
     let null_checkbutton = gtk::CheckButton::builder()
         .build();
 
-    let language_selection_row_viewport =
-        gtk::ScrolledWindow::builder()
-            .vexpand(true)
-            .hexpand(true)
-            .build();
-
-    let language_selection_row_viewport_box = gtk::ListBox::builder().build();
-    language_selection_row_viewport_box.add_css_class("boxed-list");
-
-    language_selection_row_viewport
-        .set_child(Some(&language_selection_row_viewport_box));
-
     let language_selection_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
         .build();
     language_selection_row_viewport_listbox.add_css_class("boxed-list");
+    language_selection_row_viewport_listbox.add_css_class("round-all-scroll");
+
+    let language_selection_row_viewport =
+    gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .has_frame(true)
+        .child(&language_selection_row_viewport_listbox)
+        .build();
+
+    language_selection_row_viewport.add_css_class("round-all-scroll");
 
     let language_search_bar = gtk::SearchEntry::builder()
         .hexpand(true)
@@ -246,7 +241,7 @@ pub fn language_page(
             .build();
         locale_row.add_prefix(&locale_checkbutton);
         locale_checkbutton.set_group(Some(&null_checkbutton));
-        language_selection_row_viewport_box.append(&locale_row);
+        language_selection_row_viewport_listbox.append(&locale_row);
         locale_checkbutton.connect_toggled(clone!(
             #[weak]
             locale_checkbutton,
@@ -281,10 +276,10 @@ pub fn language_page(
         #[weak]
         language_search_bar,
         #[weak]
-        language_selection_row_viewport_box,
+        language_selection_row_viewport_listbox,
         move |_|
         {
-            let mut counter = language_selection_row_viewport_box.first_child();
+            let mut counter = language_selection_row_viewport_listbox.first_child();
             while let Some(row) = counter {
                 if row.widget_name() == "AdwActionRow" {
                     if !language_search_bar.text().is_empty() {

@@ -51,9 +51,37 @@
     border-bottom-left-radius: 0px;
 }
 
+.round-border-only-top-with-padding {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding-top: 3px;
+    padding-right: 3px;
+    padding-left: 3px;
+}
+
+.round-all-scroll {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    padding-top: 3px;
+    padding-right: 3px;
+    padding-left: 3px;
+    padding-bottom: 3px;
+}
+
 .round-border-only-bottom {
     border-top-right-radius: 0px;
     border-top-left-radius: 0px;
     border-bottom-right-radius: 15px;
     border-bottom-left-radius: 15px;
+}
+
+.no-round-borders {
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
 }

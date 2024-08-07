@@ -26,21 +26,17 @@ pub fn eula_page(
     let eula_selection_text_view = gtk::TextView::builder()
         .hexpand(true)
         .vexpand(true)
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
         .editable(false)
         .buffer(&eula_buffer)
         .build();
 
-    eula_selection_text_view.add_css_class("rounded-all-25-with-padding");
-
     let eula_selection_text_scroll = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
+        .has_frame(true)
         .child(&eula_selection_text_view)
         .build();
+    eula_selection_text_scroll.add_css_class("round-all-scroll");
 
     let eula_accept_checkbutton = gtk::CheckButton::builder()
         .margin_top(15)

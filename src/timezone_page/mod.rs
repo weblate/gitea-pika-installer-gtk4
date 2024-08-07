@@ -25,26 +25,21 @@ pub fn timezone_page(
     let null_checkbutton = gtk::CheckButton::builder()
         .build();
 
+    let timezone_selection_row_viewport_listbox = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+    timezone_selection_row_viewport_listbox.add_css_class("boxed-list");
+    timezone_selection_row_viewport_listbox.add_css_class("round-all-scroll");
+
     let timezone_selection_row_viewport =
         gtk::ScrolledWindow::builder()
             .vexpand(true)
             .hexpand(true)
+            .has_frame(true)
+            .child(&timezone_selection_row_viewport_listbox)
             .build();
-
-    let timezone_selection_row_viewport_box = gtk::ListBox::builder().build();
-    timezone_selection_row_viewport_box.add_css_class("boxed-list");
-
-    timezone_selection_row_viewport
-        .set_child(Some(&timezone_selection_row_viewport_box));
-
-    let timezone_selection_row_viewport_listbox = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
-        .margin_top(15)
-        .margin_bottom(15)
-        .margin_start(15)
-        .margin_end(15)
-        .build();
-    timezone_selection_row_viewport_listbox.add_css_class("boxed-list");
+    
+    timezone_selection_row_viewport.add_css_class("round-all-scroll");
 
     let timezone_search_bar = gtk::SearchEntry::builder()
         .hexpand(true)
@@ -94,7 +89,7 @@ pub fn timezone_page(
             .build();
         timezone_row.add_prefix(&timezone_checkbutton);
         timezone_checkbutton.set_group(Some(&null_checkbutton));
-        timezone_selection_row_viewport_box.append(&timezone_row);
+        timezone_selection_row_viewport_listbox.append(&timezone_row);
         timezone_checkbutton.connect_toggled(
             clone!(
                 #[weak]
@@ -126,10 +121,10 @@ pub fn timezone_page(
         #[weak]
         timezone_search_bar,
         #[weak]
-        timezone_selection_row_viewport_box,
+        timezone_selection_row_viewport_listbox,
         move |_|
         {
-            let mut counter = timezone_selection_row_viewport_box.first_child();
+            let mut counter = timezone_selection_row_viewport_listbox.first_child();
             while let Some(row) = counter {
                 if row.widget_name() == "AdwActionRow" {
                     if !timezone_search_bar.text().is_empty() {
