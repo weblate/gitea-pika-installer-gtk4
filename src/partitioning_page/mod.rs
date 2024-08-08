@@ -1,6 +1,8 @@
 use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use glib::{clone, closure_local};
+use crate::{automatic_partitioning_page};
+
 pub fn partitioning_page(
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction
@@ -82,6 +84,7 @@ pub fn partitioning_page(
     //
 
     partitioning_carousel.append(&partitioning_page);
+    automatic_partitioning_page::automatic_partitioning_page(&partitioning_carousel, &language_changed_action);
 
     partitioning_page.connect_closure(
         "back-button-pressed",

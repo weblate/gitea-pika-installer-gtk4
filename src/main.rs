@@ -14,6 +14,7 @@ mod eula_page;
 mod keyboard_page;
 mod timezone_page;
 mod partitioning_page;
+mod automatic_partitioning_page;
 
 #[macro_use]
 extern crate rust_i18n;
