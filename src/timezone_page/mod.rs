@@ -7,6 +7,7 @@ use std::io::BufRead;
 
 pub fn timezone_page(
     main_carousel: &adw::Carousel,
+    timezone_data_buffer: &gtk::TextBuffer,
     language_changed_action: &gio::SimpleAction
 ) {
     let timezone_page = installer_stack_page::InstallerStackPage::new();
@@ -73,7 +74,6 @@ pub fn timezone_page(
     let timezone_stdout = timezone_cli.stdout.expect("could not get stdout");
     let timezone_reader = std::io::BufReader::new(timezone_stdout);
 
-    let timezone_data_buffer = gtk::TextBuffer::builder().build();
     let timezone_data_buffer_clone0 = timezone_data_buffer.clone();
 
     for timezone in timezone_reader.lines() {
@@ -186,10 +186,6 @@ pub fn timezone_page(
             move |_timezone_page: installer_stack_page::InstallerStackPage|
             {
                 let timezone_selection = timezone_data_buffer_clone0.text(&timezone_data_buffer_clone0.bounds().0, &timezone_data_buffer_clone0.bounds().1, true).to_string();
-                if Path::new("/tmp/pika-installer-gtk4-timezone.txt").exists() {
-                    fs::remove_file("/tmp/pika-installer-gtk4-timezone.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-timezone.txt");
-                }
-                fs::write("/tmp/pika-installer-gtk4-timezone.txt", &timezone_selection).expect("Unable to write file");
                 Command::new("sudo")
                     .arg("timedatectl")
                     .arg("set-timezone")

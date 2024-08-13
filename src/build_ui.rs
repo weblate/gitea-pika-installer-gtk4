@@ -49,15 +49,20 @@ pub fn build_ui(app: &adw::Application) {
         _ => efi_error_page::efi_error_page(&window, &carousel)
     }
 
+    let language_selection_text_buffer = gtk::TextBuffer::builder().build();
+    let keymap_base_selection_text_buffer = gtk::TextBuffer::builder().build();
+    let keymap_varient_selection_text_buffer = gtk::TextBuffer::builder().build();
+    let timezone_selection_text_buffer = gtk::TextBuffer::builder().build();
+
     let language_changed_action = gio::SimpleAction::new("lang-changed", None);
 
-    language_page::language_page(&carousel, &language_changed_action);
+    language_page::language_page(&carousel, &language_selection_text_buffer, &language_changed_action);
 
     eula_page::eula_page(&carousel, &language_changed_action);
 
-    keyboard_page::keyboard_page(&carousel, &language_changed_action);
+    keyboard_page::keyboard_page(&carousel, &keymap_base_selection_text_buffer, &keymap_varient_selection_text_buffer, &language_changed_action);
 
-    timezone_page::timezone_page(&carousel, &language_changed_action);
+    timezone_page::timezone_page(&carousel, &timezone_selection_text_buffer, &language_changed_action);
 
     partitioning_page::partitioning_page(&carousel, &language_changed_action);
 

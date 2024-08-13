@@ -7,6 +7,8 @@ use std::{process::Command, fs, path::Path};
 
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
+    keymap_base_data_buffer: &gtk::TextBuffer,
+    keymap_variant_data_buffer: &gtk::TextBuffer,
     language_changed_action: &gio::SimpleAction
 ) {
     let keyboard_page = installer_stack_page::InstallerStackPage::new();
@@ -70,11 +72,7 @@ pub fn keyboard_page(
 
     let keymap_list = gnome_desktop::XkbInfo::all_layouts(&xkbinfo);
 
-    let keymap_base_data_buffer = gtk::TextBuffer::builder().build();
-
     let keymap_base_data_buffer_clone0 = keymap_base_data_buffer.clone();
-
-    let keymap_variant_data_buffer = gtk::TextBuffer::builder().build();
 
     let keymap_variant_data_buffer_clone0 = keymap_variant_data_buffer.clone();
 
@@ -222,35 +220,6 @@ pub fn keyboard_page(
             main_carousel,
             move |_keyboard_page: installer_stack_page::InstallerStackPage|
             {
-                if Path::new("/tmp/pika-installer-gtk4-keyboard-base.txt").exists() {
-                    fs::remove_file("/tmp/pika-installer-gtk4-keyboard-base.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard-base.txt");
-                }
-                let base_data_text = keymap_base_data_buffer_clone0
-                .text(
-                    &keymap_base_data_buffer_clone0.bounds().0,
-                    &keymap_base_data_buffer_clone0.bounds().1,
-                    true
-                )
-                .to_string();
-                fs::write(
-                    "/tmp/pika-installer-gtk4-keyboard-base.txt",
-                    base_data_text
-                ).expect("Unable to write file");
-                if Path::new("/tmp/pika-installer-gtk4-keyboard-variant.txt").exists() {
-                    fs::remove_file("/tmp/pika-installer-gtk4-keyboard-variant.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-keyboard-variant.txt");
-                }
-                let varient_data_text = keymap_variant_data_buffer_clone0
-                .text(
-                    &keymap_variant_data_buffer_clone0.bounds().0,
-                    &keymap_variant_data_buffer_clone0.bounds().1,
-                    true
-                ).to_string();
-                if !varient_data_text.is_empty() {
-                    fs::write(
-                        "/tmp/pika-installer-gtk4-keyboard-variant.txt",
-                        varient_data_text
-                    ).expect("Unable to write file");
-                }
                 main_carousel.scroll_to(&main_carousel.nth_page(4), true)
             }
         )

@@ -6,6 +6,7 @@ use std::{process::Command, env, fs, path::Path};
 
 pub fn language_page(
     main_carousel: &adw::Carousel,
+    lang_data_buffer: &gtk::TextBuffer,
     language_changed_action: &gio::SimpleAction
 ) {
     let language_page = installer_stack_page::InstallerStackPage::new();
@@ -222,8 +223,6 @@ pub fn language_page(
         "pt_BR",
         "pt_PT",];
 
-    let lang_data_buffer = gtk::TextBuffer::builder().build();
-
     let lang_data_buffer_clone0 = lang_data_buffer.clone();
 
     for locale in locale_list.iter() {
@@ -323,16 +322,12 @@ pub fn language_page(
             language_changed_action,
             move |_language_page: installer_stack_page::InstallerStackPage|
             {
-                if Path::new("/tmp/pika-installer-gtk4-lang.txt").exists() {
-                    fs::remove_file("/tmp/pika-installer-gtk4-lang.txt").expect("Bad permissions on /tmp/pika-installer-gtk4-lang.txt");
-                }
-                fs::write("/tmp/pika-installer-gtk4-lang.txt", lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string()).expect("Unable to write file");
-//Command::new("sudo")
-//                    .arg("localectl")
-//                    .arg("set-locale")
-//                    .arg("LANG=".to_owned() + &lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string() + ".UTF-8")
-//                    .spawn()
-//                    .expect("locale failed to start");
+                //Command::new("sudo")
+                //                    .arg("localectl")
+                //                    .arg("set-locale")
+                //                    .arg("LANG=".to_owned() + &lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string() + ".UTF-8")
+                //                    .spawn()
+                //                    .expect("locale failed to start");
                 rust_i18n::set_locale(&lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string());
                 language_changed_action.activate(None);
                 main_carousel.scroll_to(&main_carousel.nth_page(2), true)
