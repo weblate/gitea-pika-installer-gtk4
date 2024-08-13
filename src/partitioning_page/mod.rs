@@ -2,6 +2,7 @@ use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use glib::{clone, closure_local};
 use crate::{automatic_partitioning_page};
+use std::io::BufRead;
 
 pub fn partitioning_page(
     main_carousel: &adw::Carousel,
@@ -100,4 +101,29 @@ pub fn partitioning_page(
     );
 
     main_carousel.append(&partitioning_carousel)
+}
+
+pub fn get_block_devices() -> Result<Vec<String>, std::io::Error> {
+    let command = std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_block_devices")
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .spawn()?;
+    
+    let mut block_devices = Vec::new();
+
+    match command.stdout {
+        Some(t) => {
+            for blockdev in std::io::BufReader::new(t).lines() {
+                match blockdev {
+                    Ok(r) => block_devices.push(r),
+                    Err(e) => return Err(e)
+                }
+            }
+        },
+        None => return Err(std::io::Error::new(std::io::ErrorKind::InvalidData, "No stdout")),
+    };
+
+    Ok(block_devices)
 }

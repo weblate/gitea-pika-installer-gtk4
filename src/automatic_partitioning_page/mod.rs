@@ -1,6 +1,8 @@
 use adw::gio;
 use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib};
+use crate::partitioning_page::{get_block_devices};
+use adw::{prelude::*};
 use glib::{clone, closure_local};
 
 pub fn automatic_partitioning_page(
@@ -32,6 +34,55 @@ pub fn automatic_partitioning_page(
             }
         )
     );
+
+    //
+
+    let devices_selection_expander_row = adw::ExpanderRow::builder()
+        .name("status:disk=none,")
+        .build();
+
+    let null_checkbutton = gtk::CheckButton::builder().build();
+
+
+    let devices_selection_expander_row_viewport_box = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+    devices_selection_expander_row_viewport_box.add_css_class("boxed-list");
+    devices_selection_expander_row_viewport_box.add_css_class("round-all-scroll");
+
+    let devices_selection_expander_row_viewport =
+    gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .has_frame(true)
+        .child(&devices_selection_expander_row_viewport_box)
+        .build();
+
+    devices_selection_expander_row_viewport.add_css_class("round-all-scroll");
+
+    devices_selection_expander_row.add_row(&devices_selection_expander_row_viewport);
+
+
+    //
+    language_changed_action.connect_activate(
+        clone!(
+            #[weak]
+            automatic_partitioning_page,
+            #[weak]
+            devices_selection_expander_row,
+            move |_, _| {
+                automatic_partitioning_page.set_page_title(t!("auto_part_installer"));
+                automatic_partitioning_page.set_page_subtitle(t!("choose_drive_auto"));
+                automatic_partitioning_page.set_back_tooltip_label(t!("back"));
+                automatic_partitioning_page.set_next_tooltip_label(t!("next"));
+                //
+                if devices_selection_expander_row.widget_name() == "status:disk=none," {
+                    devices_selection_expander_row.set_title(&t!("no_drive_auto_selected"));
+                }
+            }
+        )
+    );
+    //
 
     main_carousel.append(&automatic_partitioning_page);
 }
