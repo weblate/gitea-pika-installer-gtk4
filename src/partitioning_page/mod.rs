@@ -103,27 +103,64 @@ pub fn partitioning_page(
     main_carousel.append(&partitioning_carousel)
 }
 
-pub fn get_block_devices() -> Result<Vec<String>, std::io::Error> {
-    let command = std::process::Command::new("sudo")
+struct BlockDevice {
+    pub block_name: String,
+    pub block_size: f64,
+    pub block_size_pretty: String
+}
+
+pub fn get_block_devices() -> Vec<BlockDevice> {
+    let mut block_devices = Vec::new();
+
+    let command = match std::process::Command::new("sudo")
         .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
         .arg("get_block_devices")
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
-        .spawn()?;
-    
-    let mut block_devices = Vec::new();
+        .spawn() {
+            Ok(t) => t,
+            Err(_) => return block_devices
+        };
 
     match command.stdout {
         Some(t) => {
             for blockdev in std::io::BufReader::new(t).lines() {
                 match blockdev {
-                    Ok(r) => block_devices.push(r),
-                    Err(e) => return Err(e)
+                    Ok(r) => {
+                        let block_size = get_block_size(&r);
+                        block_devices.push(
+                            BlockDevice {
+                                block_name: r,
+                                block_size: block_size,
+                                block_size_pretty: pretty_bytes::converter::convert(block_size)
+                            }
+                        )
+                    }
+                    Err(_) => return block_devices
                 }
             }
         },
-        None => return Err(std::io::Error::new(std::io::ErrorKind::InvalidData, "No stdout")),
+        None => return block_devices
     };
 
-    Ok(block_devices)
+    block_devices
+}
+
+fn get_block_size(block_dev: &str) -> f64 {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_block_size")
+        .arg(block_dev)
+        .output() {
+            Ok(t) => t,
+            Err(_) => return 0.0
+        };
+    let size = match String::from_utf8(command.stdout) {
+        Ok(t) => {
+            t.trim().parse::<f64>().unwrap_or(0.0)
+        }
+        Err(_) => 0.0
+    };
+
+    size
 }
