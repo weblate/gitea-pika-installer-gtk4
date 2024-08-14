@@ -10,6 +10,8 @@ pub fn automatic_partitioning_page(
     partition_method_type_buffer: &gtk::TextBuffer,
     partition_method_automatic_target_buffer:  &gtk::TextBuffer,
     partition_method_automatic_luks_buffer:  &gtk::TextBuffer,
+    partition_method_automatic_ratio_buffer: &gtk::TextBuffer,
+    partition_method_automatic_seperation_buffer: &gtk::TextBuffer,
     language_changed_action: &gio::SimpleAction
 ) {
     let automatic_partitioning_page = installer_stack_page::InstallerStackPage::new();
@@ -44,8 +46,16 @@ pub fn automatic_partitioning_page(
         .name("status:disk=none,")
         .build();
 
-    let null_checkbutton = gtk::CheckButton::builder().build();
+    let devices_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
+    devices_selection_expander_row_viewport_listbox.add_css_class("boxed-list");
 
+    let null_checkbutton = gtk::CheckButton::builder().build();
 
     let devices_selection_expander_row_viewport_box = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -145,8 +155,8 @@ pub fn automatic_partitioning_page(
         device_button.set_group(Some(&null_checkbutton));
         let device_row = adw::ActionRow::builder()
             .activatable_widget(&device_button)
-            .title(device.block_name)
-            .subtitle(device.block_size_pretty)
+            .title(&device.block_name)
+            .subtitle(&device.block_size_pretty)
             .build();
         device_row.add_prefix(&device_button);
         devices_selection_expander_row_viewport_box.append(&device_row);
@@ -166,9 +176,9 @@ pub fn automatic_partitioning_page(
                 partition_method_automatic_luks_error_label,
                 #[weak]
                 partition_method_automatic_luks_checkbutton,
-                #[weak]
+                #[strong]
                 partition_method_automatic_target_buffer,
-                #[weak]
+                #[strong]
                 partition_method_automatic_luks_buffer,
                 move |_| {
                     if device_button.is_active() == true {
@@ -188,12 +198,197 @@ pub fn automatic_partitioning_page(
                             }
                         } else {
                             partition_method_automatic_disk_error_label.set_visible(true);
+                            partition_method_automatic_disk_error_label.set_widget_name("status:disk=small,");
                             partition_method_automatic_disk_error_label.set_label(&t!("disk_auto_target_small"));
                             automatic_partitioning_page.set_next_sensitive(false);
                         }
                     }
                 }));
     }
+
+    partition_method_automatic_luks_checkbutton.connect_toggled(
+        clone!(
+            #[strong]
+            partition_method_automatic_luks_error2_label,
+            #[strong]
+            partition_method_automatic_luks_checkbutton,
+            #[strong]
+            partition_method_automatic_luks_password_confirm_entry,
+            #[strong]
+            partition_method_automatic_luks_password_entry,
+            #[strong]
+            partition_method_automatic_disk_error_label,
+            #[strong]
+            partition_method_automatic_luks_error_label,
+            #[weak]
+            automatic_partitioning_page,
+            #[strong]
+            partition_method_automatic_luks_buffer,
+            move |_| {
+                if partition_method_automatic_luks_checkbutton.is_active() == true {
+                    partition_method_automatic_luks_password_entry.set_sensitive(true);
+                    if partition_method_automatic_luks_password_entry.text() != partition_method_automatic_luks_password_confirm_entry.text() {
+                        partition_method_automatic_luks_error2_label.set_visible(true)
+                    } else {
+                        partition_method_automatic_luks_error2_label.set_visible(false)
+                    }
+                    if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
+                        partition_method_automatic_luks_error_label.set_visible(true);
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    } else {
+                        partition_method_automatic_luks_error_label.set_visible(false);
+                    if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(true);
+                    } else {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    }
+                    }
+                } else {
+                    partition_method_automatic_luks_password_entry.set_sensitive(false);
+                    partition_method_automatic_luks_error_label.set_visible(false);
+                    partition_method_automatic_luks_error2_label.set_visible(false);
+                    if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(true);
+                    } else {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    }
+                }
+            }
+        )
+    );
+
+    partition_method_automatic_luks_password_entry.connect_changed(
+        clone!(
+            #[weak]
+            partition_method_automatic_luks_error2_label,
+            #[weak]
+            partition_method_automatic_luks_checkbutton,
+            #[weak]
+            partition_method_automatic_luks_password_confirm_entry,
+            #[weak]
+            partition_method_automatic_luks_password_entry,
+            #[weak] 
+            partition_method_automatic_disk_error_label,
+            #[weak]
+            partition_method_automatic_luks_error_label,
+            #[weak]
+            automatic_partitioning_page,
+            #[strong]
+            partition_method_automatic_luks_buffer,
+            move |_| {
+                if partition_method_automatic_luks_checkbutton.is_active() == true {
+                    partition_method_automatic_luks_password_entry.set_sensitive(true);
+                    if partition_method_automatic_luks_password_entry.text() != partition_method_automatic_luks_password_confirm_entry.text() {
+                        partition_method_automatic_luks_error2_label.set_visible(true)
+                    } else {
+                        partition_method_automatic_luks_error2_label.set_visible(false)
+                    }
+                    if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
+                        partition_method_automatic_luks_error_label.set_visible(true);
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    } else {
+                        partition_method_automatic_luks_error_label.set_visible(false);
+                    if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(true);
+                    } else {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    }
+                    }
+                } else {
+                    partition_method_automatic_luks_password_entry.set_sensitive(false);
+                    partition_method_automatic_luks_error_label.set_visible(false);
+                    partition_method_automatic_luks_error2_label.set_visible(false);
+                    if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(true);
+                    } else {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    }
+                }
+            }
+        )
+    );
+
+    partition_method_automatic_luks_password_confirm_entry.connect_changed(
+        clone!(
+            #[weak]
+            partition_method_automatic_luks_error2_label,
+            #[weak]
+            partition_method_automatic_luks_checkbutton,
+            #[weak]
+            partition_method_automatic_luks_password_confirm_entry,
+            #[weak]
+            partition_method_automatic_luks_password_entry,
+            #[weak]
+            partition_method_automatic_disk_error_label,
+            #[weak]
+            partition_method_automatic_luks_error_label,
+            #[weak]
+            automatic_partitioning_page,
+            #[strong]
+            partition_method_automatic_luks_buffer,
+            move |_| {
+                if partition_method_automatic_luks_checkbutton.is_active() == true {
+                    partition_method_automatic_luks_password_entry.set_sensitive(true);
+                    if partition_method_automatic_luks_password_entry.text() != partition_method_automatic_luks_password_confirm_entry.text() {
+                        partition_method_automatic_luks_error2_label.set_visible(true)
+                    } else {
+                        partition_method_automatic_luks_error2_label.set_visible(false)
+                    }
+                    if partition_method_automatic_luks_password_entry.text().to_string().is_empty() {
+                        partition_method_automatic_luks_error_label.set_visible(true);
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    } else {
+                        partition_method_automatic_luks_error_label.set_visible(false);
+                    if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(true);
+                    } else {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    }
+                    }
+                } else {
+                    partition_method_automatic_luks_password_entry.set_sensitive(false);
+                    partition_method_automatic_luks_error_label.set_visible(false);
+                    partition_method_automatic_luks_error2_label.set_visible(false);
+                    if !partition_method_automatic_disk_error_label.get_visible() && !partition_method_automatic_luks_error_label.get_visible() && !partition_method_automatic_luks_error2_label.get_visible() {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(true);
+                    } else {
+                        partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
+                        automatic_partitioning_page.set_next_sensitive(false);
+                    }
+                }
+            }
+        )
+    );
+
+    //
+
+    devices_selection_expander_row_viewport_listbox.append(&devices_selection_expander_row);
+
+    partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_entry);
+    partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_confirm_entry);
+
+    partition_method_automatic_luks_box.append(&partition_method_automatic_luks_checkbutton);
+    partition_method_automatic_luks_box.append(&partition_method_automatic_luks_listbox);
+
+    content_box.append(&devices_selection_expander_row_viewport_listbox);
+    content_box.append(&partition_method_automatic_luks_box);
+    content_box.append(&partition_method_automatic_luks_error_label);
+    content_box.append(&partition_method_automatic_luks_error2_label);
+    content_box.append(&partition_method_automatic_disk_error_label);
 
     //
     language_changed_action.connect_activate(
@@ -212,8 +407,14 @@ pub fn automatic_partitioning_page(
                     devices_selection_expander_row.set_title(&t!("no_drive_auto_selected"));
                 }
                 //
-                if partition_method_automatic_disk_error_label.widget_name() == "status:no_disk_specified," {
-                    partition_method_automatic_disk_error_label.set_label(&t!("no_disk_specified"));
+                match partition_method_automatic_disk_error_label.widget_name().as_str() {
+                    "status:no_disk_specified," => {
+                        partition_method_automatic_disk_error_label.set_label(&t!("no_disk_specified"));
+                    }
+                    "status:disk=small," => {
+                        partition_method_automatic_disk_error_label.set_label(&t!("disk_auto_target_small"));
+                    }
+                    _ => {}
                 }
                 //
                 if partition_method_automatic_luks_error_label.widget_name() == "status:luks_yes_but_empty," {
@@ -227,6 +428,53 @@ pub fn automatic_partitioning_page(
         )
     );
     //
+
+    automatic_partitioning_page.connect_closure(
+        "back-button-pressed",
+        false,
+        closure_local!(
+            #[weak]
+            main_carousel,
+            move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage|
+            {
+                    main_carousel.scroll_to(&main_carousel.nth_page(0), true)
+            }
+        )
+    );
+
+    automatic_partitioning_page.connect_closure(
+        "next-button-pressed",
+        false,
+        closure_local!(
+            #[weak]
+            main_carousel,
+            #[strong]
+            partition_method_type_buffer,
+            #[strong]
+            partition_method_automatic_target_buffer,
+            #[strong]
+            partition_method_automatic_luks_buffer,
+            #[strong]
+            partition_method_automatic_ratio_buffer,
+            #[strong]
+            partition_method_automatic_seperation_buffer,
+            move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage|
+            {;
+                //main_carousel.scroll_to(&main_carousel.nth_page(5), true)
+                dbg!(partition_method_type_buffer.text(&partition_method_type_buffer.bounds().0, &partition_method_type_buffer.bounds().1, true).to_string());
+                dbg!(partition_method_automatic_target_buffer.text(&partition_method_automatic_target_buffer.bounds().0, &partition_method_automatic_target_buffer.bounds().1, true).to_string());
+                dbg!(partition_method_automatic_luks_buffer.text(&partition_method_automatic_luks_buffer.bounds().0, &partition_method_automatic_luks_buffer.bounds().1, true).to_string());
+                dbg!(partition_method_automatic_ratio_buffer.text(&partition_method_automatic_ratio_buffer.bounds().0, &partition_method_automatic_ratio_buffer.bounds().1, true).to_string());
+                dbg!(partition_method_automatic_seperation_buffer.text(&partition_method_automatic_seperation_buffer.bounds().0, &partition_method_automatic_seperation_buffer.bounds().1, true).to_string());
+            }
+        )
+    );
+
+
+    //
+
+
+    automatic_partitioning_page.set_child_widget(&content_box);
 
     main_carousel.append(&automatic_partitioning_page);
 }

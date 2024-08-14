@@ -6,6 +6,11 @@ use std::io::BufRead;
 
 pub fn partitioning_page(
     main_carousel: &adw::Carousel,
+    partition_method_type_buffer: &gtk::TextBuffer,
+    partition_method_automatic_target_buffer:  &gtk::TextBuffer,
+    partition_method_automatic_luks_buffer:  &gtk::TextBuffer,
+    partition_method_automatic_ratio_buffer: &gtk::TextBuffer,
+    partition_method_automatic_seperation_buffer: &gtk::TextBuffer,
     language_changed_action: &gio::SimpleAction
 ) {
     let partitioning_page = installer_stack_page::InstallerStackPage::new();
@@ -85,7 +90,14 @@ pub fn partitioning_page(
     //
 
     partitioning_carousel.append(&partitioning_page);
-    automatic_partitioning_page::automatic_partitioning_page(&partitioning_carousel, &language_changed_action);
+    automatic_partitioning_page::automatic_partitioning_page(
+        &partitioning_carousel, 
+        &partition_method_type_buffer,
+        &partition_method_automatic_target_buffer,
+        &partition_method_automatic_luks_buffer,
+        &partition_method_automatic_ratio_buffer,
+        &partition_method_automatic_seperation_buffer,
+        &language_changed_action);
 
     partitioning_page.connect_closure(
         "back-button-pressed",
@@ -103,7 +115,7 @@ pub fn partitioning_page(
     main_carousel.append(&partitioning_carousel)
 }
 
-struct BlockDevice {
+pub struct BlockDevice {
     pub block_name: String,
     pub block_size: f64,
     pub block_size_pretty: String

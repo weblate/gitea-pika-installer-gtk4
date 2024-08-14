@@ -53,6 +53,11 @@ pub fn build_ui(app: &adw::Application) {
     let keymap_base_selection_text_buffer = gtk::TextBuffer::builder().build();
     let keymap_varient_selection_text_buffer = gtk::TextBuffer::builder().build();
     let timezone_selection_text_buffer = gtk::TextBuffer::builder().build();
+    let partition_method_type_buffer= gtk::TextBuffer::builder().build();
+    let partition_method_automatic_target_buffer= gtk::TextBuffer::builder().build();
+    let partition_method_automatic_luks_buffer = gtk::TextBuffer::builder().build();
+    let partition_method_automatic_ratio_buffer= gtk::TextBuffer::builder().build();
+    let partition_method_automatic_seperation_buffer= gtk::TextBuffer::builder().build();
 
     let language_changed_action = gio::SimpleAction::new("lang-changed", None);
 
@@ -64,7 +69,14 @@ pub fn build_ui(app: &adw::Application) {
 
     timezone_page::timezone_page(&carousel, &timezone_selection_text_buffer, &language_changed_action);
 
-    partitioning_page::partitioning_page(&carousel, &language_changed_action);
+    partitioning_page::partitioning_page(
+    &carousel,
+    &partition_method_type_buffer,
+    &partition_method_automatic_target_buffer,
+    &partition_method_automatic_luks_buffer,
+    &partition_method_automatic_ratio_buffer,
+    &partition_method_automatic_seperation_buffer,
+    &language_changed_action);
 
     window.present()
 }
