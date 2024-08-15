@@ -10,6 +10,7 @@ pub fn automatic_partitioning_page(
     main_carousel: &adw::Carousel,
     partition_method_type_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_target_refcell:  &Rc<RefCell<String>>,
+    partition_method_automatic_target_fs_refcell:  &Rc<RefCell<String>>,
     partition_method_automatic_luks_enabled_refcell:  &Rc<RefCell<bool>>,
     partition_method_automatic_luks_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_ratio_refcell: &Rc<RefCell<String>>,
@@ -404,6 +405,8 @@ pub fn automatic_partitioning_page(
             #[strong]
             partition_method_automatic_target_refcell,
             #[strong]
+            partition_method_automatic_target_fs_refcell,
+            #[strong]
             partition_method_automatic_luks_refcell,
             #[strong]
             partition_method_automatic_luks_enabled_refcell,
@@ -415,6 +418,7 @@ pub fn automatic_partitioning_page(
             {
                 //main_carousel.scroll_to(&main_carousel.nth_page(5), true)
                 dbg!(partition_method_type_refcell.borrow());
+                dbg!(partition_method_automatic_target_fs_refcell.borrow());
                 dbg!(partition_method_automatic_target_refcell.borrow());
                 dbg!(partition_method_automatic_luks_enabled_refcell.borrow());
                 dbg!(partition_method_automatic_luks_refcell.borrow());

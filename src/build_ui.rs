@@ -55,6 +55,7 @@ pub fn build_ui(app: &adw::Application) {
     let timezone_selection_text_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_type_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_automatic_target_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
+    let partition_method_automatic_target_fs_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_automatic_luks_enabled_refcell: Rc<RefCell<bool>> = Rc::new(RefCell::new(false));
     let partition_method_automatic_luks_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_automatic_ratio_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
@@ -74,6 +75,7 @@ pub fn build_ui(app: &adw::Application) {
     &carousel,
     &partition_method_type_refcell,
     &partition_method_automatic_target_refcell,
+    &partition_method_automatic_target_fs_refcell,
     &partition_method_automatic_luks_enabled_refcell,
     &partition_method_automatic_luks_refcell,
     &partition_method_automatic_ratio_refcell,
