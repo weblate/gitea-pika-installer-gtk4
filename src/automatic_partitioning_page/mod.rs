@@ -75,31 +75,36 @@ pub fn automatic_partitioning_page(
 
     devices_selection_expander_row.add_row(&devices_selection_expander_row_viewport);
 
-    let partition_method_automatic_disk_error_label = gtk::Label::builder()
-        .name("status:no_disk_specified,")
+    let partition_method_automatic_disk_nodisk_error_label = gtk::Label::builder()
         .halign(gtk::Align::Start)
         .valign(gtk::Align::End)
         .vexpand(true)
         .build();
-    partition_method_automatic_disk_error_label.add_css_class("small_error_text");
+    partition_method_automatic_disk_nodisk_error_label.add_css_class("small_error_text");
 
-    let partition_method_automatic_luks_error_label = gtk::Label::builder()
-        .name("status:luks_yes_but_empty,")
+    let partition_method_automatic_disk_small_error_label = gtk::Label::builder()
         .halign(gtk::Align::Start)
         .valign(gtk::Align::End)
         .vexpand(true)
         .visible(false)
         .build();
-    partition_method_automatic_luks_error_label.add_css_class("small_error_text");
+    partition_method_automatic_disk_small_error_label.add_css_class("small_error_text");
 
-    let partition_method_automatic_luks_error2_label = gtk::Label::builder()
-        .name("status:luks_not_match,")
+    let partition_method_automatic_luks_empty_error_label = gtk::Label::builder()
         .halign(gtk::Align::Start)
         .valign(gtk::Align::End)
         .vexpand(true)
         .visible(false)
         .build();
-    partition_method_automatic_luks_error2_label.add_css_class("small_error_text");
+    partition_method_automatic_luks_empty_error_label.add_css_class("small_error_text");
+
+    let partition_method_automatic_luks_missmatch_error_label = gtk::Label::builder()
+        .halign(gtk::Align::Start)
+        .valign(gtk::Align::End)
+        .vexpand(true)
+        .visible(false)
+        .build();
+    partition_method_automatic_luks_missmatch_error_label.add_css_class("small_error_text");
 
     //
 
@@ -108,11 +113,11 @@ pub fn automatic_partitioning_page(
         .build();
 
     let partition_method_automatic_luks_checkbutton = gtk::CheckButton::builder()
-        .label(t!("enable_luks2_enc"))
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
         .margin_end(15)
+        .valign(gtk::Align::Start)
         .build();
 
     let partition_method_automatic_luks_listbox = gtk::ListBox::builder()
@@ -124,23 +129,30 @@ pub fn automatic_partitioning_page(
     partition_method_automatic_luks_listbox.add_css_class("boxed-list");
 
     let partition_method_automatic_luks_password_entry = adw::PasswordEntryRow::builder()
-        .title(t!("luks2_password"))
         .hexpand(true)
         .sensitive(false)
         .build();
 
     let partition_method_automatic_luks_password_confirm_entry = adw::PasswordEntryRow::builder()
-        .title(t!("luks2_password_confirm"))
         .hexpand(true)
         .sensitive(true)
         .visible(false)
         .build();
 
-    let _partition_method_automatic_luks_password = partition_method_automatic_luks_password_entry
+    partition_method_automatic_luks_password_entry
         .bind_property(
             "sensitive",
             &partition_method_automatic_luks_password_confirm_entry,
             "visible",
+        )
+        .sync_create()
+        .build();
+
+    partition_method_automatic_luks_checkbutton
+        .bind_property(
+            "active",
+            &partition_method_automatic_luks_password_entry,
+            "sensitive",
         )
         .sync_create()
         .build();
@@ -165,51 +177,26 @@ pub fn automatic_partitioning_page(
                 #[weak]
                 device_button,
                 #[weak]
-                partition_method_automatic_luks_password_entry,
-                #[weak]
                 devices_selection_expander_row,
                 #[weak]
-                automatic_partitioning_page,
+                partition_method_automatic_disk_nodisk_error_label,
                 #[weak]
-                partition_method_automatic_disk_error_label,
-                #[weak]
-                partition_method_automatic_luks_error_label,
-                #[weak]
-                partition_method_automatic_luks_checkbutton,
+                partition_method_automatic_disk_small_error_label,
                 #[strong]
                 partition_method_automatic_target_buffer,
-                #[strong]
-                partition_method_automatic_luks_buffer,
                 move |_| {
-                    if device_button.is_active() == true {
-                        devices_selection_expander_row.set_title(&device.block_name);
-                        if device.block_size > 39000000000.0 {
-                            partition_method_automatic_disk_error_label.set_visible(false);
-                            if partition_method_automatic_luks_checkbutton.is_active() == true {
-                                if partition_method_automatic_luks_error_label.get_visible() {
-                                    //
-                                } else {
-                                    automatic_partitioning_page.set_next_sensitive(true);
-                                }
-                            }  else {
-                                partition_method_automatic_target_buffer.set_text(&device.block_name);
-                                partition_method_automatic_luks_buffer.set_text(&partition_method_automatic_luks_password_entry.text().to_string());
-                                automatic_partitioning_page.set_next_sensitive(true);
-                            }
-                        } else {
-                            partition_method_automatic_disk_error_label.set_visible(true);
-                            partition_method_automatic_disk_error_label.set_widget_name("status:disk=small,");
-                            partition_method_automatic_disk_error_label.set_label(&t!("disk_auto_target_small"));
-                            automatic_partitioning_page.set_next_sensitive(false);
-                        }
-                    }
-                }));
+                    disk_check(&device_button, &devices_selection_expander_row, &partition_method_automatic_disk_small_error_label, &device.block_name, device.block_size);
+                    partition_method_automatic_disk_nodisk_error_label.set_visible(false);
+                    partition_method_automatic_target_buffer.set_text(&device.block_name);
+                }
+            )
+        );
     }
 
-    partition_method_automatic_luks_checkbutton.connect_toggled(
+/*     partition_method_automatic_luks_checkbutton.connect_toggled(
         clone!(
             #[strong]
-            partition_method_automatic_luks_error2_label,
+            partition_method_automatic_luks_missmatch_error_label,
             #[strong]
             partition_method_automatic_luks_checkbutton,
             #[strong]
@@ -217,9 +204,9 @@ pub fn automatic_partitioning_page(
             #[strong]
             partition_method_automatic_luks_password_entry,
             #[strong]
-            partition_method_automatic_disk_error_label,
+            partition_method_automatic_disk_nodisk_error_label,
             #[strong]
-            partition_method_automatic_luks_error_label,
+            partition_method_automatic_luks_empty_error_label,
             #[weak]
             automatic_partitioning_page,
             #[strong]
@@ -260,12 +247,12 @@ pub fn automatic_partitioning_page(
                 }
             }
         )
-    );
+    ); */
 
-    partition_method_automatic_luks_password_entry.connect_changed(
+/*     partition_method_automatic_luks_password_entry.connect_changed(
         clone!(
             #[weak]
-            partition_method_automatic_luks_error2_label,
+            partition_method_automatic_luks_missmatch_error_label,
             #[weak]
             partition_method_automatic_luks_checkbutton,
             #[weak]
@@ -273,9 +260,9 @@ pub fn automatic_partitioning_page(
             #[weak]
             partition_method_automatic_luks_password_entry,
             #[weak] 
-            partition_method_automatic_disk_error_label,
+            partition_method_automatic_disk_nodisk_error_label,
             #[weak]
-            partition_method_automatic_luks_error_label,
+            partition_method_automatic_luks_empty_error_label,
             #[weak]
             automatic_partitioning_page,
             #[strong]
@@ -321,7 +308,7 @@ pub fn automatic_partitioning_page(
     partition_method_automatic_luks_password_confirm_entry.connect_changed(
         clone!(
             #[weak]
-            partition_method_automatic_luks_error2_label,
+            partition_method_automatic_luks_missmatch_error_label,
             #[weak]
             partition_method_automatic_luks_checkbutton,
             #[weak]
@@ -329,9 +316,9 @@ pub fn automatic_partitioning_page(
             #[weak]
             partition_method_automatic_luks_password_entry,
             #[weak]
-            partition_method_automatic_disk_error_label,
+            partition_method_automatic_disk_nodisk_error_label,
             #[weak]
-            partition_method_automatic_luks_error_label,
+            partition_method_automatic_luks_empty_error_label,
             #[weak]
             automatic_partitioning_page,
             #[strong]
@@ -372,7 +359,7 @@ pub fn automatic_partitioning_page(
                 }
             }
         )
-    );
+    ); */
 
     //
 
@@ -386,48 +373,10 @@ pub fn automatic_partitioning_page(
 
     content_box.append(&devices_selection_expander_row_viewport_listbox);
     content_box.append(&partition_method_automatic_luks_box);
-    content_box.append(&partition_method_automatic_luks_error_label);
-    content_box.append(&partition_method_automatic_luks_error2_label);
-    content_box.append(&partition_method_automatic_disk_error_label);
-
-    //
-    language_changed_action.connect_activate(
-        clone!(
-            #[weak]
-            automatic_partitioning_page,
-            #[weak]
-            devices_selection_expander_row,
-            move |_, _| {
-                automatic_partitioning_page.set_page_title(t!("auto_part_installer"));
-                automatic_partitioning_page.set_page_subtitle(t!("choose_drive_auto"));
-                automatic_partitioning_page.set_back_tooltip_label(t!("back"));
-                automatic_partitioning_page.set_next_tooltip_label(t!("next"));
-                //
-                if devices_selection_expander_row.widget_name() == "status:disk=none," {
-                    devices_selection_expander_row.set_title(&t!("no_drive_auto_selected"));
-                }
-                //
-                match partition_method_automatic_disk_error_label.widget_name().as_str() {
-                    "status:no_disk_specified," => {
-                        partition_method_automatic_disk_error_label.set_label(&t!("no_disk_specified"));
-                    }
-                    "status:disk=small," => {
-                        partition_method_automatic_disk_error_label.set_label(&t!("disk_auto_target_small"));
-                    }
-                    _ => {}
-                }
-                //
-                if partition_method_automatic_luks_error_label.widget_name() == "status:luks_yes_but_empty," {
-                    partition_method_automatic_luks_error_label.set_label(&t!("luks_yes_but_empty"));
-                }
-                //
-                if partition_method_automatic_luks_error2_label.widget_name() == "status:luks_not_match," {
-                    partition_method_automatic_luks_error2_label.set_label(&t!("luks_not_match"));
-                }
-            }
-        )
-    );
-    //
+    content_box.append(&partition_method_automatic_luks_empty_error_label);
+    content_box.append(&partition_method_automatic_luks_missmatch_error_label);
+    content_box.append(&partition_method_automatic_disk_nodisk_error_label);
+    content_box.append(&partition_method_automatic_disk_small_error_label);
 
     automatic_partitioning_page.connect_closure(
         "back-button-pressed",
@@ -459,7 +408,7 @@ pub fn automatic_partitioning_page(
             #[strong]
             partition_method_automatic_seperation_buffer,
             move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage|
-            {;
+            {
                 //main_carousel.scroll_to(&main_carousel.nth_page(5), true)
                 dbg!(partition_method_type_buffer.text(&partition_method_type_buffer.bounds().0, &partition_method_type_buffer.bounds().1, true).to_string());
                 dbg!(partition_method_automatic_target_buffer.text(&partition_method_automatic_target_buffer.bounds().0, &partition_method_automatic_target_buffer.bounds().1, true).to_string());
@@ -469,12 +418,47 @@ pub fn automatic_partitioning_page(
             }
         )
     );
-
-
     //
-
 
     automatic_partitioning_page.set_child_widget(&content_box);
 
     main_carousel.append(&automatic_partitioning_page);
+
+    //
+    language_changed_action.connect_activate(
+            move |_, _| {
+                automatic_partitioning_page.set_page_title(t!("auto_part_installer"));
+                automatic_partitioning_page.set_page_subtitle(t!("choose_drive_auto"));
+                automatic_partitioning_page.set_back_tooltip_label(t!("back"));
+                automatic_partitioning_page.set_next_tooltip_label(t!("next"));
+                //
+                devices_selection_expander_row.set_title(&t!("no_drive_auto_selected"));
+                //
+                partition_method_automatic_disk_nodisk_error_label.set_label(&t!("no_disk_specified"));
+                //
+                partition_method_automatic_disk_small_error_label.set_label(&t!("disk_auto_target_small"));
+                //
+                partition_method_automatic_luks_empty_error_label.set_label(&t!("luks_yes_but_empty"));
+                //
+                partition_method_automatic_luks_missmatch_error_label.set_label(&t!("luks_not_match"));
+                //
+                partition_method_automatic_luks_checkbutton.set_label(Some(&t!("enable_luks2_enc")));
+                //
+                partition_method_automatic_luks_password_entry.set_title(&t!("luks2_password"));
+                //
+                partition_method_automatic_luks_password_confirm_entry.set_title(&t!("luks2_password_confirm"));
+            }
+    );
+    //
+}
+
+fn disk_check(device_button: &gtk::CheckButton ,devices_selection_expander_row: &adw::ExpanderRow, partition_method_automatic_disk_size_error_label: &gtk::Label, device_block_name: &str, device_block_size: f64) {
+    if device_button.is_active() == true {
+        devices_selection_expander_row.set_title(device_block_name);
+        if device_block_size > 39000000000.0 {
+            partition_method_automatic_disk_size_error_label.set_visible(false);
+        } else {
+            partition_method_automatic_disk_size_error_label.set_visible(true);
+        }
+    }
 }
