@@ -97,5 +97,6 @@
     "luks_not_match": "The LUKS Passwords do not match!",
     "search_for_language": "Search for a Language",
     "search_for_keyboard": "Search for a Keyboard Layout",
-    "search_for_timezone": "Search for a Timezone"
+    "search_for_timezone": "Search for a Timezone",
+    "advanced_options": "Advanced Options"
 }

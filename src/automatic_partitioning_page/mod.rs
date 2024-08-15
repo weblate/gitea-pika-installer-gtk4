@@ -298,6 +298,153 @@ pub fn automatic_partitioning_page(
         )
     );
 
+    // Advanced
+
+    let advanced_box = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .build();
+
+    let advanced_box_viewport =
+        gtk::ScrolledWindow::builder()
+            .vexpand(true)
+            .hexpand(true)
+            .child(&advanced_box)
+            .build();
+
+    //
+
+    let advanced_home_part_ratio_selection_box =  gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .homogeneous(true)
+        .build();
+
+    let advanced_home_part_ratio_selection_frame =  gtk::Frame::builder()
+        .label("/ to /home ratio")
+        .child(&advanced_home_part_ratio_selection_box)
+        .margin_top(5)
+        .margin_bottom(5)
+        .build();
+
+    let advanced_home_part_ratio_selection_slider= gtk::Scale::builder()
+        .build();
+
+    //
+
+    let advanced_home_seperation_selection_box =  gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .homogeneous(true)
+        .build();
+
+    let advanced_home_seperation_selection_frame =  gtk::Frame::builder()
+        .label("/home seperation")
+        .child(&advanced_home_seperation_selection_box)
+        .margin_top(5)
+        .margin_bottom(5)
+        .build();
+
+    let advanced_home_seperation_selection_checkbutton_subvol = gtk::CheckButton::builder()
+        .label("subvol")
+        .active(true)
+        .build();
+
+    let advanced_home_seperation_selection_checkbutton_partition = gtk::CheckButton::builder()
+        .label("partition")
+        .build();
+
+    let advanced_home_seperation_selection_checkbutton_none = gtk::CheckButton::builder()
+        .label("none")
+        .build();
+
+    advanced_home_seperation_selection_checkbutton_partition.set_group(Some(&advanced_home_seperation_selection_checkbutton_subvol));
+    advanced_home_seperation_selection_checkbutton_none.set_group(Some(&advanced_home_seperation_selection_checkbutton_subvol));
+
+    advanced_home_seperation_selection_checkbutton_partition
+        .bind_property(
+            "active",
+            &advanced_home_part_ratio_selection_frame,
+            "sensitive",
+        )
+    .sync_create()
+    .build();
+
+    //
+
+    let advanced_filesystem_selection_box =  gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .homogeneous(true)
+        .build();
+
+    let advanced_filesystem_selection_frame =  gtk::Frame::builder()
+        .label("Filesystem")
+        .child(&advanced_filesystem_selection_box)
+        .margin_top(5)
+        .margin_bottom(5)
+        .build();
+
+    let advanced_filesystem_selection_checkbutton_btrfs = gtk::CheckButton::builder()
+        .label("BTRFS")
+        .active(true)
+        .build();
+
+    let advanced_filesystem_selection_checkbutton_ext4 = gtk::CheckButton::builder()
+        .label("EXT4")
+        .build();
+
+    let advanced_filesystem_selection_checkbutton_xfs = gtk::CheckButton::builder()
+        .label("XFS")
+        .build();
+
+    advanced_filesystem_selection_checkbutton_btrfs
+        .bind_property(
+            "active",
+            &advanced_home_seperation_selection_checkbutton_subvol,
+            "sensitive",
+        )
+    .sync_create()
+    .build();
+
+    advanced_filesystem_selection_checkbutton_ext4.connect_toggled(clone!(
+        #[weak]
+        advanced_filesystem_selection_checkbutton_ext4,
+        #[weak]
+        advanced_home_seperation_selection_checkbutton_subvol,
+        #[weak]
+        advanced_home_seperation_selection_checkbutton_partition,
+        move |_|
+            {
+                if advanced_filesystem_selection_checkbutton_ext4.is_active() && advanced_home_seperation_selection_checkbutton_subvol.is_active() {
+                    advanced_home_seperation_selection_checkbutton_partition.set_active(true)
+                }
+            }
+     )
+    );
+
+    advanced_filesystem_selection_checkbutton_xfs.connect_toggled(clone!(
+        #[weak]
+        advanced_filesystem_selection_checkbutton_xfs,
+        #[weak]
+        advanced_home_seperation_selection_checkbutton_subvol,
+        #[weak]
+        advanced_home_seperation_selection_checkbutton_partition,
+        move |_|
+            {
+                if advanced_filesystem_selection_checkbutton_xfs.is_active() && advanced_home_seperation_selection_checkbutton_subvol.is_active() {
+                    advanced_home_seperation_selection_checkbutton_partition.set_active(true)
+                }
+            }
+     )
+    );
+
+
+    advanced_filesystem_selection_checkbutton_ext4.set_group(Some(&advanced_filesystem_selection_checkbutton_btrfs));
+    advanced_filesystem_selection_checkbutton_xfs.set_group(Some(&advanced_filesystem_selection_checkbutton_btrfs));
+
+    //
+
+    let advanced_expander = gtk::Expander::builder()
+        .child(&advanced_box_viewport)
+        .build();
+
     //
 
     devices_selection_expander_row_viewport_listbox.append(&devices_selection_expander_row);
@@ -308,12 +455,27 @@ pub fn automatic_partitioning_page(
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_checkbutton);
     partition_method_automatic_luks_box.append(&partition_method_automatic_luks_listbox);
 
+    advanced_home_seperation_selection_box.append(&advanced_home_seperation_selection_checkbutton_subvol);
+    advanced_home_seperation_selection_box.append(&advanced_home_seperation_selection_checkbutton_partition);
+    advanced_home_seperation_selection_box.append(&advanced_home_seperation_selection_checkbutton_none);
+
+    advanced_filesystem_selection_box.append(&advanced_filesystem_selection_checkbutton_btrfs);
+    advanced_filesystem_selection_box.append(&advanced_filesystem_selection_checkbutton_ext4);
+    advanced_filesystem_selection_box.append(&advanced_filesystem_selection_checkbutton_xfs);
+
+    advanced_home_part_ratio_selection_box.append(&advanced_home_part_ratio_selection_slider);
+
+    advanced_box.append(&advanced_home_seperation_selection_frame);
+    advanced_box.append(&advanced_filesystem_selection_frame);
+    advanced_box.append(&advanced_home_part_ratio_selection_frame);
+
     content_box.append(&devices_selection_expander_row_viewport_listbox);
     content_box.append(&partition_method_automatic_luks_box);
     content_box.append(&partition_method_automatic_luks_empty_error_label);
     content_box.append(&partition_method_automatic_luks_missmatch_error_label);
     content_box.append(&partition_method_automatic_disk_nodisk_error_label);
     content_box.append(&partition_method_automatic_disk_small_error_label);
+    content_box.append(&advanced_expander);
 
     automatic_partitioning_page.connect_closure(
         "back-button-pressed",
@@ -398,6 +560,8 @@ pub fn automatic_partitioning_page(
                 partition_method_automatic_luks_password_entry.set_title(&t!("luks2_password"));
                 //
                 partition_method_automatic_luks_password_confirm_entry.set_title(&t!("luks2_password_confirm"));
+                //
+                advanced_expander.set_label(Some(&t!("advanced_options")));
             }
         )
     );
