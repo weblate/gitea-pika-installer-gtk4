@@ -2,15 +2,17 @@ use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use glib::{clone, closure_local};
 use crate::{automatic_partitioning_page};
+use std::{rc::Rc, cell::RefCell};
 use std::io::BufRead;
 
 pub fn partitioning_page(
     main_carousel: &adw::Carousel,
-    partition_method_type_buffer: &gtk::TextBuffer,
-    partition_method_automatic_target_buffer:  &gtk::TextBuffer,
-    partition_method_automatic_luks_buffer:  &gtk::TextBuffer,
-    partition_method_automatic_ratio_buffer: &gtk::TextBuffer,
-    partition_method_automatic_seperation_buffer: &gtk::TextBuffer,
+    partition_method_type_refcell: &Rc<RefCell<String>>,
+    partition_method_automatic_target_refcell:  &Rc<RefCell<String>>,
+    partition_method_automatic_luks_enabled_refcell:  &Rc<RefCell<bool>>,
+    partition_method_automatic_luks_refcell: &Rc<RefCell<String>>,
+    partition_method_automatic_ratio_refcell: &Rc<RefCell<String>>,
+    partition_method_automatic_seperation_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction
 ) {
     let partitioning_page = installer_stack_page::InstallerStackPage::new();
@@ -92,11 +94,12 @@ pub fn partitioning_page(
     partitioning_carousel.append(&partitioning_page);
     automatic_partitioning_page::automatic_partitioning_page(
         &partitioning_carousel, 
-        &partition_method_type_buffer,
-        &partition_method_automatic_target_buffer,
-        &partition_method_automatic_luks_buffer,
-        &partition_method_automatic_ratio_buffer,
-        &partition_method_automatic_seperation_buffer,
+        &partition_method_type_refcell,
+        &partition_method_automatic_target_refcell,
+        &partition_method_automatic_luks_enabled_refcell,
+        &partition_method_automatic_luks_refcell,
+        &partition_method_automatic_ratio_refcell,
+        &partition_method_automatic_seperation_refcell,
         &language_changed_action);
 
     partitioning_page.connect_closure(

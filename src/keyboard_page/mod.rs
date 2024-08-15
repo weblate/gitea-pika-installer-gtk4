@@ -3,12 +3,12 @@ use gnome_desktop::XkbInfoExt;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use adw::{prelude::*};
 use glib::{clone, closure_local};
-use std::{process::Command, fs, path::Path};
+use std::{process::Command, fs, path::Path, rc::Rc, cell::RefCell};
 
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
-    keymap_base_data_buffer: &gtk::TextBuffer,
-    keymap_variant_data_buffer: &gtk::TextBuffer,
+    keymap_base_data_refcell: &Rc<RefCell<String>>,
+    keymap_variant_data_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction
 ) {
     let keyboard_page = installer_stack_page::InstallerStackPage::new();
@@ -72,10 +72,6 @@ pub fn keyboard_page(
 
     let keymap_list = gnome_desktop::XkbInfo::all_layouts(&xkbinfo);
 
-    let keymap_base_data_buffer_clone0 = keymap_base_data_buffer.clone();
-
-    let keymap_variant_data_buffer_clone0 = keymap_variant_data_buffer.clone();
-
     for keymap in keymap_list.iter() {
         let keymap = keymap.to_string();
         let keymap_name = xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string();
@@ -106,10 +102,10 @@ pub fn keyboard_page(
         keymap_checkbutton.connect_toggled(clone!(
             #[weak]
             keymap_checkbutton,
-            #[weak]
-            keymap_base_data_buffer_clone0,
-            #[weak]
-            keymap_variant_data_buffer_clone0,
+            #[strong]
+            keymap_base_data_refcell,
+            #[strong]
+            keymap_variant_data_refcell,
             #[weak]
             keyboard_page,
             move |_|
@@ -117,15 +113,15 @@ pub fn keyboard_page(
                     if keymap_checkbutton.is_active() == true {
                         keyboard_page.set_next_sensitive(true);
                         if keymap_variant.is_empty() {
-                            keymap_base_data_buffer_clone0.set_text(&keymap_base);
+                            *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
                             Command::new("setxkbmap")
                                 .arg("-layout")
                                 .arg(keymap_base.clone())
                                 .spawn()
                                 .expect("keyboard failed to start");
                         } else {
-                            keymap_base_data_buffer_clone0.set_text(&keymap_base);
-                            keymap_variant_data_buffer_clone0.set_text(&keymap_variant);
+                            *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
+                            *keymap_variant_data_refcell.borrow_mut() = String::from(&keymap_variant);
                             Command::new("setxkbmap")
                                 .arg("-layout")
                                 .arg(keymap_base.clone())

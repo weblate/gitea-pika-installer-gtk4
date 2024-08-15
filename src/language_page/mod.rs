@@ -2,11 +2,11 @@ use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use adw::{prelude::*};
 use glib::{clone, closure_local};
-use std::{process::Command, env, fs, path::Path};
+use std::{cell::RefCell, env, fs, path::Path, process::Command, rc::Rc};
 
 pub fn language_page(
     main_carousel: &adw::Carousel,
-    lang_data_buffer: &gtk::TextBuffer,
+    lang_data_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction
 ) {
     let language_page = installer_stack_page::InstallerStackPage::new();
@@ -223,8 +223,6 @@ pub fn language_page(
         "pt_BR",
         "pt_PT",];
 
-    let lang_data_buffer_clone0 = lang_data_buffer.clone();
-
     for locale in locale_list.iter() {
         let locale = locale.to_string();
         let locale_name = gnome_desktop::language_from_locale(&locale, None).unwrap_or(locale.clone().into()).to_string();
@@ -244,15 +242,15 @@ pub fn language_page(
         locale_checkbutton.connect_toggled(clone!(
             #[weak]
             locale_checkbutton,
-            #[weak]
-            lang_data_buffer_clone0,
+            #[strong]
+            lang_data_refcell,
             #[weak]
             language_page,
             move |_|
                 {
                     if locale_checkbutton.is_active() == true {
                         language_page.set_next_sensitive(true);
-                        lang_data_buffer_clone0.set_text(&locale);
+                        *lang_data_refcell.borrow_mut() = String::from(&locale);
                     }
                 }
         ));
@@ -319,16 +317,19 @@ pub fn language_page(
             #[weak]
             main_carousel,
             #[strong]
+            lang_data_refcell,
+            #[strong]
             language_changed_action,
             move |_language_page: installer_stack_page::InstallerStackPage|
             {
+                let locale = &lang_data_refcell.borrow();
                 //Command::new("sudo")
                 //                    .arg("localectl")
                 //                    .arg("set-locale")
-                //                    .arg("LANG=".to_owned() + &lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string() + ".UTF-8")
+                //                    .arg("LANG=".to_owned() + &locale + ".UTF-8")
                 //                    .spawn()
                 //                    .expect("locale failed to start");
-                rust_i18n::set_locale(&lang_data_buffer_clone0.text(&lang_data_buffer_clone0.bounds().0, &lang_data_buffer_clone0.bounds().1, true).to_string());
+                rust_i18n::set_locale(&locale);
                 language_changed_action.activate(None);
                 main_carousel.scroll_to(&main_carousel.nth_page(2), true)
             }

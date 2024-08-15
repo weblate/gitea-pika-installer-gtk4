@@ -2,12 +2,12 @@ use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib, gio as gio};
 use adw::{prelude::*};
 use glib::{clone, closure_local};
-use std::{process::Command, fs, path::Path};
+use std::{process::Command, fs, path::Path, rc::Rc, cell::RefCell};
 use std::io::BufRead;
 
 pub fn timezone_page(
     main_carousel: &adw::Carousel,
-    timezone_data_buffer: &gtk::TextBuffer,
+    timezone_data_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction
 ) {
     let timezone_page = installer_stack_page::InstallerStackPage::new();
@@ -74,8 +74,6 @@ pub fn timezone_page(
     let timezone_stdout = timezone_cli.stdout.expect("could not get stdout");
     let timezone_reader = std::io::BufReader::new(timezone_stdout);
 
-    let timezone_data_buffer_clone0 = timezone_data_buffer.clone();
-
     for timezone in timezone_reader.lines() {
         let timezone = timezone.unwrap();
         let timezone_clone = timezone.clone();
@@ -97,12 +95,12 @@ pub fn timezone_page(
                 #[weak]
                 timezone_page,
                 #[weak]
-                timezone_data_buffer,
+                timezone_data_refcell,
                 move |_| 
                 {
                     if timezone_checkbutton.is_active() == true {
                         timezone_page.set_next_sensitive(true);
-                        timezone_data_buffer.set_text(&timezone);
+                        *timezone_data_refcell.borrow_mut() = String::from(&timezone);
                     }
                 }
             )
@@ -183,13 +181,15 @@ pub fn timezone_page(
         closure_local!(
             #[weak]
             main_carousel,
+            #[strong]
+            timezone_data_refcell,
             move |_timezone_page: installer_stack_page::InstallerStackPage|
             {
-                let timezone_selection = timezone_data_buffer_clone0.text(&timezone_data_buffer_clone0.bounds().0, &timezone_data_buffer_clone0.bounds().1, true).to_string();
+                let timezone = timezone_data_refcell.borrow();
                 Command::new("sudo")
                     .arg("timedatectl")
                     .arg("set-timezone")
-                    .arg(&timezone_selection)
+                    .arg(timezone.to_owned())
                     .spawn()
                     .expect("timezone failed to start");
                 main_carousel.scroll_to(&main_carousel.nth_page(5), true)
