@@ -164,7 +164,7 @@ pub fn manual_partitioning(
 
     // the header icon for the partitioning icon
     let partition_method_manual_header_icon = gtk::Image::builder()
-        .icon_name("org.gnome.Settings")
+        .icon_name("emblem-system-symbolic")
         .halign(gtk::Align::Start)
         .hexpand(true)
         .pixel_size(78)
