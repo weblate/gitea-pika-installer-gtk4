@@ -83,6 +83,9 @@ pub fn build_ui(app: &adw::Application) {
     &partition_method_automatic_luks_refcell,
     &partition_method_automatic_ratio_refcell,
     &partition_method_automatic_seperation_refcell,
+    &partition_method_manual_fstab_json_refcell,
+    &partition_method_manual_luks_enabled_refcell,
+    &partition_method_manual_crypttab_json_refcell,
     &language_changed_action);
 
     window.present()
