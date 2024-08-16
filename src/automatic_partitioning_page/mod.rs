@@ -3,7 +3,7 @@ use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib};
 use crate::partitioning_page::{get_block_devices};
 use adw::{prelude::*};
-use glib::{clone, closure_local};
+use glib::{clone, closure_local, ffi::gboolean};
 use std::{rc::Rc, cell::RefCell};
 
 const BOOT_AND_EFI_BYTE_SIZE: f64 = 1611661312.0;
@@ -64,13 +64,23 @@ pub fn automatic_partitioning_page(
     //
 
     let advanced_home_part_ratio_selection_box =  gtk::Box::builder()
-        .orientation(gtk::Orientation::Horizontal)
-        .homogeneous(true)
+        .orientation(gtk::Orientation::Vertical)
         .build();
+
+    let advanced_home_part_ratio_label_root = gtk::Label::builder()
+        .build();
+
+    advanced_home_part_ratio_label_root.add_css_class("accent-text");
+
+    let advanced_home_part_ratio_label_home = gtk::Label::builder()
+        .build();
+
+    advanced_home_part_ratio_label_home.add_css_class("green-text");
 
     let advanced_home_part_ratio_selection_frame =  gtk::Frame::builder()
         .label("/ to /home ratio")
         .child(&advanced_home_part_ratio_selection_box)
+        .hexpand(true)
         .margin_top(5)
         .margin_bottom(5)
         .build();
@@ -78,6 +88,18 @@ pub fn automatic_partitioning_page(
     let advanced_home_part_ratio_selection_slider= gtk::Scale::builder()
         .draw_value(false)
         .build();
+
+    advanced_home_part_ratio_selection_slider.add_css_class("green-trough");
+        
+    let advanced_home_part_ratio_label_root_clone0 = advanced_home_part_ratio_label_root.clone();
+    let advanced_home_part_ratio_label_home_clone0 = advanced_home_part_ratio_label_home.clone();
+
+    advanced_home_part_ratio_selection_slider.connect_change_value(move |slider, _, value| {
+        let home_size: f64 = slider.adjustment().upper() + 10000000000.0 - value;
+        advanced_home_part_ratio_label_root_clone0.set_label(&format!("{}: {}", t!("Root Part Size"), pretty_bytes::converter::convert(value.into())));
+        advanced_home_part_ratio_label_home_clone0.set_label(&format!("{}: {}", t!("Home Part Size"), pretty_bytes::converter::convert(home_size.into())));
+        glib::Propagation::Proceed
+    });
 
     //
 
@@ -357,8 +379,9 @@ pub fn automatic_partitioning_page(
                     } else {
                         MINIMUM_ROOT_BYTE_SIZE
                     };
-                    advanced_home_part_ratio_selection_slider.set_range(MINIMUM_ROOT_BYTE_SIZE, device.block_size);
+                    advanced_home_part_ratio_selection_slider.set_range(MINIMUM_ROOT_BYTE_SIZE, device.block_size - 10000000000.0);
                     advanced_home_part_ratio_selection_slider.set_value(default_root_size);
+                    advanced_home_part_ratio_selection_slider.emit_by_name_with_values("change_value", &[gtk::ScrollType::None.into(), default_root_size.into()]);
                     *partition_method_automatic_target_refcell.borrow_mut() = String::from(&device.block_name);
                     if check_for_errors(&error_labels) {
                         automatic_partitioning_page.set_next_sensitive(true)
@@ -482,6 +505,8 @@ pub fn automatic_partitioning_page(
     advanced_filesystem_selection_box.append(&advanced_filesystem_selection_checkbutton_xfs);
 
     advanced_home_part_ratio_selection_box.append(&advanced_home_part_ratio_selection_slider);
+    advanced_home_part_ratio_selection_box.append(&advanced_home_part_ratio_label_root);
+    advanced_home_part_ratio_selection_box.append(&advanced_home_part_ratio_label_home);
 
     advanced_box.append(&advanced_home_seperation_selection_frame);
     advanced_box.append(&advanced_filesystem_selection_frame);

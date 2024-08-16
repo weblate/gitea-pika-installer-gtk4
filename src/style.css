@@ -85,3 +85,17 @@
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
 }
+
+
+.green-trough trough {
+    background-color:green;
+    color:green;
+}
+
+.green-text {
+    color:green;  
+}
+
+.accent-text {
+    color: @accent_bg_color;;  
+}
