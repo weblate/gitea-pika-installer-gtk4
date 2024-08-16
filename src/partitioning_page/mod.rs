@@ -117,6 +117,8 @@ pub fn partitioning_page(
         )
     );
 
+    dbg!(get_partitions());
+
     main_carousel.append(&partitioning_carousel)
 }
 
@@ -124,6 +126,16 @@ pub struct BlockDevice {
     pub block_name: String,
     pub block_size: f64,
     pub block_size_pretty: String
+}
+
+#[derive(Debug)]
+pub struct Partition {
+    pub part_name: String,
+    pub part_fs: String,
+    pub has_encryption: bool,
+    pub need_mapper: bool,
+    pub part_size: f64,
+    pub part_size_pretty: String
 }
 
 pub fn get_block_devices() -> Vec<BlockDevice> {
@@ -180,4 +192,108 @@ fn get_block_size(block_dev: &str) -> f64 {
     };
 
     size
+}
+
+pub fn get_partitions() -> Vec<Partition> {
+    let mut partitions = Vec::new();
+
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_partitions")
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .spawn() {
+            Ok(t) => t,
+            Err(_) => return partitions
+        };
+
+    match command.stdout {
+        Some(t) => {
+            for partition in std::io::BufReader::new(t).lines() {
+                match partition {
+                    Ok(r) => {
+                        let part_size = get_part_size(&r);
+                        let part_fs = get_part_fs(&r);
+                        partitions.push(
+                            Partition {
+                                has_encryption: is_encrypted(&r),
+                                need_mapper: is_needs_mapper(&part_fs),
+                                part_name: r,
+                                part_fs: part_fs,
+                                part_size: part_size,
+                                part_size_pretty: pretty_bytes::converter::convert(part_size)
+                            }
+                        )
+                    }
+                    Err(_) => return partitions
+                }
+            }
+        },
+        None => return partitions
+    };
+
+    partitions
+}
+
+fn get_part_size(part_dev: &str) -> f64 {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_part_size")
+        .arg(part_dev)
+        .output() {
+            Ok(t) => t,
+            Err(_) => return 0.0
+        };
+    let size = match String::from_utf8(command.stdout) {
+        Ok(t) => {
+            t.trim().parse::<f64>().unwrap_or(0.0)
+        }
+        Err(_) => 0.0
+    };
+
+    size
+}
+
+fn get_part_fs(part_dev: &str) -> String {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_part_fs")
+        .arg(part_dev.replace("mapper/", ""))
+        .output() {
+            Ok(t) => t,
+            Err(_) => return String::from(t!("fs_unknown"))
+        };
+    let fs = match String::from_utf8(command.stdout) {
+        Ok(t) => {
+            t.trim().to_owned()
+        }
+        Err(_) => String::from(t!("fs_unknown"))
+    };
+
+    fs
+}
+
+fn is_needs_mapper(part_fs: &str) -> bool {
+    if part_fs.contains("crypto_LUKS") || part_fs.contains("lvm") {
+        true
+    } else {
+        false
+    }
+}
+
+fn is_encrypted(part_dev: &str) -> bool {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("has_encryption")
+        .arg(part_dev)
+        .output() {
+            Ok(t) => t,
+            Err(_) => return false
+        };
+    
+    if command.status.success() {
+        true
+    } else {
+        false
+    }
 }

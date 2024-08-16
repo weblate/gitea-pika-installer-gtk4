@@ -103,5 +103,6 @@
     "choose_home_seperation_auto": "Seperate /home ?",
     "advanced_home_seperation_selection_checkbutton_subvol_label": "Yes, via a Subvolume",
     "advanced_home_seperation_selection_checkbutton_partition_label": "Yes, via a Partition",
-    "advanced_home_seperation_selection_checkbutton_none_label": "No"
+    "advanced_home_seperation_selection_checkbutton_none_label": "No",
+    "fs_unknown": "Unknown"
 }
