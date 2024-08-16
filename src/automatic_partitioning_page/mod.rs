@@ -7,7 +7,7 @@ use glib::{clone, closure_local, ffi::gboolean};
 use std::{rc::Rc, cell::RefCell};
 
 const BOOT_AND_EFI_BYTE_SIZE: f64 = 1611661312.0;
-const MINIMUM_ROOT_BYTE_SIZE: f64 = 40000000000.0;
+const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
 
 pub fn automatic_partitioning_page(
     main_carousel: &adw::Carousel,
@@ -16,7 +16,7 @@ pub fn automatic_partitioning_page(
     partition_method_automatic_target_fs_refcell:  &Rc<RefCell<String>>,
     partition_method_automatic_luks_enabled_refcell:  &Rc<RefCell<bool>>,
     partition_method_automatic_luks_refcell: &Rc<RefCell<String>>,
-    partition_method_automatic_ratio_refcell: &Rc<RefCell<String>>,
+    partition_method_automatic_ratio_refcell: &Rc<RefCell<f64>>,
     partition_method_automatic_seperation_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction
 ) {
@@ -78,7 +78,6 @@ pub fn automatic_partitioning_page(
     advanced_home_part_ratio_label_home.add_css_class("green-text");
 
     let advanced_home_part_ratio_selection_frame =  gtk::Frame::builder()
-        .label("/ to /home ratio")
         .child(&advanced_home_part_ratio_selection_box)
         .hexpand(true)
         .margin_top(5)
@@ -93,11 +92,13 @@ pub fn automatic_partitioning_page(
         
     let advanced_home_part_ratio_label_root_clone0 = advanced_home_part_ratio_label_root.clone();
     let advanced_home_part_ratio_label_home_clone0 = advanced_home_part_ratio_label_home.clone();
+    let partition_method_automatic_ratio_refcell_clone0 = partition_method_automatic_ratio_refcell.clone();
 
     advanced_home_part_ratio_selection_slider.connect_change_value(move |slider, _, value| {
         let home_size: f64 = slider.adjustment().upper() + 10000000000.0 - value;
         advanced_home_part_ratio_label_root_clone0.set_label(&format!("{}: {}", t!("Root Part Size"), pretty_bytes::converter::convert(value.into())));
         advanced_home_part_ratio_label_home_clone0.set_label(&format!("{}: {}", t!("Home Part Size"), pretty_bytes::converter::convert(home_size.into())));
+        *partition_method_automatic_ratio_refcell_clone0.borrow_mut() = value;
         glib::Propagation::Proceed
     });
 
@@ -109,23 +110,21 @@ pub fn automatic_partitioning_page(
         .build();
 
     let advanced_home_seperation_selection_frame =  gtk::Frame::builder()
-        .label("/home seperation")
         .child(&advanced_home_seperation_selection_box)
         .margin_top(5)
         .margin_bottom(5)
         .build();
 
+    *partition_method_automatic_seperation_refcell.borrow_mut() = String::from("subvol");
+
     let advanced_home_seperation_selection_checkbutton_subvol = gtk::CheckButton::builder()
-        .label("subvol")
         .active(true)
         .build();
 
     let advanced_home_seperation_selection_checkbutton_partition = gtk::CheckButton::builder()
-        .label("partition")
         .build();
 
     let advanced_home_seperation_selection_checkbutton_none = gtk::CheckButton::builder()
-        .label("none")
         .build();
 
     advanced_home_seperation_selection_checkbutton_partition.set_group(Some(&advanced_home_seperation_selection_checkbutton_subvol));
@@ -140,6 +139,36 @@ pub fn automatic_partitioning_page(
     .sync_create()
     .build();
 
+    advanced_home_seperation_selection_checkbutton_subvol.connect_toggled(clone!(
+        #[strong]
+        partition_method_automatic_seperation_refcell,
+        move |_|
+            {
+                *partition_method_automatic_seperation_refcell.borrow_mut() = String::from("subvol");
+            }
+     )
+    );
+
+    advanced_home_seperation_selection_checkbutton_partition.connect_toggled(clone!(
+        #[strong]
+        partition_method_automatic_seperation_refcell,
+        move |_|
+            {
+                *partition_method_automatic_seperation_refcell.borrow_mut() = String::from("partition");
+            }
+     )
+    );
+
+    advanced_home_seperation_selection_checkbutton_none.connect_toggled(clone!(
+        #[strong]
+        partition_method_automatic_seperation_refcell,
+        move |_|
+            {
+                *partition_method_automatic_seperation_refcell.borrow_mut() = String::from("none");
+            }
+     )
+    );
+
     //
 
     let advanced_filesystem_selection_box =  gtk::Box::builder()
@@ -148,11 +177,12 @@ pub fn automatic_partitioning_page(
         .build();
 
     let advanced_filesystem_selection_frame =  gtk::Frame::builder()
-        .label("Filesystem")
         .child(&advanced_filesystem_selection_box)
         .margin_top(5)
         .margin_bottom(5)
         .build();
+
+    *partition_method_automatic_target_fs_refcell.borrow_mut() = String::from("btrfs");
 
     let advanced_filesystem_selection_checkbutton_btrfs = gtk::CheckButton::builder()
         .label("BTRFS")
@@ -176,6 +206,16 @@ pub fn automatic_partitioning_page(
     .sync_create()
     .build();
 
+    advanced_filesystem_selection_checkbutton_btrfs.connect_toggled(clone!(
+        #[strong]
+        partition_method_automatic_target_fs_refcell,
+        move |_|
+            {
+                *partition_method_automatic_target_fs_refcell.borrow_mut() = String::from("btrfs");
+            }
+     )
+    );
+
     advanced_filesystem_selection_checkbutton_ext4.connect_toggled(clone!(
         #[weak]
         advanced_filesystem_selection_checkbutton_ext4,
@@ -183,11 +223,14 @@ pub fn automatic_partitioning_page(
         advanced_home_seperation_selection_checkbutton_subvol,
         #[weak]
         advanced_home_seperation_selection_checkbutton_partition,
+        #[strong]
+        partition_method_automatic_target_fs_refcell,
         move |_|
             {
                 if advanced_filesystem_selection_checkbutton_ext4.is_active() && advanced_home_seperation_selection_checkbutton_subvol.is_active() {
                     advanced_home_seperation_selection_checkbutton_partition.set_active(true)
                 }
+                *partition_method_automatic_target_fs_refcell.borrow_mut() = String::from("ext4");
             }
      )
     );
@@ -199,11 +242,14 @@ pub fn automatic_partitioning_page(
         advanced_home_seperation_selection_checkbutton_subvol,
         #[weak]
         advanced_home_seperation_selection_checkbutton_partition,
+        #[strong]
+        partition_method_automatic_target_fs_refcell,
         move |_|
             {
                 if advanced_filesystem_selection_checkbutton_xfs.is_active() && advanced_home_seperation_selection_checkbutton_subvol.is_active() {
                     advanced_home_seperation_selection_checkbutton_partition.set_active(true)
                 }
+                *partition_method_automatic_target_fs_refcell.borrow_mut() = String::from("xfs");
             }
      )
     );
@@ -223,7 +269,6 @@ pub fn automatic_partitioning_page(
     //
 
     let devices_selection_expander_row = adw::ExpanderRow::builder()
-        .name("status:disk=none,")
         .build();
 
     let devices_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
@@ -376,8 +421,10 @@ pub fn automatic_partitioning_page(
                     let usable_disk_space = device.block_size - BOOT_AND_EFI_BYTE_SIZE;
                     let default_root_size = if (usable_disk_space * 40.0) / 100.0 > 100000000000.0 {
                         100000000000.0
-                    } else {
+                    } else if (usable_disk_space * 40.0) / 100.0 < MINIMUM_ROOT_BYTE_SIZE {
                         MINIMUM_ROOT_BYTE_SIZE
+                    } else {
+                        (usable_disk_space * 40.0) / 100.0
                     };
                     advanced_home_part_ratio_selection_slider.set_range(MINIMUM_ROOT_BYTE_SIZE, device.block_size - 10000000000.0);
                     advanced_home_part_ratio_selection_slider.set_value(default_root_size);
@@ -555,6 +602,7 @@ pub fn automatic_partitioning_page(
             partition_method_automatic_seperation_refcell,
             move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage|
             {
+                *partition_method_type_refcell.borrow_mut() = String::from("automatic");
                 //main_carousel.scroll_to(&main_carousel.nth_page(5), true)
                 dbg!(partition_method_type_refcell.borrow());
                 dbg!(partition_method_automatic_target_fs_refcell.borrow());
@@ -582,6 +630,16 @@ pub fn automatic_partitioning_page(
         partition_method_automatic_luks_empty_error_label,
         #[weak]
         partition_method_automatic_luks_missmatch_error_label,
+        #[weak]
+        advanced_filesystem_selection_frame,
+        #[weak]
+        advanced_home_seperation_selection_frame,
+        #[weak]
+        advanced_home_seperation_selection_checkbutton_subvol,
+        #[weak]
+        advanced_home_seperation_selection_checkbutton_partition,
+        #[weak]
+        advanced_home_seperation_selection_checkbutton_none,
             move |_, _| {
                 automatic_partitioning_page.set_page_title(t!("auto_part_installer"));
                 automatic_partitioning_page.set_page_subtitle(t!("choose_drive_auto"));
@@ -605,6 +663,17 @@ pub fn automatic_partitioning_page(
                 partition_method_automatic_luks_password_confirm_entry.set_title(&t!("luks2_password_confirm"));
                 //
                 advanced_expander.set_label(Some(&t!("advanced_options")));
+                //
+                advanced_filesystem_selection_frame.set_label(Some(&t!("choose_fs_auto")));
+                //
+                advanced_home_seperation_selection_frame.set_label(Some(&t!("choose_home_seperation_auto")));
+                //
+                advanced_home_seperation_selection_checkbutton_subvol.set_label(Some(&t!("advanced_home_seperation_selection_checkbutton_subvol_label")));
+                //
+                advanced_home_seperation_selection_checkbutton_partition.set_label(Some(&t!("advanced_home_seperation_selection_checkbutton_partition_label")));
+                //
+                advanced_home_seperation_selection_checkbutton_none.set_label(Some(&t!("advanced_home_seperation_selection_checkbutton_none_label")));
+                //
             }
         )
     );
@@ -614,7 +683,7 @@ pub fn automatic_partitioning_page(
 fn disk_check(device_button: &gtk::CheckButton ,devices_selection_expander_row: &adw::ExpanderRow, partition_method_automatic_disk_size_error_label: &gtk::Label, device_block_name: &str, device_block_size: f64) {
     if device_button.is_active() == true {
         devices_selection_expander_row.set_title(device_block_name);
-        if device_block_size > 39000000000.0 {
+        if device_block_size >= MINIMUM_ROOT_BYTE_SIZE {
             partition_method_automatic_disk_size_error_label.set_visible(false);
         } else {
             partition_method_automatic_disk_size_error_label.set_visible(true);

@@ -12,7 +12,7 @@ pub fn partitioning_page(
     partition_method_automatic_target_fs_refcell:  &Rc<RefCell<String>>,
     partition_method_automatic_luks_enabled_refcell:  &Rc<RefCell<bool>>,
     partition_method_automatic_luks_refcell: &Rc<RefCell<String>>,
-    partition_method_automatic_ratio_refcell: &Rc<RefCell<String>>,
+    partition_method_automatic_ratio_refcell: &Rc<RefCell<f64>>,
     partition_method_automatic_seperation_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction
 ) {

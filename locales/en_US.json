@@ -98,5 +98,10 @@
     "search_for_language": "Search for a Language",
     "search_for_keyboard": "Search for a Keyboard Layout",
     "search_for_timezone": "Search for a Timezone",
-    "advanced_options": "Advanced Options"
+    "advanced_options": "Advanced Options",
+    "choose_fs_auto": "Format Target Disk as:",
+    "choose_home_seperation_auto": "Seperate /home ?",
+    "advanced_home_seperation_selection_checkbutton_subvol_label": "Yes, via a Subvolume",
+    "advanced_home_seperation_selection_checkbutton_partition_label": "Yes, via a Partition",
+    "advanced_home_seperation_selection_checkbutton_none_label": "No"
 }

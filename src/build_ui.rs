@@ -58,7 +58,7 @@ pub fn build_ui(app: &adw::Application) {
     let partition_method_automatic_target_fs_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_automatic_luks_enabled_refcell: Rc<RefCell<bool>> = Rc::new(RefCell::new(false));
     let partition_method_automatic_luks_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
-    let partition_method_automatic_ratio_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
+    let partition_method_automatic_ratio_refcell: Rc<RefCell<f64>> = Rc::new(RefCell::new(0.0));
     let partition_method_automatic_seperation_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
 
     let language_changed_action = gio::SimpleAction::new("lang-changed", None);
