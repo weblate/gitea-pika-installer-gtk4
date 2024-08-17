@@ -1,6 +1,7 @@
+use crate::drive_mount_row::DriveMountRow;
 use crate::installer_stack_page;
 use gtk::{prelude::*, glib as glib, gio as gio};
-use glib::{clone, closure_local};
+use glib::{clone, closure_local, Properties};
 use crate::{automatic_partitioning_page, manual_partitioning_page};
 use std::{rc::Rc, cell::RefCell};
 use std::io::BufRead;
@@ -14,9 +15,9 @@ pub fn partitioning_page(
     partition_method_automatic_luks_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_ratio_refcell: &Rc<RefCell<f64>>,
     partition_method_automatic_seperation_refcell: &Rc<RefCell<String>>,
-    partition_method_manual_fstab_json_refcell: &Rc<RefCell<String>>,
+    partition_method_manual_fstab_entry_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     partition_method_manual_luks_enabled_refcell: &Rc<RefCell<bool>>,
-    partition_method_manual_crypttab_json_refcell: &Rc<RefCell<String>>,
+    partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<Vec<CrypttabEntry>>>,
     language_changed_action: &gio::SimpleAction
 ) {
     let partitioning_page = installer_stack_page::InstallerStackPage::new();
@@ -109,9 +110,9 @@ pub fn partitioning_page(
     manual_partitioning_page::manual_partitioning_page(
             &partitioning_carousel, 
             &partition_method_type_refcell,
-            &partition_method_manual_fstab_json_refcell,
+            &partition_method_manual_fstab_entry_array_refcell,
             &partition_method_manual_luks_enabled_refcell,
-            &partition_method_manual_crypttab_json_refcell,
+            &partition_method_manual_crypttab_entry_array_refcell,
             &language_changed_action);
 
     partitioning_page.connect_closure(
@@ -136,7 +137,7 @@ pub struct BlockDevice {
     pub block_size_pretty: String
 }
 
-#[derive(Debug)]
+#[derive(Clone)]
 pub struct Partition {
     pub part_name: String,
     pub part_fs: String,
@@ -144,6 +145,19 @@ pub struct Partition {
     pub need_mapper: bool,
     pub part_size: f64,
     pub part_size_pretty: String
+}
+
+#[derive(Default)]
+pub struct FstabEntry {
+    pub partition: String,
+    pub mountpoint: String,
+    pub mountopt: String,
+}
+
+pub struct CrypttabEntry {
+    pub map: String,
+    pub uuid: String,
+    pub password: Option<String>,
 }
 
 pub fn get_block_devices() -> Vec<BlockDevice> {

@@ -1,6 +1,6 @@
 use std::{path::Path, rc::Rc, cell::RefCell};
 use gtk::{prelude::*, glib as glib, gio as gio};
-use crate::{efi_error_page, welcome_page, language_page, eula_page, keyboard_page, timezone_page, partitioning_page};
+use crate::{efi_error_page, eula_page, keyboard_page, language_page, partitioning_page::{self, CrypttabEntry, FstabEntry}, timezone_page, welcome_page};
 
 pub fn build_ui(app: &adw::Application) {
     glib::set_prgname(Some("pikaos_installer"));
@@ -60,9 +60,9 @@ pub fn build_ui(app: &adw::Application) {
     let partition_method_automatic_luks_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_automatic_ratio_refcell: Rc<RefCell<f64>> = Rc::new(RefCell::new(0.0));
     let partition_method_automatic_seperation_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
-    let partition_method_manual_fstab_json_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
+    let partition_method_manual_fstab_entry_array_refcell: Rc<RefCell<Vec<FstabEntry>>> = Rc::new(RefCell::new(Vec::new()));
     let partition_method_manual_luks_enabled_refcell: Rc<RefCell<bool>> = Rc::new(RefCell::new(false));
-    let partition_method_manual_crypttab_json_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
+    let partition_method_manual_crypttab_entry_array_refcell: Rc<RefCell<Vec<CrypttabEntry>>> = Rc::new(RefCell::new(Vec::new()));
 
     let language_changed_action = gio::SimpleAction::new("lang-changed", None);
 
@@ -83,9 +83,9 @@ pub fn build_ui(app: &adw::Application) {
     &partition_method_automatic_luks_refcell,
     &partition_method_automatic_ratio_refcell,
     &partition_method_automatic_seperation_refcell,
-    &partition_method_manual_fstab_json_refcell,
+    &partition_method_manual_fstab_entry_array_refcell,
     &partition_method_manual_luks_enabled_refcell,
-    &partition_method_manual_crypttab_json_refcell,
+    &partition_method_manual_crypttab_entry_array_refcell,
     &language_changed_action);
 
     window.present()

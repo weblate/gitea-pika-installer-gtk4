@@ -926,8 +926,6 @@ version = "1.0.2"
 dependencies = [
  "async-channel",
  "duct",
- "glib 0.18.5",
- "glib 0.20.0",
  "glob",
  "gnome-desktop",
  "gtk4",

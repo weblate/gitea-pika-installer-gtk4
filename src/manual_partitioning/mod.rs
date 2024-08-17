@@ -14,9 +14,9 @@ const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
 pub fn manual_partitioning(
     partition_carousel: &adw::Carousel,
     partition_method_type_refcell: &Rc<RefCell<String>>,
-    partition_method_manual_fstab_json_refcell: &Rc<RefCell<String>>,
+    partition_method_manual_fstab_entry_array_refcell: &Rc<RefCell<String>>,
     partition_method_manual_luks_enabled_refcell: &Rc<RefCell<bool>>,
-    partition_method_manual_crypttab_json_refcell: &Rc<RefCell<String>>,
+    partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction
 ) {
     let manual_partitioning_page = installer_stack_page::InstallerStackPage::new();
@@ -58,19 +58,19 @@ pub fn manual_partitioning(
             #[strong]
             partition_method_type_refcell,
             #[strong]
-            partition_method_manual_fstab_json_refcell,
+            partition_method_manual_fstab_entry_array_refcell,
             #[strong]
             partition_method_manual_luks_enabled_refcell,
             #[strong]
-            partition_method_manual_crypttab_json_refcell,
+            partition_method_manual_crypttab_entry_array_refcell,
             move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage|
             {
                 *partition_method_type_refcell.borrow_mut() = String::from("automatic");
                 //partition_carousel.scroll_to(&partition_carousel.nth_page(5), true)
                 dbg!(partition_method_type_refcell.borrow());
-                dbg!(partition_method_manual_fstab_json_refcell.borrow());
+                dbg!(partition_method_manual_fstab_entry_array_refcell.borrow());
                 dbg!(partition_method_manual_luks_enabled_refcell.borrow());
-                dbg!(partition_method_manual_crypttab_json_refcell.borrow());
+                dbg!(partition_method_manual_crypttab_entry_array_refcell.borrow());
             }
         )
     );
