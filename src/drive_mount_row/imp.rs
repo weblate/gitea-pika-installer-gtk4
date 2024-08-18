@@ -134,6 +134,11 @@ impl ObjectImpl for DriveMountRow {
             .bidirectional()
             .build();
 
+        obj.bind_property("deletable", &mountpoint_entry_row, "sensitive")
+            .sync_create()
+            .bidirectional()
+            .build();
+
         partition_row_delete_button.connect_clicked(clone!(
             #[weak]
             obj,

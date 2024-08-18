@@ -67,6 +67,8 @@ pub fn manual_partitioning_page(
         .vexpand(true)
         .hexpand(true)
         .build();
+    
+    create_root_row(&drive_mounts_adw_listbox, &drive_rows_size_group, &partition_array_refcell.borrow(), &partition_changed_action, &language_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell);
 
     drive_mounts_adw_listbox.append(&drive_mount_add_button);
     content_box.append(&drive_mounts_viewport);
@@ -292,4 +294,372 @@ fn create_mount_row(
                 }
         ),
     );
+}
+
+fn create_efi_row(
+    listbox: &gtk::ListBox,
+    drive_rows_size_group: &gtk::SizeGroup,
+    partition_array: &Vec<Partition>,
+    partition_changed_action: &gio::SimpleAction,
+    language_changed_action: &gio::SimpleAction,
+    used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+) {
+    let partition_scroll_child = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+
+    let partitions_scroll = gtk::ScrolledWindow::builder()
+        .hexpand(true)
+        .vexpand(true)
+        .child(&partition_scroll_child)
+        .build();
+
+    // Create row
+    let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+
+    row.set_deletable(true);
+
+    row.set_sizegroup(drive_rows_size_group);
+
+    row.set_langaction(language_changed_action);
+
+    let null_checkbutton = gtk::CheckButton::builder().build();
+
+    for partition in partition_array {
+        let part_name = &partition.part_name.to_owned();
+        let partition_button = gtk::CheckButton::builder()
+            .valign(gtk::Align::Center)
+            .can_focus(false)
+            .build();
+        partition_button.set_group(Some(&null_checkbutton));
+        let partition_row: adw::ActionRow =
+            if partition.need_mapper {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(t!("part_need_mapper").to_string() + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
+                    .build();
+                prow
+            }
+            else if used_partition_array_refcell.clone().borrow().iter().any(|e| part_name == e && part_name != &row.partition()) {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
+                    .build();
+                prow
+            } else {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .build();
+                prow
+            };
+        partition_row.add_prefix(&partition_button);
+        partition_button.connect_toggled(clone!(
+            #[weak]
+            row,
+            #[weak]
+            partition_button,
+            #[strong]
+            partition_changed_action,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            partition,
+            move |_|
+                {
+                    if partition_button.is_active() == true {
+                        let part_name = &partition.part_name;
+                        row.set_partition(part_name.to_string());
+                        (*used_partition_array_refcell.borrow_mut()).push(part_name.to_string());
+                    } else {
+                        (*used_partition_array_refcell.borrow_mut()).retain(|x| x != &partition.part_name);
+                    }
+                    partition_changed_action.activate(None);
+                }
+            )
+        );
+        partition_changed_action.connect_activate(clone!(
+            #[strong]
+            partition_row,
+            #[strong]
+            row,
+            #[strong]
+            partition,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            do_used_part_check_refcell,
+                move |_, _| {
+                    if *do_used_part_check_refcell.borrow() == true {
+                        let part_name = &partition.part_name;
+                        let used_partition_array = used_partition_array_refcell.borrow();
+                        if used_partition_array.iter().any(|e| part_name == e && part_name != &row.partition()) {
+                            partition_row.set_sensitive(false);
+                        } else {
+                            partition_row.set_sensitive(true);
+                        }
+                    }
+                }
+            )
+        );
+        partition_scroll_child.append(&partition_row);
+    }
+
+    
+    listbox.append(&row);
+}
+
+fn create_boot_row(
+    listbox: &gtk::ListBox,
+    drive_rows_size_group: &gtk::SizeGroup,
+    partition_array: &Vec<Partition>,
+    partition_changed_action: &gio::SimpleAction,
+    language_changed_action: &gio::SimpleAction,
+    used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+) {
+    let partition_scroll_child = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+
+    let partitions_scroll = gtk::ScrolledWindow::builder()
+        .hexpand(true)
+        .vexpand(true)
+        .child(&partition_scroll_child)
+        .build();
+
+    // Create row
+    let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+
+    row.set_deletable(true);
+
+    row.set_sizegroup(drive_rows_size_group);
+
+    row.set_langaction(language_changed_action);
+
+    let null_checkbutton = gtk::CheckButton::builder().build();
+
+    for partition in partition_array {
+        let part_name = &partition.part_name.to_owned();
+        let partition_button = gtk::CheckButton::builder()
+            .valign(gtk::Align::Center)
+            .can_focus(false)
+            .build();
+        partition_button.set_group(Some(&null_checkbutton));
+        let partition_row: adw::ActionRow =
+            if partition.need_mapper {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(t!("part_need_mapper").to_string() + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
+                    .build();
+                prow
+            }
+            else if used_partition_array_refcell.clone().borrow().iter().any(|e| part_name == e && part_name != &row.partition()) {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
+                    .build();
+                prow
+            } else {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .build();
+                prow
+            };
+        partition_row.add_prefix(&partition_button);
+        partition_button.connect_toggled(clone!(
+            #[weak]
+            row,
+            #[weak]
+            partition_button,
+            #[strong]
+            partition_changed_action,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            partition,
+            move |_|
+                {
+                    if partition_button.is_active() == true {
+                        let part_name = &partition.part_name;
+                        row.set_partition(part_name.to_string());
+                        (*used_partition_array_refcell.borrow_mut()).push(part_name.to_string());
+                    } else {
+                        (*used_partition_array_refcell.borrow_mut()).retain(|x| x != &partition.part_name);
+                    }
+                    partition_changed_action.activate(None);
+                }
+            )
+        );
+        partition_changed_action.connect_activate(clone!(
+            #[strong]
+            partition_row,
+            #[strong]
+            row,
+            #[strong]
+            partition,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            do_used_part_check_refcell,
+                move |_, _| {
+                    if *do_used_part_check_refcell.borrow() == true {
+                        let part_name = &partition.part_name;
+                        let used_partition_array = used_partition_array_refcell.borrow();
+                        if used_partition_array.iter().any(|e| part_name == e && part_name != &row.partition()) {
+                            partition_row.set_sensitive(false);
+                        } else {
+                            partition_row.set_sensitive(true);
+                        }
+                    }
+                }
+            )
+        );
+        partition_scroll_child.append(&partition_row);
+    }
+
+    
+    listbox.append(&row);
+}
+
+fn create_root_row(
+    listbox: &gtk::ListBox,
+    drive_rows_size_group: &gtk::SizeGroup,
+    partition_array: &Vec<Partition>,
+    partition_changed_action: &gio::SimpleAction,
+    language_changed_action: &gio::SimpleAction,
+    used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+) {
+    let partition_scroll_child = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+
+    let partitions_scroll = gtk::ScrolledWindow::builder()
+        .hexpand(true)
+        .vexpand(true)
+        .child(&partition_scroll_child)
+        .build();
+
+    // Create row
+    let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+
+    row.set_deletable(false);
+
+    row.set_sizegroup(drive_rows_size_group);
+
+    row.set_langaction(language_changed_action);
+
+    row.set_mountpoint("/");
+
+    let null_checkbutton = gtk::CheckButton::builder().build();
+
+    for partition in partition_array {
+        let part_name = &partition.part_name.to_owned();
+        let partition_button = gtk::CheckButton::builder()
+            .valign(gtk::Align::Center)
+            .can_focus(false)
+            .build();
+        partition_button.set_group(Some(&null_checkbutton));
+        let partition_row: adw::ActionRow =
+            if partition.need_mapper {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(t!("part_need_mapper").to_string() + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
+                    .build();
+                prow
+            }
+            else if used_partition_array_refcell.clone().borrow().iter().any(|e| part_name == e && part_name != &row.partition()) {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
+                    .build();
+                prow
+            } else {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .build();
+                prow
+            };
+        partition_row.add_prefix(&partition_button);
+        partition_button.connect_toggled(clone!(
+            #[weak]
+            row,
+            #[weak]
+            partition_button,
+            #[strong]
+            partition_changed_action,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            partition,
+            move |_|
+                {
+                    if partition_button.is_active() == true {
+                        let part_name = &partition.part_name;
+                        row.set_partition(part_name.to_string());
+                        (*used_partition_array_refcell.borrow_mut()).push(part_name.to_string());
+                    } else {
+                        (*used_partition_array_refcell.borrow_mut()).retain(|x| x != &partition.part_name);
+                    }
+                    partition_changed_action.activate(None);
+                }
+            )
+        );
+        partition_changed_action.connect_activate(clone!(
+            #[strong]
+            partition_row,
+            #[strong]
+            row,
+            #[strong]
+            partition,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            do_used_part_check_refcell,
+                move |_, _| {
+                    if *do_used_part_check_refcell.borrow() == true {
+                        let part_name = &partition.part_name;
+                        let used_partition_array = used_partition_array_refcell.borrow();
+                        if used_partition_array.iter().any(|e| part_name == e && part_name != &row.partition()) {
+                            partition_row.set_sensitive(false);
+                        } else {
+                            partition_row.set_sensitive(true);
+                        }
+                    }
+                }
+            )
+        );
+        partition_scroll_child.append(&partition_row);
+    }
+
+    
+    listbox.append(&row);
 }
