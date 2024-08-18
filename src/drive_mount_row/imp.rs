@@ -1,12 +1,18 @@
 use std::{cell::RefCell, env, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
-use gtk::{glib as glib, Orientation::Horizontal};
+use gtk::{glib as glib, Orientation::Horizontal, SizeGroup};
 use glib::{clone, subclass::Signal, Properties};
 
 use crate::partitioning_page::FstabEntry;
 
+struct DriveSizeGroup(gtk::SizeGroup);
 
+impl Default for DriveSizeGroup {
+    pub fn default(&self) -> Self {
+        DriveSizeGroup::
+    }
+}
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -23,6 +29,8 @@ pub struct DriveMountRow {
     deletable: RefCell<bool>,
     #[property(get, set)]
     partitionscroll: Rc<RefCell<gtk::ScrolledWindow>>,
+    #[property(get, set)]
+    sizegroup: Rc<RefCell<DriveSizeGroup>>,
 }
 // ANCHOR_END: custom_button
 
@@ -31,7 +39,7 @@ pub struct DriveMountRow {
 impl ObjectSubclass for DriveMountRow {
     const NAME: &'static str = "DriveMountRow";
     type Type = super::DriveMountRow;
-    type ParentType = adw::ActionRow;
+    type ParentType = gtk::Box;
 }
 
 // ANCHOR: object_impl
@@ -54,28 +62,19 @@ impl ObjectImpl for DriveMountRow {
         // Bind label to number
         // `SYNC_CREATE` ensures that the label will be immediately set
         let obj = self.obj();
-        let action_row_content_box = gtk::Box::builder()
-            .orientation(Horizontal)
-            .spacing(0)
-            .vexpand(true)
-            .hexpand(true)
-            .build();
 
         let partition_row_expander_adw_listbox = gtk::ListBox::builder()
-            .margin_end(5)
-            .margin_start(10)
-            .margin_top(5)
-            .margin_bottom(5)
-            .vexpand(true)
             .hexpand(true)
+            .vexpand(true)
+            .margin_bottom(5)
+            .margin_top(5)
+            .margin_start(5)
+            .margin_end(5)
             .build();
         partition_row_expander_adw_listbox.add_css_class("boxed-list");
 
         let partition_row_expander = adw::ExpanderRow::builder()
             .subtitle(t!("subtitle_partition"))
-            .vexpand(true)
-            .hexpand(true)
-            .width_request(300)
             .build();
 
         let mountpoint_entry_row = gtk::Entry::builder()
@@ -84,26 +83,29 @@ impl ObjectImpl for DriveMountRow {
             .vexpand(true)
             .margin_bottom(5)
             .margin_top(5)
-            .width_request(300)
+            .margin_start(5)
+            .margin_end(5)
             .build();
 
         let mountopts_entry_row = gtk::Entry::builder()
             .placeholder_text(t!("title_mountopts"))
             .hexpand(true)
             .vexpand(true)
-            .margin_start(10)
             .margin_bottom(5)
             .margin_top(5)
-            .width_request(300)
+            .margin_start(5)
+            .margin_end(5)
             .build();
 
         let partition_row_delete_button = gtk::Button::builder()
-            .margin_end(5)
-            .margin_top(5)
-            .margin_bottom(5)
             .vexpand(true)
+            .margin_bottom(5)
+            .margin_top(5)
+            .margin_start(5)
+            .margin_end(5)
+            .halign(gtk::Align::Center)
+            .valign(gtk::Align::Center)
             .icon_name("user-trash")
-            .halign(gtk::Align::End)
             .build();
 
         obj.bind_property("deletable", &partition_row_delete_button, "visible")
@@ -122,15 +124,13 @@ impl ObjectImpl for DriveMountRow {
         );
 
         partition_row_expander_adw_listbox.append(&partition_row_expander);
-        action_row_content_box.append(&partition_row_expander_adw_listbox);
+        obj.append(&partition_row_expander_adw_listbox);
 
-        action_row_content_box.append(&mountpoint_entry_row);
+        obj.append(&mountpoint_entry_row);
 
-        action_row_content_box.append(&mountopts_entry_row);
+        obj.append(&mountopts_entry_row);
 
-        obj.add_prefix(&action_row_content_box);
-
-        obj.add_suffix(&partition_row_delete_button);
+        obj.append(&partition_row_delete_button);
 
         // Bind label to number
         // `SYNC_CREATE` ensures that the label will be immediately set
@@ -164,16 +164,4 @@ impl ObjectImpl for DriveMountRow {
 // Trait shared by all widgets
 impl WidgetImpl for DriveMountRow {}
 
-// Trait shared by all buttons
-// Trait shared by all buttons
-
-impl ListBoxRowImpl for DriveMountRow {}
-
-impl PreferencesRowImpl for DriveMountRow {}
-
-impl ActionRowImpl for DriveMountRow {
-    //fn clicked(&self) {
-    //    let incremented_number = self.obj().number() + 1;
-    //    self.obj().set_number(incremented_number);
-    //}
-}
+impl BoxImpl for DriveMountRow {}
