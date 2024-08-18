@@ -67,14 +67,14 @@ pub fn eula_page(main_carousel: &adw::Carousel, language_changed_action: &gio::S
         #[strong]
         eula_buffer,
         move |_, _| {
-            eula_page.set_page_title(t!("eula"));
-            eula_page.set_page_subtitle(t!("pikaos_eula_agreement"));
+            eula_page.set_page_title(t!("eula_page_title"));
+            eula_page.set_page_subtitle(t!("eula_page_subtitle"));
             eula_page.set_back_tooltip_label(t!("back"));
             eula_page.set_next_tooltip_label(t!("next"));
             //
-            eula_accept_checkbutton.set_label(Some(&t!("i_agree_eula")));
+            eula_accept_checkbutton.set_label(Some(&t!("eula_accept_checkbutton_label")));
             //
-            eula_buffer.set_text(&t!("eula_buffer"))
+            eula_buffer.set_text(&t!("eula_buffer_text"))
         }
     ));
     //

@@ -4,8 +4,8 @@ use glib::clone;
 use gtk::{glib, prelude::*};
 pub fn welcome_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carousel) {
     let welcome_page = installer_stack_page::InstallerStackPage::new();
-    welcome_page.set_page_title(t!("welcome"));
-    welcome_page.set_page_subtitle(t!("welcome_to_pikaos"));
+    welcome_page.set_page_title(t!("welcome_page_title"));
+    welcome_page.set_page_subtitle(t!("welcome_page_subtitle"));
     welcome_page.set_page_icon(config::DISTRO_ICON);
     welcome_page.set_back_visible(false);
     welcome_page.set_next_visible(false);
@@ -23,12 +23,12 @@ pub fn welcome_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carous
 
     let live_media_button = gtk::Button::builder()
         .icon_name("drive-optical")
-        .label(t!("use_pikaos_in_live_media"))
+        .label(t!("live_media_button_label"))
         .build();
 
     let install_media_button = gtk::Button::builder()
         .icon_name("drive-harddisk")
-        .label(t!("install_distro_to_system"))
+        .label(t!("install_media_button_label"))
         .build();
 
     install_media_button.connect_clicked(clone!(

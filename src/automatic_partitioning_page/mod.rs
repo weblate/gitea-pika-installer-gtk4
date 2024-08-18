@@ -81,12 +81,12 @@ pub fn automatic_partitioning_page(
         let home_size: f64 = slider.adjustment().upper() + 10000000000.0 - value;
         advanced_home_part_ratio_label_root_clone0.set_label(&format!(
             "{}: {}",
-            t!("Root Part Size"),
+            t!("advanced_home_part_ratio_label_root_label"),
             pretty_bytes::converter::convert(value.into())
         ));
         advanced_home_part_ratio_label_home_clone0.set_label(&format!(
             "{}: {}",
-            t!("Home Part Size"),
+            t!("advanced_home_part_ratio_label_home_label"),
             pretty_bytes::converter::convert(home_size.into())
         ));
         *partition_method_automatic_ratio_refcell_clone0.borrow_mut() = value;
@@ -651,35 +651,35 @@ pub fn automatic_partitioning_page(
         #[weak]
         advanced_home_seperation_selection_checkbutton_none,
         move |_, _| {
-            automatic_partitioning_page.set_page_title(t!("auto_part_installer"));
-            automatic_partitioning_page.set_page_subtitle(t!("choose_drive_auto"));
+            automatic_partitioning_page.set_page_title(t!("automatic_partitioning_page_title"));
+            automatic_partitioning_page.set_page_subtitle(t!("automatic_partitioning_page_subtitle"));
             automatic_partitioning_page.set_back_tooltip_label(t!("back"));
             automatic_partitioning_page.set_next_tooltip_label(t!("next"));
             //
-            devices_selection_expander_row.set_title(&t!("no_drive_auto_selected"));
+            devices_selection_expander_row.set_title(&t!("devices_selection_expander_row_title_no_drive_selected"));
             //
-            partition_method_automatic_disk_nodisk_error_label.set_label(&t!("no_disk_specified"));
+            partition_method_automatic_disk_nodisk_error_label.set_label(&t!("partition_method_automatic_disk_nodisk_error_label_label"));
             //
             partition_method_automatic_disk_small_error_label
-                .set_label(&t!("disk_auto_target_small"));
+                .set_label(&t!("partition_method_automatic_disk_small_error_label_label"));
             //
-            partition_method_automatic_luks_empty_error_label.set_label(&t!("luks_yes_but_empty"));
+            partition_method_automatic_luks_empty_error_label.set_label(&t!("partition_method_automatic_luks_empty_error_label_label"));
             //
-            partition_method_automatic_luks_missmatch_error_label.set_label(&t!("luks_not_match"));
+            partition_method_automatic_luks_missmatch_error_label.set_label(&t!("partition_method_automatic_luks_missmatch_error_label_label"));
             //
-            partition_method_automatic_luks_checkbutton.set_label(Some(&t!("enable_luks2_enc")));
+            partition_method_automatic_luks_checkbutton.set_label(Some(&t!("partition_method_automatic_luks_checkbutton_label")));
             //
-            partition_method_automatic_luks_password_entry.set_title(&t!("luks2_password"));
+            partition_method_automatic_luks_password_entry.set_title(&t!("partition_method_automatic_luks_password_entry_label"));
             //
             partition_method_automatic_luks_password_confirm_entry
-                .set_title(&t!("luks2_password_confirm"));
+                .set_title(&t!("partition_method_automatic_luks_password_entry_label_confirm"));
             //
-            advanced_expander.set_label(Some(&t!("advanced_options")));
+            advanced_expander.set_label(Some(&t!("advanced_expander_label")));
             //
-            advanced_filesystem_selection_frame.set_label(Some(&t!("choose_fs_auto")));
+            advanced_filesystem_selection_frame.set_label(Some(&t!("advanced_filesystem_selection_frame_label")));
             //
             advanced_home_seperation_selection_frame
-                .set_label(Some(&t!("choose_home_seperation_auto")));
+                .set_label(Some(&t!("advanced_filesystem_selection_frame_label")));
             //
             advanced_home_seperation_selection_checkbutton_subvol.set_label(Some(&t!(
                 "advanced_home_seperation_selection_checkbutton_subvol_label"

@@ -130,8 +130,8 @@ pub fn manual_partitioning_page(
         #[weak]
         manual_partitioning_page,
         move |_, _| {
-            manual_partitioning_page.set_page_title(t!("manual_part_installer"));
-            manual_partitioning_page.set_page_subtitle(t!("manual_part_info"));
+            manual_partitioning_page.set_page_title(t!("manual_partitioning_page_title"));
+            manual_partitioning_page.set_page_subtitle(t!("manual_partitioning_page_subtitle"));
             manual_partitioning_page.set_back_tooltip_label(t!("back"));
             manual_partitioning_page.set_next_tooltip_label(t!("next"));
         }
@@ -185,7 +185,7 @@ fn create_efi_row(
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
-                            t!("part_need_mapper").to_string()
+                            t!("partition_row_subtitle_needs_mapper").to_string()
                                 + " "
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
@@ -225,7 +225,7 @@ fn create_efi_row(
                     let prow = adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
-                        .subtitle(t!("fstab_badfs_efi"))
+                        .subtitle(t!("partition_row_subtitle_efi_fs_bad"))
                         .sensitive(false)
                         .build();
                     prow
@@ -239,7 +239,7 @@ fn create_efi_row(
                     let prow = adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
-                        .subtitle(t!("fstab_small_efi_size"))
+                        .subtitle(t!("partition_row_subtitle_efi_fs_small"))
                         .sensitive(false)
                         .build();
                     prow
@@ -339,7 +339,7 @@ fn create_boot_row(
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
-                            t!("part_need_mapper").to_string()
+                            t!("partition_row_subtitle_needs_mapper").to_string()
                                 + " "
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
@@ -379,7 +379,7 @@ fn create_boot_row(
                     let prow = adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
-                        .subtitle(t!("fstab_badfs_boot"))
+                        .subtitle(t!("partition_row_subtitle_boot_fs_bad"))
                         .sensitive(false)
                         .build();
                     prow
@@ -393,7 +393,7 @@ fn create_boot_row(
                     let prow = adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
-                        .subtitle(t!("fstab_small_boot_size"))
+                        .subtitle(t!("partition_row_subtitle_boot_fs_small"))
                         .sensitive(false)
                         .build();
                     prow
@@ -493,7 +493,7 @@ fn create_root_row(
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
-                            t!("part_need_mapper").to_string()
+                            t!("partition_row_subtitle_needs_mapper").to_string()
                                 + " "
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
@@ -538,7 +538,7 @@ fn create_root_row(
                     let prow = adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
-                        .subtitle(t!("fstab_badfs_root"))
+                        .subtitle(t!("partition_row_subtitle_root_fs_bad"))
                         .sensitive(false)
                         .build();
                     prow
@@ -552,7 +552,7 @@ fn create_root_row(
                     let prow = adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
-                        .subtitle(t!("fstab_small_root_size"))
+                        .subtitle(t!("partition_row_subtitle_root_fs_small"))
                         .sensitive(false)
                         .build();
                     prow
@@ -650,7 +650,7 @@ fn create_mount_row(
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
-                            t!("part_need_mapper").to_string()
+                            t!("partition_row_subtitle_needs_mapper").to_string()
                                 + " "
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )

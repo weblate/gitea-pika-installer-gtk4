@@ -7,8 +7,8 @@ use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, path::Path, rc::Rc};
 
 pub fn build_ui(app: &adw::Application) {
-    glib::set_prgname(Some("pikaos_installer"));
-    glib::set_application_name(&t!("pikaos_installer"));
+    glib::set_prgname(Some("application_name"));
+    glib::set_application_name(&t!("application_name"));
 
     let carousel = adw::Carousel::builder()
         .allow_long_swipes(false)
@@ -36,7 +36,7 @@ pub fn build_ui(app: &adw::Application) {
     toolbarview.add_top_bar(&window_headerbar);
 
     let window = adw::ApplicationWindow::builder()
-        .title(t!("pikaos_installer"))
+        .title(t!("application_name"))
         .application(app)
         .icon_name("calamares")
         .width_request(700)

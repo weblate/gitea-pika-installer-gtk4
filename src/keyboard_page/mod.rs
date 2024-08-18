@@ -184,14 +184,14 @@ pub fn keyboard_page(
         #[weak]
         keyboard_test_entry,
         move |_, _| {
-            keyboard_page.set_page_title(t!("keyboard"));
-            keyboard_page.set_page_subtitle(t!("select_a_keyboard"));
+            keyboard_page.set_page_title(t!("keyboard_page_title"));
+            keyboard_page.set_page_subtitle(t!("keyboard_page_subtitle"));
             keyboard_page.set_back_tooltip_label(t!("back"));
             keyboard_page.set_next_tooltip_label(t!("next"));
             //
-            keyboard_search_bar.set_placeholder_text(Some(&t!("search_for_keyboard")));
+            keyboard_search_bar.set_placeholder_text(Some(&t!("keyboard_search_bar_placeholder_text")));
             //
-            keyboard_test_entry.set_title(&t!("test_your_keyboard"))
+            keyboard_test_entry.set_title(&t!("keyboard_test_entry_title"))
         }
     ));
     //

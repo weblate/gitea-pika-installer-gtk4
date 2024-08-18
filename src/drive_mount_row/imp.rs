@@ -94,11 +94,11 @@ impl ObjectImpl for DriveMountRow {
         mountopts_entry_row_adw_listbox.add_css_class("boxed-list");
 
         let partition_row_expander = adw::ExpanderRow::builder()
-            .subtitle(t!("subtitle_partition"))
+            .subtitle(t!("partition_row_expander_subtitle"))
             .build();
 
         let mountpoint_entry_row = adw::EntryRow::builder()
-            .title(t!("title_mountpoint"))
+            .title(t!("mountpoint_entry_row_title"))
             .hexpand(true)
             .vexpand(true)
             .margin_bottom(5)
@@ -108,7 +108,7 @@ impl ObjectImpl for DriveMountRow {
             .build();
 
         let mountopts_entry_row = adw::EntryRow::builder()
-            .title(t!("title_mountopts"))
+            .title(t!("mountopts_entry_row_title"))
             .hexpand(true)
             .vexpand(true)
             .margin_bottom(5)
@@ -234,9 +234,9 @@ impl ObjectImpl for DriveMountRow {
                             #[weak]
                             mountopts_entry_row,
                             move |_, _| {
-                                partition_row_expander.set_subtitle(&t!("subtitle_partition"));
-                                mountpoint_entry_row.set_title(&t!("title_mountpoint"));
-                                mountopts_entry_row.set_title(&t!("title_mountopts"));
+                                partition_row_expander.set_subtitle(&t!("partition_row_expander_subtitle"));
+                                mountpoint_entry_row.set_title(&t!("mountpoint_entry_row_title"));
+                                mountopts_entry_row.set_title(&t!("mountopts_entry_row_title"));
                             }
                         ));
                     }

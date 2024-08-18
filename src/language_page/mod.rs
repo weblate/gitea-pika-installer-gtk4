@@ -10,8 +10,8 @@ pub fn language_page(
     language_changed_action: &gio::SimpleAction,
 ) {
     let language_page = installer_stack_page::InstallerStackPage::new();
-    language_page.set_page_title(t!("select_a_language"));
-    language_page.set_page_subtitle(t!("please_select_locale"));
+    language_page.set_page_title(t!("language_page_title"));
+    language_page.set_page_subtitle(t!("language_page_subtitle"));
     language_page.set_page_icon("preferences-desktop-locale-symbolic");
     language_page.set_back_tooltip_label(t!("back"));
     language_page.set_next_tooltip_label(t!("next"));
@@ -47,7 +47,7 @@ pub fn language_page(
         .hexpand(true)
         .margin_top(15)
         .margin_bottom(15)
-        .placeholder_text(t!("search_for_language"))
+        .placeholder_text(t!("language_search_bar_placeholder_text"))
         .search_delay(500)
         .build();
 

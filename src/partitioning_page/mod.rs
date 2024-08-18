@@ -74,14 +74,14 @@ pub fn partitioning_page(
         #[weak]
         partitioning_page,
         move |_, _| {
-            partitioning_page.set_page_title(t!("partitioning"));
-            partitioning_page.set_page_subtitle(t!("choose_install_method"));
+            partitioning_page.set_page_title(t!("partitioning_page_title"));
+            partitioning_page.set_page_subtitle(t!("partitioning_page_subtitle"));
             partitioning_page.set_back_tooltip_label(t!("back"));
             partitioning_page.set_next_tooltip_label(t!("next"));
             //
-            automatic_method_button.set_label(&t!("auto_partition_drive"));
+            automatic_method_button.set_label(&t!("automatic_method_button_label"));
             //
-            manual_method_button.set_label(&t!("manual_partition_drive"));
+            manual_method_button.set_label(&t!("manual_method_button_label"));
         }
     ));
     //

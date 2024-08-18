@@ -53,7 +53,7 @@ pub fn timezone_page(
         .arg("show")
         .arg("--va")
         .arg("-p")
-        .arg("Timezone")
+        .arg("timezone_page_title")
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
         .spawn()
@@ -154,12 +154,12 @@ pub fn timezone_page(
         #[weak]
         timezone_search_bar,
         move |_, _| {
-            timezone_page.set_page_title(t!("timezone"));
-            timezone_page.set_page_subtitle(t!("select_a_timezone"));
+            timezone_page.set_page_title(t!("timezone_page_title"));
+            timezone_page.set_page_subtitle(t!("timezone_page_subtitle"));
             timezone_page.set_back_tooltip_label(t!("back"));
             timezone_page.set_next_tooltip_label(t!("next"));
             //
-            timezone_search_bar.set_placeholder_text(Some(&t!("search_for_timezone")));
+            timezone_search_bar.set_placeholder_text(Some(&t!("timezone_search_bar_placeholder_text")));
         }
     ));
     //
