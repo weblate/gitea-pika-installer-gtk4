@@ -87,8 +87,8 @@ impl ObjectImpl for DriveMountRow {
             .width_request(300)
             .build();
 
-        let mountopt_entry_row = gtk::Entry::builder()
-            .placeholder_text(t!("title_mountopt"))
+        let mountopts_entry_row = gtk::Entry::builder()
+            .placeholder_text(t!("title_mountopts"))
             .hexpand(true)
             .vexpand(true)
             .margin_start(10)
@@ -126,7 +126,7 @@ impl ObjectImpl for DriveMountRow {
 
         action_row_content_box.append(&mountpoint_entry_row);
 
-        action_row_content_box.append(&mountopt_entry_row);
+        action_row_content_box.append(&mountopts_entry_row);
 
         obj.add_prefix(&action_row_content_box);
 
@@ -145,7 +145,7 @@ impl ObjectImpl for DriveMountRow {
             .bidirectional()
             .build();
 
-        obj.bind_property("mountopt", &mountopt_entry_row, "text")
+        obj.bind_property("mountopts", &mountopts_entry_row, "text")
             .sync_create()
             .bidirectional()
             .build();

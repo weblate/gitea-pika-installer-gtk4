@@ -24,7 +24,7 @@ impl DriveMountRow {
         FstabEntry{
             partition: self.partition(),
             mountpoint: self.mountpoint(),
-            mountopt: self.mountopts()
+            mountopts: self.mountopts()
         }
     }
 }

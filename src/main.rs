@@ -1,5 +1,5 @@
 use std::env;
-use gtk::{CssProvider, gdk, STYLE_PROVIDER_PRIORITY_APPLICATION, prelude::*};
+use gtk::{CssProvider, gdk, STYLE_PROVIDER_PRIORITY_APPLICATION, prelude::*, glib as glib};
 use gdk::{Display};
 mod config;
 mod build_ui;
@@ -16,7 +16,6 @@ mod timezone_page;
 mod partitioning_page;
 mod automatic_partitioning_page;
 mod manual_partitioning_page;
-mod fstab_entry;
 mod drive_mount_row;
 
 #[macro_use]

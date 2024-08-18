@@ -76,7 +76,7 @@
     "exit_button_label": "Beenden",
     "subtitle_partition": "Partition",
     "title_mountpoint": "Einhängepunkt",
-    "title_mountopt": "Zusätzliche Einhängeoptionen",
+    "title_mountopts": "Zusätzliche Einhängeoptionen",
     "pika_install_good": "Die Installation von PikaOS wurde erfolgreich abgeschlossen.",
     "reboot": "Neu starten",
     "pika_install_bad": "PikaOS installation ist gescheitert!\nWeitere Informationen findest du in den Protokollen.",

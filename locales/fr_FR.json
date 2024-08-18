@@ -76,7 +76,7 @@
     "exit_button_label": "Sortir",
     "subtitle_partition": "Partition",
     "title_mountpoint": "Point de Montage",
-    "title_mountopt": "Options additionnelles de montage",
+    "title_mountopts": "Options additionnelles de montage",
     "pika_install_good": "L'installation de PikaOS a bien complété.",
     "reboot": "Redémarrer",
     "pika_install_bad": "PikaOS a échoué!\nVeuillez voir les logs pour plus d'info.",

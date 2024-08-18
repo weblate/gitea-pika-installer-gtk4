@@ -76,7 +76,7 @@
     "exit_button_label": "Изход",
     "subtitle_partition": "Дял",
     "title_mountpoint": "Точка за монтиране",
-    "title_mountopt": "Допълнителни Точки за Монтиране",
+    "title_mountopts": "Допълнителни Точки за Монтиране",
     "pika_install_good": "Инсталацията на PikaOS беше завършена успешно.",
     "reboot": "Рестартирай",
     "pika_install_bad": "PikaOS се провали!\nПроверете логовете за повече информация.",

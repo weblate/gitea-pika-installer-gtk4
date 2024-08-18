@@ -151,7 +151,7 @@ pub struct Partition {
 pub struct FstabEntry {
     pub partition: String,
     pub mountpoint: String,
-    pub mountopt: String,
+    pub mountopts: String,
 }
 
 pub struct CrypttabEntry {
