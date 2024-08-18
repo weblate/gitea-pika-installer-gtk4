@@ -21,10 +21,10 @@ impl DriveMountRow {
             .build()
     }
     pub fn get_fstab_entry(&self) -> FstabEntry {
-        FstabEntry{
+        FstabEntry {
             partition: self.partition(),
             mountpoint: self.mountpoint(),
-            mountopts: self.mountopts()
+            mountopts: self.mountopts(),
         }
     }
 }

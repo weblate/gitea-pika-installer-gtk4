@@ -1,15 +1,15 @@
 use crate::installer_stack_page;
-use gnome_desktop::XkbInfoExt;
-use gtk::{prelude::*, glib as glib, gio as gio};
-use adw::{prelude::*};
+use adw::prelude::*;
 use glib::{clone, closure_local};
-use std::{process::Command, fs, path::Path, rc::Rc, cell::RefCell};
+use gnome_desktop::XkbInfoExt;
+use gtk::{gio, glib, prelude::*};
+use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
 
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
     keymap_base_data_refcell: &Rc<RefCell<String>>,
     keymap_variant_data_refcell: &Rc<RefCell<String>>,
-    language_changed_action: &gio::SimpleAction
+    language_changed_action: &gio::SimpleAction,
 ) {
     let keyboard_page = installer_stack_page::InstallerStackPage::new();
     keyboard_page.set_page_icon("keyboard-symbolic");
@@ -24,8 +24,7 @@ pub fn keyboard_page(
         .vexpand(true)
         .build();
 
-    let null_checkbutton = gtk::CheckButton::builder()
-        .build();
+    let null_checkbutton = gtk::CheckButton::builder().build();
 
     let keyboard_selection_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -33,8 +32,7 @@ pub fn keyboard_page(
     keyboard_selection_row_viewport_listbox.add_css_class("boxed-list");
     keyboard_selection_row_viewport_listbox.add_css_class("round-border-only");
 
-    let keyboard_selection_row_viewport =
-    gtk::ScrolledWindow::builder()
+    let keyboard_selection_row_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
@@ -59,8 +57,7 @@ pub fn keyboard_page(
 
     keyboard_test_entry_boxed_list.add_css_class("boxed-list");
 
-    let keyboard_test_entry = adw::EntryRow::builder()
-        .build();
+    let keyboard_test_entry = adw::EntryRow::builder().build();
 
     keyboard_test_entry_boxed_list.append(&keyboard_test_entry);
 
@@ -75,7 +72,7 @@ pub fn keyboard_page(
     for keymap in keymap_list.iter() {
         let keymap = keymap.to_string();
         let keymap_name = xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string();
-        let keymap_split: Vec<String> = keymap.split("+").map(|s|s.into()).collect();
+        let keymap_split: Vec<String> = keymap.split("+").map(|s| s.into()).collect();
         let keymap_base = keymap_split.get(0).unwrap().clone();
         let mut keymap_variant = String::new();
         let mut split_index = 0;
@@ -108,30 +105,29 @@ pub fn keyboard_page(
             keymap_variant_data_refcell,
             #[weak]
             keyboard_page,
-            move |_|
-                {
-                    if keymap_checkbutton.is_active() == true {
-                        keyboard_page.set_next_sensitive(true);
-                        if keymap_variant.is_empty() {
-                            *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
-                            Command::new("setxkbmap")
-                                .arg("-layout")
-                                .arg(keymap_base.clone())
-                                .spawn()
-                                .expect("keyboard failed to start");
-                        } else {
-                            *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
-                            *keymap_variant_data_refcell.borrow_mut() = String::from(&keymap_variant);
-                            Command::new("setxkbmap")
-                                .arg("-layout")
-                                .arg(keymap_base.clone())
-                                .arg("-variant")
-                                .arg(keymap_variant.clone())
-                                .spawn()
-                                .expect("keyboard failed to start");
-                        }
+            move |_| {
+                if keymap_checkbutton.is_active() == true {
+                    keyboard_page.set_next_sensitive(true);
+                    if keymap_variant.is_empty() {
+                        *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
+                        Command::new("setxkbmap")
+                            .arg("-layout")
+                            .arg(keymap_base.clone())
+                            .spawn()
+                            .expect("keyboard failed to start");
+                    } else {
+                        *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
+                        *keymap_variant_data_refcell.borrow_mut() = String::from(&keymap_variant);
+                        Command::new("setxkbmap")
+                            .arg("-layout")
+                            .arg(keymap_base.clone())
+                            .arg("-variant")
+                            .arg(keymap_variant.clone())
+                            .spawn()
+                            .expect("keyboard failed to start");
                     }
                 }
+            }
         ));
         if current_keymap == keymap_clone {
             keymap_checkbutton.set_active(true);
@@ -149,13 +145,20 @@ pub fn keyboard_page(
         keyboard_search_bar,
         #[weak]
         keyboard_selection_row_viewport_listbox,
-        move |_|
-        {
+        move |_| {
             let mut counter = keyboard_selection_row_viewport_listbox.first_child();
             while let Some(row) = counter {
                 if row.widget_name() == "AdwActionRow" {
                     if !keyboard_search_bar.text().is_empty() {
-                        if row.property::<String>("subtitle").to_lowercase().contains(&keyboard_search_bar.text().to_string().to_lowercase()) || row.property::<String>("title").to_lowercase().contains(&keyboard_search_bar.text().to_string().to_lowercase()) {
+                        if row
+                            .property::<String>("subtitle")
+                            .to_lowercase()
+                            .contains(&keyboard_search_bar.text().to_string().to_lowercase())
+                            || row
+                                .property::<String>("title")
+                                .to_lowercase()
+                                .contains(&keyboard_search_bar.text().to_string().to_lowercase())
+                        {
                             row.set_property("visible", true);
                             keyboard_search_bar.grab_focus();
                         } else {
@@ -173,26 +176,24 @@ pub fn keyboard_page(
     keyboard_page.set_child_widget(&content_box);
 
     //
-    language_changed_action.connect_activate(
-        clone!(
-            #[weak]
-            keyboard_page,
-            #[weak]
-            keyboard_search_bar,
-            #[weak]
-            keyboard_test_entry,
-            move |_, _| {
-                keyboard_page.set_page_title(t!("keyboard"));
-                keyboard_page.set_page_subtitle(t!("select_a_keyboard"));
-                keyboard_page.set_back_tooltip_label(t!("back"));
-                keyboard_page.set_next_tooltip_label(t!("next"));
-                //
-                keyboard_search_bar.set_placeholder_text(Some(&t!("search_for_keyboard")));
-                //
-                keyboard_test_entry.set_title(&t!("test_your_keyboard"))
-            }
-        )
-    );
+    language_changed_action.connect_activate(clone!(
+        #[weak]
+        keyboard_page,
+        #[weak]
+        keyboard_search_bar,
+        #[weak]
+        keyboard_test_entry,
+        move |_, _| {
+            keyboard_page.set_page_title(t!("keyboard"));
+            keyboard_page.set_page_subtitle(t!("select_a_keyboard"));
+            keyboard_page.set_back_tooltip_label(t!("back"));
+            keyboard_page.set_next_tooltip_label(t!("next"));
+            //
+            keyboard_search_bar.set_placeholder_text(Some(&t!("search_for_keyboard")));
+            //
+            keyboard_test_entry.set_title(&t!("test_your_keyboard"))
+        }
+    ));
     //
 
     keyboard_page.connect_closure(
@@ -201,11 +202,10 @@ pub fn keyboard_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |_keyboard_page: installer_stack_page::InstallerStackPage|
-            {
-                    main_carousel.scroll_to(&main_carousel.nth_page(2), true)
+            move |_keyboard_page: installer_stack_page::InstallerStackPage| {
+                main_carousel.scroll_to(&main_carousel.nth_page(2), true)
             }
-        )
+        ),
     );
 
     keyboard_page.connect_closure(
@@ -214,11 +214,10 @@ pub fn keyboard_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |_keyboard_page: installer_stack_page::InstallerStackPage|
-            {
+            move |_keyboard_page: installer_stack_page::InstallerStackPage| {
                 main_carousel.scroll_to(&main_carousel.nth_page(4), true)
             }
-        )
+        ),
     );
 
     main_carousel.append(&keyboard_page);

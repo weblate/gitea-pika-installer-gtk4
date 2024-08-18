@@ -1,8 +1,8 @@
 use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
-use gtk::{glib as glib, Orientation::Horizontal};
 use glib::{clone, subclass::Signal, Properties};
+use gtk::{glib, Orientation::Horizontal};
 
 use crate::partitioning_page::FstabEntry;
 
@@ -24,7 +24,7 @@ pub struct DriveMountRow {
     #[property(get, set)]
     sizegroup: RefCell<Option<gtk::SizeGroup>>,
     #[property(get, set)]
-    langaction: RefCell<Option<gio::SimpleAction>>
+    langaction: RefCell<Option<gio::SimpleAction>>,
 }
 // ANCHOR_END: custom_button
 
@@ -45,7 +45,6 @@ impl ObjectImpl for DriveMountRow {
         SIGNALS.get_or_init(|| vec![Signal::builder("row-deleted").build()])
     }
     fn constructed(&self) {
-
         self.parent_constructed();
 
         // Bind label to number
@@ -142,12 +141,10 @@ impl ObjectImpl for DriveMountRow {
         partition_row_delete_button.connect_clicked(clone!(
             #[weak]
             obj,
-            move |_|
-                {
-                    obj.emit_by_name::<()>("row-deleted", &[]);
-                }
-            )
-        );
+            move |_| {
+                obj.emit_by_name::<()>("row-deleted", &[]);
+            }
+        ));
 
         //
 
@@ -176,21 +173,17 @@ impl ObjectImpl for DriveMountRow {
             mountpoint_entry_row_adw_listbox,
             #[weak]
             mountopts_entry_row_adw_listbox,
-            move |_|
-                {
-                    match obj.sizegroup() {
-                        Some(t) => {
-                            t.add_widget(&partition_row_expander_adw_listbox);
-                            t.add_widget(&mountpoint_entry_row_adw_listbox);
-                            t.add_widget(&mountopts_entry_row_adw_listbox);
-                        }
-                        None => {
-
-                        }
+            move |_| {
+                match obj.sizegroup() {
+                    Some(t) => {
+                        t.add_widget(&partition_row_expander_adw_listbox);
+                        t.add_widget(&mountpoint_entry_row_adw_listbox);
+                        t.add_widget(&mountopts_entry_row_adw_listbox);
                     }
+                    None => {}
                 }
-            )
-        );
+            }
+        ));
 
         // Bind label to number
         // `SYNC_CREATE` ensures that the label will be immediately set
@@ -215,12 +208,11 @@ impl ObjectImpl for DriveMountRow {
             obj,
             #[weak]
             partition_row_expander,
-            move |_|
-                {
-                    partition_row_expander.add_row(&obj.property::<gtk::ScrolledWindow>("partitionscroll"));
-                }
-            )
-        );
+            move |_| {
+                partition_row_expander
+                    .add_row(&obj.property::<gtk::ScrolledWindow>("partitionscroll"));
+            }
+        ));
 
         obj.connect_langaction_notify(clone!(
             #[weak]
@@ -231,34 +223,27 @@ impl ObjectImpl for DriveMountRow {
             mountpoint_entry_row,
             #[weak]
             mountopts_entry_row,
-            move |_|
-                {
-                    match obj.langaction() {
-                        Some(t) => {
-                            t.connect_activate(
-                                clone!(
-                                    #[weak]
-                                    partition_row_expander,
-                                    #[weak]
-                                    mountpoint_entry_row,
-                                    #[weak]
-                                    mountopts_entry_row,
-                                    move |_, _| 
-                                    {
-                                        partition_row_expander.set_subtitle(&t!("subtitle_partition"));
-                                        mountpoint_entry_row.set_title(&t!("title_mountpoint"));
-                                        mountopts_entry_row.set_title(&t!("title_mountopts"));
-                                    }
-                                )
-                            );
-                        }
-                        None => {
-
-                        }
+            move |_| {
+                match obj.langaction() {
+                    Some(t) => {
+                        t.connect_activate(clone!(
+                            #[weak]
+                            partition_row_expander,
+                            #[weak]
+                            mountpoint_entry_row,
+                            #[weak]
+                            mountopts_entry_row,
+                            move |_, _| {
+                                partition_row_expander.set_subtitle(&t!("subtitle_partition"));
+                                mountpoint_entry_row.set_title(&t!("title_mountpoint"));
+                                mountopts_entry_row.set_title(&t!("title_mountopts"));
+                            }
+                        ));
                     }
+                    None => {}
                 }
-            )
-        );
+            }
+        ));
 
         obj.set_child(Some(&action_row_content_box));
     }

@@ -1,7 +1,7 @@
-use std::{cell::RefCell, rc::Rc, sync::OnceLock};
-use gtk::{prelude::*, subclass::prelude::*, glib as glib, Justification};
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{clone, subclass::Signal};
+use gtk::{glib, prelude::*, subclass::prelude::*, Justification};
+use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -45,7 +45,12 @@ impl ObjectSubclass for InstallerStackPage {
 impl ObjectImpl for InstallerStackPage {
     fn signals() -> &'static [Signal] {
         static SIGNALS: OnceLock<Vec<Signal>> = OnceLock::new();
-        SIGNALS.get_or_init(|| vec![Signal::builder("next-button-pressed").build(), Signal::builder("back-button-pressed").build()])
+        SIGNALS.get_or_init(|| {
+            vec![
+                Signal::builder("next-button-pressed").build(),
+                Signal::builder("back-button-pressed").build(),
+            ]
+        })
     }
     fn constructed(&self) {
         self.parent_constructed();
@@ -210,9 +215,7 @@ impl ObjectImpl for InstallerStackPage {
             obj,
             #[weak]
             child_bin,
-            move |_| {
-                child_bin.set_child(Some(&obj.property::<gtk::Box>("child_widget")))
-            }
+            move |_| { child_bin.set_child(Some(&obj.property::<gtk::Box>("child_widget"))) }
         ));
 
         //

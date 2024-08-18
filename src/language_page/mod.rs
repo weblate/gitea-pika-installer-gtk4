@@ -1,13 +1,13 @@
 use crate::installer_stack_page;
-use gtk::{prelude::*, glib as glib, gio as gio};
-use adw::{prelude::*};
+use adw::prelude::*;
 use glib::{clone, closure_local};
+use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, env, fs, path::Path, process::Command, rc::Rc};
 
 pub fn language_page(
     main_carousel: &adw::Carousel,
     lang_data_refcell: &Rc<RefCell<String>>,
-    language_changed_action: &gio::SimpleAction
+    language_changed_action: &gio::SimpleAction,
 ) {
     let language_page = installer_stack_page::InstallerStackPage::new();
     language_page.set_page_title(t!("select_a_language"));
@@ -26,8 +26,7 @@ pub fn language_page(
         .vexpand(true)
         .build();
 
-    let null_checkbutton = gtk::CheckButton::builder()
-        .build();
+    let null_checkbutton = gtk::CheckButton::builder().build();
 
     let language_selection_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -35,8 +34,7 @@ pub fn language_page(
     language_selection_row_viewport_listbox.add_css_class("boxed-list");
     language_selection_row_viewport_listbox.add_css_class("round-all-scroll");
 
-    let language_selection_row_viewport =
-    gtk::ScrolledWindow::builder()
+    let language_selection_row_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
@@ -56,176 +54,39 @@ pub fn language_page(
     language_search_bar.add_css_class("rounded-all-25");
 
     let current_locale = match env::var_os("LANG") {
-        Some(v) => v.into_string().unwrap().chars()
+        Some(v) => v
+            .into_string()
+            .unwrap()
+            .chars()
             .take_while(|&ch| ch != '.')
             .collect::<String>(),
         None => panic!("$LANG is not set"),
     };
 
-    let locale_list = ["ab_GE",
-        "aa_DJ",
-        "af_ZA",
-        "ak_GH",
-        "sq_AL",
-        "am_ET",
-        "ar_EG",
-        "an_ES",
-        "hy_AM",
-        "as_IN",
-        "ar_AE",
-        "az_AZ",
-        "bs_BA",
-        "eu_ES",
-        "be_BY",
-        "bn_BD",
-        "ar_BH",
-        "bi_VU",
-        "bs_BA",
-        "br_FR",
-        "bg_BG",
-        "my_MM",
-        "ca_ES",
-        "de_CH",
-        "ce_RU",
-        "zh_CN",
-        "cv_RU",
-        "kw_GB",
-        "es_CO",
-        "es_CR",
-        "hr_HR",
-        "cs_CZ",
-        "da_DK",
-        "dv_MV",
-        "nl_NL",
-        "dz_BT",
-        "en_US",
-        "en_GB",
-        "eo",
-        "et_EE",
-        "et_EE",
-        "fo_FO",
-        "hif_FJ",
-        "fi_FI",
-        "fr_FR",
-        "ff_SN",
-        "gl_ES",
-        "ka_GE",
-        "de_DE",
-        "el_GR",
-        "gu_IN",
-        "ht_HT",
-        "ha_NG",
-        "he_IL",
-        "hi_IN",
-        "hu_HU",
-        "ia_FR",
-        "id_ID",
-        "en_IE",
-        "ga_IE",
-        "ig_NG",
-        "ik_CA",
-        "is_IS",
-        "it_IT",
-        "iu_CA",
-        "ja_JP",
-        "kl_GL",
-        "kn_IN",
-        "ko_KR",
-        "kk_KZ",
-        "km_KH",
-        "rw_RW",
-        "ky_KG",
-        "ky_KG",
-        "ko_KR",
-        "ku_TR",
-        "lo_LA",
-        "lb_LU",
-        "lg_UG",
-        "li_NL",
-        "ln_CD",
-        "lo_LA",
-        "lt_LT",
-        "fr_LU",
-        "lv_LV",
-        "gv_GB",
-        "mk_MK",
-        "mg_MG",
-        "ms_MY",
-        "ml_IN",
-        "mt_MT",
-        "mi_NZ",
-        "mr_IN",
-        "mn_MN",
-        "ne_NP",
-        "en_NG",
-        "nb_NO",
-        "nn_NO",
-        "no_NO",
-        "nr_ZA",
-        "oc_FR",
-        "es_CU",
-        "om_ET",
-        "or_IN",
-        "os_RU",
-        "pa_IN",
-        "fa_IR",
-        "pl_PL",
-        "ps_AF",
-        "pt_BR",
-        "ro_RO",
-        "ru_RU",
-        "sa_IN",
-        "sc_IT",
-        "sd_IN",
-        "se_NO",
-        "sm_WS",
-        "en_SG",
-        "sr_RS",
-        "gd_GB",
-        "wo_SN",
-        "si_LK",
-        "sk_SK",
-        "sl_SI",
-        "so_SO",
-        "st_ZA",
-        "es_ES",
-        "sw_KE",
-        "ss_ZA",
-        "sv_SE",
-        "ta_IN",
-        "te_IN",
-        "tg_TJ",
-        "th_TH",
-        "ti_ER",
-        "bo_CN",
-        "tk_TM",
-        "tl_PH",
-        "tn_ZA",
-        "to_TO",
-        "tr_TR",
-        "ts_ZA",
-        "tt_RU",
-        "zh_TW",
-        "ug_CN",
-        "uk_UA",
-        "ur_PK",
-        "ve_ZA",
-        "vi_VN",
-        "wa_BE",
-        "cy_GB",
-        "wo_SN",
-        "fy_NL",
-        "xh_ZA",
-        "yi_US",
-        "yo_NG",
-        "zu_ZA",
-        "zu_ZA",
-        "pt_BR",
-        "pt_PT",];
+    let locale_list = [
+        "ab_GE", "aa_DJ", "af_ZA", "ak_GH", "sq_AL", "am_ET", "ar_EG", "an_ES", "hy_AM", "as_IN",
+        "ar_AE", "az_AZ", "bs_BA", "eu_ES", "be_BY", "bn_BD", "ar_BH", "bi_VU", "bs_BA", "br_FR",
+        "bg_BG", "my_MM", "ca_ES", "de_CH", "ce_RU", "zh_CN", "cv_RU", "kw_GB", "es_CO", "es_CR",
+        "hr_HR", "cs_CZ", "da_DK", "dv_MV", "nl_NL", "dz_BT", "en_US", "en_GB", "eo", "et_EE",
+        "et_EE", "fo_FO", "hif_FJ", "fi_FI", "fr_FR", "ff_SN", "gl_ES", "ka_GE", "de_DE", "el_GR",
+        "gu_IN", "ht_HT", "ha_NG", "he_IL", "hi_IN", "hu_HU", "ia_FR", "id_ID", "en_IE", "ga_IE",
+        "ig_NG", "ik_CA", "is_IS", "it_IT", "iu_CA", "ja_JP", "kl_GL", "kn_IN", "ko_KR", "kk_KZ",
+        "km_KH", "rw_RW", "ky_KG", "ky_KG", "ko_KR", "ku_TR", "lo_LA", "lb_LU", "lg_UG", "li_NL",
+        "ln_CD", "lo_LA", "lt_LT", "fr_LU", "lv_LV", "gv_GB", "mk_MK", "mg_MG", "ms_MY", "ml_IN",
+        "mt_MT", "mi_NZ", "mr_IN", "mn_MN", "ne_NP", "en_NG", "nb_NO", "nn_NO", "no_NO", "nr_ZA",
+        "oc_FR", "es_CU", "om_ET", "or_IN", "os_RU", "pa_IN", "fa_IR", "pl_PL", "ps_AF", "pt_BR",
+        "ro_RO", "ru_RU", "sa_IN", "sc_IT", "sd_IN", "se_NO", "sm_WS", "en_SG", "sr_RS", "gd_GB",
+        "wo_SN", "si_LK", "sk_SK", "sl_SI", "so_SO", "st_ZA", "es_ES", "sw_KE", "ss_ZA", "sv_SE",
+        "ta_IN", "te_IN", "tg_TJ", "th_TH", "ti_ER", "bo_CN", "tk_TM", "tl_PH", "tn_ZA", "to_TO",
+        "tr_TR", "ts_ZA", "tt_RU", "zh_TW", "ug_CN", "uk_UA", "ur_PK", "ve_ZA", "vi_VN", "wa_BE",
+        "cy_GB", "wo_SN", "fy_NL", "xh_ZA", "yi_US", "yo_NG", "zu_ZA", "zu_ZA", "pt_BR", "pt_PT",
+    ];
 
     for locale in locale_list.iter() {
         let locale = locale.to_string();
-        let locale_name = gnome_desktop::language_from_locale(&locale, None).unwrap_or(locale.clone().into()).to_string();
+        let locale_name = gnome_desktop::language_from_locale(&locale, None)
+            .unwrap_or(locale.clone().into())
+            .to_string();
         let locale_clone = locale.clone();
         let locale_checkbutton = gtk::CheckButton::builder()
             .valign(gtk::Align::Center)
@@ -246,13 +107,12 @@ pub fn language_page(
             lang_data_refcell,
             #[weak]
             language_page,
-            move |_|
-                {
-                    if locale_checkbutton.is_active() == true {
-                        language_page.set_next_sensitive(true);
-                        *lang_data_refcell.borrow_mut() = String::from(&locale);
-                    }
+            move |_| {
+                if locale_checkbutton.is_active() == true {
+                    language_page.set_next_sensitive(true);
+                    *lang_data_refcell.borrow_mut() = String::from(&locale);
                 }
+            }
         ));
         if &current_locale == &locale_clone
             && current_locale != "C.UTF-8"
@@ -274,13 +134,20 @@ pub fn language_page(
         language_search_bar,
         #[weak]
         language_selection_row_viewport_listbox,
-        move |_|
-        {
+        move |_| {
             let mut counter = language_selection_row_viewport_listbox.first_child();
             while let Some(row) = counter {
                 if row.widget_name() == "AdwActionRow" {
                     if !language_search_bar.text().is_empty() {
-                        if row.property::<String>("subtitle").to_lowercase().contains(&language_search_bar.text().to_string().to_lowercase()) || row.property::<String>("title").to_lowercase().contains(&language_search_bar.text().to_string().to_lowercase()) {
+                        if row
+                            .property::<String>("subtitle")
+                            .to_lowercase()
+                            .contains(&language_search_bar.text().to_string().to_lowercase())
+                            || row
+                                .property::<String>("title")
+                                .to_lowercase()
+                                .contains(&language_search_bar.text().to_string().to_lowercase())
+                        {
                             row.set_property("visible", true);
                             language_search_bar.grab_focus();
                         } else {
@@ -303,11 +170,10 @@ pub fn language_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |_language_page: installer_stack_page::InstallerStackPage|
-            {
-                    main_carousel.scroll_to(&main_carousel.nth_page(0), true)
+            move |_language_page: installer_stack_page::InstallerStackPage| {
+                main_carousel.scroll_to(&main_carousel.nth_page(0), true)
             }
-        )
+        ),
     );
 
     language_page.connect_closure(
@@ -320,8 +186,7 @@ pub fn language_page(
             lang_data_refcell,
             #[strong]
             language_changed_action,
-            move |_language_page: installer_stack_page::InstallerStackPage|
-            {
+            move |_language_page: installer_stack_page::InstallerStackPage| {
                 let locale = &lang_data_refcell.borrow();
                 //Command::new("sudo")
                 //                    .arg("localectl")
@@ -333,7 +198,7 @@ pub fn language_page(
                 language_changed_action.activate(None);
                 main_carousel.scroll_to(&main_carousel.nth_page(2), true)
             }
-        )
+        ),
     );
 
     main_carousel.append(&language_page);

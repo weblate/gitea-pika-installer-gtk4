@@ -1,7 +1,6 @@
-use gtk::{prelude::*, glib as glib, Justification};
 use glib::clone;
+use gtk::{glib, prelude::*, Justification};
 pub fn efi_error_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carousel) {
-
     let efi_error_main_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .build();
@@ -76,7 +75,6 @@ pub fn efi_error_page(window: &adw::ApplicationWindow, main_carousel: &adw::Caro
     exit_button.connect_clicked(clone!(
         #[weak]
         window,
-        move |_|
-        window.close()
+        move |_| window.close()
     ));
 }

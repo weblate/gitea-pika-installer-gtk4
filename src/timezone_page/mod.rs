@@ -1,14 +1,14 @@
 use crate::installer_stack_page;
-use gtk::{prelude::*, glib as glib, gio as gio};
-use adw::{prelude::*};
+use adw::prelude::*;
 use glib::{clone, closure_local};
-use std::{process::Command, fs, path::Path, rc::Rc, cell::RefCell};
+use gtk::{gio, glib, prelude::*};
 use std::io::BufRead;
+use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
 
 pub fn timezone_page(
     main_carousel: &adw::Carousel,
     timezone_data_refcell: &Rc<RefCell<String>>,
-    language_changed_action: &gio::SimpleAction
+    language_changed_action: &gio::SimpleAction,
 ) {
     let timezone_page = installer_stack_page::InstallerStackPage::new();
     timezone_page.set_page_icon("alarm-symbolic");
@@ -23,8 +23,7 @@ pub fn timezone_page(
         .vexpand(true)
         .build();
 
-    let null_checkbutton = gtk::CheckButton::builder()
-        .build();
+    let null_checkbutton = gtk::CheckButton::builder().build();
 
     let timezone_selection_row_viewport_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -32,14 +31,13 @@ pub fn timezone_page(
     timezone_selection_row_viewport_listbox.add_css_class("boxed-list");
     timezone_selection_row_viewport_listbox.add_css_class("round-all-scroll");
 
-    let timezone_selection_row_viewport =
-        gtk::ScrolledWindow::builder()
-            .vexpand(true)
-            .hexpand(true)
-            .has_frame(true)
-            .child(&timezone_selection_row_viewport_listbox)
-            .build();
-    
+    let timezone_selection_row_viewport = gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .has_frame(true)
+        .child(&timezone_selection_row_viewport_listbox)
+        .build();
+
     timezone_selection_row_viewport.add_css_class("round-all-scroll");
 
     let timezone_search_bar = gtk::SearchEntry::builder()
@@ -52,17 +50,19 @@ pub fn timezone_page(
     timezone_search_bar.add_css_class("rounded-all-25");
 
     let current_timezone_cli = Command::new("timedatectl")
-    .arg("show")
-    .arg("--va")
-    .arg("-p")
-    .arg("Timezone")
-    .stdin(std::process::Stdio::piped())
-    .stdout(std::process::Stdio::piped())
-    .spawn()
-    .unwrap_or_else(|e| panic!("failed {}", e));
+        .arg("show")
+        .arg("--va")
+        .arg("-p")
+        .arg("Timezone")
+        .stdin(std::process::Stdio::piped())
+        .stdout(std::process::Stdio::piped())
+        .spawn()
+        .unwrap_or_else(|e| panic!("failed {}", e));
 
     let current_timezone_output = current_timezone_cli.wait_with_output().unwrap();
-    let current_timezone = String::from_utf8_lossy(&current_timezone_output.stdout).trim().to_owned();
+    let current_timezone = String::from_utf8_lossy(&current_timezone_output.stdout)
+        .trim()
+        .to_owned();
 
     let timezone_cli = Command::new("timedatectl")
         .arg("list-timezones")
@@ -88,23 +88,20 @@ pub fn timezone_page(
         timezone_row.add_prefix(&timezone_checkbutton);
         timezone_checkbutton.set_group(Some(&null_checkbutton));
         timezone_selection_row_viewport_listbox.append(&timezone_row);
-        timezone_checkbutton.connect_toggled(
-            clone!(
-                #[weak]
-                timezone_checkbutton,
-                #[weak]
-                timezone_page,
-                #[weak]
-                timezone_data_refcell,
-                move |_| 
-                {
-                    if timezone_checkbutton.is_active() == true {
-                        timezone_page.set_next_sensitive(true);
-                        *timezone_data_refcell.borrow_mut() = String::from(&timezone);
-                    }
+        timezone_checkbutton.connect_toggled(clone!(
+            #[weak]
+            timezone_checkbutton,
+            #[weak]
+            timezone_page,
+            #[weak]
+            timezone_data_refcell,
+            move |_| {
+                if timezone_checkbutton.is_active() == true {
+                    timezone_page.set_next_sensitive(true);
+                    *timezone_data_refcell.borrow_mut() = String::from(&timezone);
                 }
-            )
-        );
+            }
+        ));
         if &current_timezone == &timezone_clone {
             timezone_checkbutton.set_active(true);
         }
@@ -120,13 +117,20 @@ pub fn timezone_page(
         timezone_search_bar,
         #[weak]
         timezone_selection_row_viewport_listbox,
-        move |_|
-        {
+        move |_| {
             let mut counter = timezone_selection_row_viewport_listbox.first_child();
             while let Some(row) = counter {
                 if row.widget_name() == "AdwActionRow" {
                     if !timezone_search_bar.text().is_empty() {
-                        if row.property::<String>("subtitle").to_lowercase().contains(&timezone_search_bar.text().to_string().to_lowercase()) || row.property::<String>("title").to_lowercase().contains(&timezone_search_bar.text().to_string().to_lowercase()) {
+                        if row
+                            .property::<String>("subtitle")
+                            .to_lowercase()
+                            .contains(&timezone_search_bar.text().to_string().to_lowercase())
+                            || row
+                                .property::<String>("title")
+                                .to_lowercase()
+                                .contains(&timezone_search_bar.text().to_string().to_lowercase())
+                        {
                             row.set_property("visible", true);
                             timezone_search_bar.grab_focus();
                         } else {
@@ -144,22 +148,20 @@ pub fn timezone_page(
     timezone_page.set_child_widget(&content_box);
 
     //
-    language_changed_action.connect_activate(
-        clone!(
-            #[weak]
-            timezone_page,
-            #[weak]
-            timezone_search_bar,
-            move |_, _| {
-                timezone_page.set_page_title(t!("timezone"));
-                timezone_page.set_page_subtitle(t!("select_a_timezone"));
-                timezone_page.set_back_tooltip_label(t!("back"));
-                timezone_page.set_next_tooltip_label(t!("next"));
-                //
-                timezone_search_bar.set_placeholder_text(Some(&t!("search_for_timezone")));
-            }
-        )
-    );
+    language_changed_action.connect_activate(clone!(
+        #[weak]
+        timezone_page,
+        #[weak]
+        timezone_search_bar,
+        move |_, _| {
+            timezone_page.set_page_title(t!("timezone"));
+            timezone_page.set_page_subtitle(t!("select_a_timezone"));
+            timezone_page.set_back_tooltip_label(t!("back"));
+            timezone_page.set_next_tooltip_label(t!("next"));
+            //
+            timezone_search_bar.set_placeholder_text(Some(&t!("search_for_timezone")));
+        }
+    ));
     //
 
     timezone_page.connect_closure(
@@ -168,11 +170,10 @@ pub fn timezone_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |_timezone_page: installer_stack_page::InstallerStackPage|
-            {
-                    main_carousel.scroll_to(&main_carousel.nth_page(3), true)
+            move |_timezone_page: installer_stack_page::InstallerStackPage| {
+                main_carousel.scroll_to(&main_carousel.nth_page(3), true)
             }
-        )
+        ),
     );
 
     timezone_page.connect_closure(
@@ -183,8 +184,7 @@ pub fn timezone_page(
             main_carousel,
             #[strong]
             timezone_data_refcell,
-            move |_timezone_page: installer_stack_page::InstallerStackPage|
-            {
+            move |_timezone_page: installer_stack_page::InstallerStackPage| {
                 let timezone = timezone_data_refcell.borrow();
                 Command::new("sudo")
                     .arg("timedatectl")
@@ -194,7 +194,7 @@ pub fn timezone_page(
                     .expect("timezone failed to start");
                 main_carousel.scroll_to(&main_carousel.nth_page(5), true)
             }
-        )
+        ),
     );
 
     main_carousel.append(&timezone_page);

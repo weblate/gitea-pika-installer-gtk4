@@ -1,12 +1,9 @@
-use adw::gio;
 use crate::installer_stack_page;
-use gtk::{prelude::*, glib as glib};
+use adw::gio;
 use glib::{clone, closure_local};
+use gtk::{glib, prelude::*};
 
-pub fn eula_page(
-    main_carousel: &adw::Carousel,
-    language_changed_action: &gio::SimpleAction
-) {
+pub fn eula_page(main_carousel: &adw::Carousel, language_changed_action: &gio::SimpleAction) {
     let eula_page = installer_stack_page::InstallerStackPage::new();
     eula_page.set_page_icon("error-correct-symbolic");
     eula_page.set_back_visible(true);
@@ -20,8 +17,7 @@ pub fn eula_page(
         .vexpand(true)
         .build();
 
-    let eula_buffer = gtk::TextBuffer::builder()
-        .build();
+    let eula_buffer = gtk::TextBuffer::builder().build();
 
     let eula_selection_text_view = gtk::TextView::builder()
         .hexpand(true)
@@ -45,47 +41,42 @@ pub fn eula_page(
         .margin_end(15)
         .build();
 
-    eula_accept_checkbutton.connect_toggled(
-        clone!(
-            #[weak]
-            eula_accept_checkbutton,
-            #[weak]
-            eula_page,
-            move |_|
-            {
-                if eula_accept_checkbutton.is_active() == true {
-                    eula_page.set_next_sensitive(true);
-                } else {
-                    eula_page.set_next_sensitive(false);
-                }
+    eula_accept_checkbutton.connect_toggled(clone!(
+        #[weak]
+        eula_accept_checkbutton,
+        #[weak]
+        eula_page,
+        move |_| {
+            if eula_accept_checkbutton.is_active() == true {
+                eula_page.set_next_sensitive(true);
+            } else {
+                eula_page.set_next_sensitive(false);
             }
-        ),
-    );
+        }
+    ));
 
     content_box.append(&eula_selection_text_scroll);
     content_box.append(&eula_accept_checkbutton);
 
     //
-    language_changed_action.connect_activate(
-        clone!(
-            #[weak]
-            eula_page,
-            #[weak]
-            eula_accept_checkbutton,
-            #[strong]
-            eula_buffer,
-            move |_, _| {
-                eula_page.set_page_title(t!("eula"));
-                eula_page.set_page_subtitle(t!("pikaos_eula_agreement"));
-                eula_page.set_back_tooltip_label(t!("back"));
-                eula_page.set_next_tooltip_label(t!("next"));
-                //
-                eula_accept_checkbutton.set_label(Some(&t!("i_agree_eula")));
-                //
-                eula_buffer.set_text(&t!("eula_buffer"))
-            }
-        )
-    );
+    language_changed_action.connect_activate(clone!(
+        #[weak]
+        eula_page,
+        #[weak]
+        eula_accept_checkbutton,
+        #[strong]
+        eula_buffer,
+        move |_, _| {
+            eula_page.set_page_title(t!("eula"));
+            eula_page.set_page_subtitle(t!("pikaos_eula_agreement"));
+            eula_page.set_back_tooltip_label(t!("back"));
+            eula_page.set_next_tooltip_label(t!("next"));
+            //
+            eula_accept_checkbutton.set_label(Some(&t!("i_agree_eula")));
+            //
+            eula_buffer.set_text(&t!("eula_buffer"))
+        }
+    ));
     //
 
     eula_page.set_child_widget(&content_box);
@@ -96,11 +87,10 @@ pub fn eula_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |_language_page: installer_stack_page::InstallerStackPage|
-            {
-                    main_carousel.scroll_to(&main_carousel.nth_page(1), true)
+            move |_language_page: installer_stack_page::InstallerStackPage| {
+                main_carousel.scroll_to(&main_carousel.nth_page(1), true)
             }
-        )
+        ),
     );
 
     eula_page.connect_closure(
@@ -109,11 +99,10 @@ pub fn eula_page(
         closure_local!(
             #[weak]
             main_carousel,
-            move |_language_page: installer_stack_page::InstallerStackPage|
-            {
+            move |_language_page: installer_stack_page::InstallerStackPage| {
                 main_carousel.scroll_to(&main_carousel.nth_page(3), true)
             }
-        )
+        ),
     );
 
     main_carousel.append(&eula_page);

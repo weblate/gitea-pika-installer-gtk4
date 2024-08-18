@@ -1,11 +1,8 @@
-use crate::installer_stack_page;
 use crate::config;
-use gtk::{prelude::*, glib as glib};
+use crate::installer_stack_page;
 use glib::clone;
-pub fn welcome_page(
-    window: &adw::ApplicationWindow,
-    main_carousel: &adw::Carousel,
-) {
+use gtk::{glib, prelude::*};
+pub fn welcome_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carousel) {
     let welcome_page = installer_stack_page::InstallerStackPage::new();
     welcome_page.set_page_title(t!("welcome"));
     welcome_page.set_page_subtitle(t!("welcome_to_pikaos"));
@@ -34,23 +31,17 @@ pub fn welcome_page(
         .label(t!("install_distro_to_system"))
         .build();
 
-    install_media_button.connect_clicked(
-        clone!(
-            #[weak]
-            main_carousel,
-            move |_|
-            main_carousel.scroll_to(&main_carousel.nth_page(1), true)
-        )
-    );
+    install_media_button.connect_clicked(clone!(
+        #[weak]
+        main_carousel,
+        move |_| main_carousel.scroll_to(&main_carousel.nth_page(1), true)
+    ));
 
-    live_media_button.connect_clicked(
-        clone!(
-            #[weak]
-            window,
-            move |_|
-            window.close()
-        )
-    );
+    live_media_button.connect_clicked(clone!(
+        #[weak]
+        window,
+        move |_| window.close()
+    ));
 
     content_box.append(&install_media_button);
     content_box.append(&live_media_button);
