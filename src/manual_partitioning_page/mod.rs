@@ -27,6 +27,12 @@ pub fn manual_partitioning_page(
     manual_partitioning_page.set_next_sensitive(false);
 
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
+    let used_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
+    let do_used_part_check_refcell = Rc::new(RefCell::new(true));
+
+    //
+
+    let partition_changed_action = gio::SimpleAction::new("partition-changed", None);
 
     //
 
@@ -36,42 +42,45 @@ pub fn manual_partitioning_page(
         .vexpand(true)
         .build();
 
-    let drive_mounts_adw_listbox = gtk::ListBox::builder().hexpand(true).vexpand(true).build();
+    let drive_mounts_adw_listbox = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
     drive_mounts_adw_listbox.add_css_class("boxed-list");
-    
-    let drive_mounts_viewport = gtk::ScrolledWindow::builder()
-        .margin_top(30)
-        .margin_bottom(30)
-        .margin_start(30)
-        .margin_end(30)
-        .hexpand(true)
+    drive_mounts_adw_listbox.add_css_class("round-all-scroll");
+
+    let drive_mounts_viewport =
+    gtk::ScrolledWindow::builder()
         .vexpand(true)
+        .hexpand(true)
+        .has_frame(true)
         .child(&drive_mounts_adw_listbox)
         .build();
 
-        let drive_mount_add_button = gtk::Button::builder()
+    drive_mounts_viewport.add_css_class("round-all-scroll");
+
+    let drive_mount_add_button = gtk::Button::builder()
         .icon_name("list-add")
         .vexpand(true)
         .hexpand(true)
         .build();
 
-        drive_mounts_adw_listbox.append(&drive_mount_add_button);
-        content_box.append(&drive_mounts_viewport);
+    drive_mounts_adw_listbox.append(&drive_mount_add_button);
+    content_box.append(&drive_mounts_viewport);
 
 
-        drive_mount_add_button.connect_clicked(clone!(
-            #[weak]
-            drive_mounts_adw_listbox,
-            #[strong]
-            partition_array_refcell,
-            #[strong]
-            partition_method_manual_fstab_entry_array_refcell,
-            move |_|
-                {
-                    drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &partition_array_refcell.borrow(), &partition_method_manual_fstab_entry_array_refcell))
-                }
-            )
-        );
+    drive_mount_add_button.connect_clicked(clone!(
+        #[weak]
+        drive_mounts_adw_listbox,
+        #[strong]
+        partition_array_refcell,
+        #[strong]
+        partition_method_manual_fstab_entry_array_refcell,
+        move |_|
+            {
+                drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &partition_array_refcell.borrow(), &partition_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell))
+            }
+        )    
+    );
 
     //
     manual_partitioning_page.connect_closure(
@@ -121,25 +130,27 @@ pub fn manual_partitioning_page(
 
     partition_carousel.append(&manual_partitioning_page);
 
-        //
-        language_changed_action.connect_activate(clone!(
-            #[weak]
-            manual_partitioning_page,
-                move |_, _| {
-                    manual_partitioning_page.set_page_title(t!("manual_part_installer"));
-                    manual_partitioning_page.set_page_subtitle(t!("manual_part_info"));
-                    manual_partitioning_page.set_back_tooltip_label(t!("back"));
-                    manual_partitioning_page.set_next_tooltip_label(t!("next"));
-                }
-            )
-        );
-        //
+    //
+    language_changed_action.connect_activate(clone!(
+        #[weak]
+        manual_partitioning_page,
+            move |_, _| {
+                manual_partitioning_page.set_page_title(t!("manual_part_installer"));
+                manual_partitioning_page.set_page_subtitle(t!("manual_part_info"));
+                manual_partitioning_page.set_back_tooltip_label(t!("back"));
+                manual_partitioning_page.set_next_tooltip_label(t!("next"));
+            }
+        )
+    );
+    //
 }
 
 fn create_mount_row(
     listbox: &gtk::ListBox,
     partition_array: &Vec<Partition>,
-    fstab_refcell_array: &Rc<RefCell<Vec<FstabEntry>>>
+    partition_changed_action: &gio::SimpleAction,
+    used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    do_used_part_check_refcell: &Rc<RefCell<bool>>,
 ) -> DriveMountRow {
     let partition_scroll_child = gtk::ListBox::builder().build();
 
@@ -171,6 +182,16 @@ fn create_mount_row(
                     .sensitive(false)
                     .build();
                 prow
+            }
+            else if used_partition_array_refcell.clone().borrow().iter().any(|e| part_name == e && part_name != &row.partition()) {
+                let prow = adw::ActionRow::builder()
+                    .activatable_widget(&partition_button)
+                    .title(part_name)
+                    .name(part_name)
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
+                    .build();
+                prow
             } else {
                 let prow = adw::ActionRow::builder()
                     .activatable_widget(&partition_button)
@@ -189,12 +210,44 @@ fn create_mount_row(
             #[weak]
             partition_button,
             #[strong]
+            partition_changed_action,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
             partition,
             move |_|
                 {
                     if partition_button.is_active() == true {
                         let part_name = &partition.part_name;
                         row.set_partition(part_name.to_string());
+                        (*used_partition_array_refcell.borrow_mut()).push(part_name.to_string());
+                    } else {
+                        (*used_partition_array_refcell.borrow_mut()).retain(|x| x != &partition.part_name);
+                    }
+                    partition_changed_action.activate(None);
+                }
+            )
+        );
+        partition_changed_action.connect_activate(clone!(
+            #[strong]
+            partition_row,
+            #[strong]
+            row,
+            #[strong]
+            partition,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            do_used_part_check_refcell,
+                move |_, _| {
+                    if *do_used_part_check_refcell.borrow() == true {
+                        let part_name = &partition.part_name;
+                        let used_partition_array = used_partition_array_refcell.borrow();
+                        if used_partition_array.iter().any(|e| part_name == e && part_name != &row.partition()) {
+                            partition_row.set_sensitive(false);
+                        } else {
+                            partition_row.set_sensitive(true);
+                        }
                     }
                 }
             )
