@@ -679,7 +679,7 @@ pub fn automatic_partitioning_page(
             advanced_filesystem_selection_frame.set_label(Some(&t!("advanced_filesystem_selection_frame_label")));
             //
             advanced_home_seperation_selection_frame
-                .set_label(Some(&t!("advanced_filesystem_selection_frame_label")));
+                .set_label(Some(&t!("advanced_home_seperation_selection_frame_label")));
             //
             advanced_home_seperation_selection_checkbutton_subvol.set_label(Some(&t!(
                 "advanced_home_seperation_selection_checkbutton_subvol_label"
