@@ -36,6 +36,10 @@ pub fn manual_partitioning_page(
 
     //
 
+    let drive_rows_size_group = gtk::SizeGroup::new(gtk::SizeGroupMode::Horizontal);
+
+    //
+
     let content_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .hexpand(true)
@@ -77,7 +81,7 @@ pub fn manual_partitioning_page(
         partition_method_manual_fstab_entry_array_refcell,
         move |_|
             {
-                drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &partition_array_refcell.borrow(), &partition_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell))
+                drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &drive_rows_size_group, &partition_array_refcell.borrow(), &partition_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell))
             }
         )    
     );
@@ -147,6 +151,7 @@ pub fn manual_partitioning_page(
 
 fn create_mount_row(
     listbox: &gtk::ListBox,
+    drive_rows_size_group: &gtk::SizeGroup,
     partition_array: &Vec<Partition>,
     partition_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
@@ -166,6 +171,8 @@ fn create_mount_row(
     let row = DriveMountRow::new_with_scroll(&partitions_scroll);
 
     row.set_deletable(true);
+
+    row.set_sizegroup(drive_rows_size_group);
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 

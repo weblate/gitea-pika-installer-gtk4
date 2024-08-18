@@ -1,18 +1,10 @@
 use std::{cell::RefCell, env, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
-use gtk::{glib as glib, Orientation::Horizontal, SizeGroup};
+use gtk::{glib as glib, Orientation::Horizontal};
 use glib::{clone, subclass::Signal, Properties};
 
 use crate::partitioning_page::FstabEntry;
-
-struct DriveSizeGroup(gtk::SizeGroup);
-
-impl Default for DriveSizeGroup {
-    pub fn default(&self) -> Self {
-        DriveSizeGroup::
-    }
-}
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -30,7 +22,7 @@ pub struct DriveMountRow {
     #[property(get, set)]
     partitionscroll: Rc<RefCell<gtk::ScrolledWindow>>,
     #[property(get, set)]
-    sizegroup: Rc<RefCell<DriveSizeGroup>>,
+    sizegroup: Rc<RefCell<Option<gtk::SizeGroup>>>,
 }
 // ANCHOR_END: custom_button
 
@@ -131,6 +123,31 @@ impl ObjectImpl for DriveMountRow {
         obj.append(&mountopts_entry_row);
 
         obj.append(&partition_row_delete_button);
+
+        obj.connect_sizegroup_notify(clone!(
+            #[weak]
+            obj,
+            #[weak]
+            partition_row_expander_adw_listbox,
+            #[weak]
+            mountpoint_entry_row,
+            #[weak]
+            mountopts_entry_row,
+            move |_|
+                {
+                    match obj.sizegroup() {
+                        Some(t) => {
+                            t.add_widget(&partition_row_expander_adw_listbox);
+                            t.add_widget(&mountpoint_entry_row);
+                            t.add_widget(&mountopts_entry_row);
+                        }
+                        None => {
+
+                        }
+                    }
+                }
+            )
+        );
 
         // Bind label to number
         // `SYNC_CREATE` ensures that the label will be immediately set
