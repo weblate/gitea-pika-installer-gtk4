@@ -81,7 +81,7 @@ pub fn manual_partitioning_page(
         partition_method_manual_fstab_entry_array_refcell,
         move |_|
             {
-                drive_mounts_adw_listbox.append(&create_mount_row(&drive_mounts_adw_listbox, &drive_rows_size_group, &partition_array_refcell.borrow(), &partition_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell))
+                create_mount_row(&drive_mounts_adw_listbox, &drive_rows_size_group, &partition_array_refcell.borrow(), &partition_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell);
             }
         )    
     );
@@ -156,7 +156,7 @@ fn create_mount_row(
     partition_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
     do_used_part_check_refcell: &Rc<RefCell<bool>>,
-) -> DriveMountRow {
+) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
@@ -264,11 +264,15 @@ fn create_mount_row(
         partition_scroll_child.append(&partition_row);
     }
 
-    let listbox_clone = listbox.clone();
+    
+    listbox.append(&row);
+
     row.connect_closure(
         "row-deleted",
         false,
         closure_local!(
+            #[weak]
+            listbox,
             #[strong]
             row,
             #[strong]
@@ -277,13 +281,10 @@ fn create_mount_row(
             partition_changed_action,
             move |row: DriveMountRow| 
                 {
-                    listbox_clone.remove(&row);
+                    listbox.remove(&row);
                     (*used_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
                     partition_changed_action.activate(None);
                 }
         ),
     );
-
-    // Return row
-    row
 }

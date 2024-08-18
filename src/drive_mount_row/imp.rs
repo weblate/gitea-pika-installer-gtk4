@@ -31,7 +31,7 @@ pub struct DriveMountRow {
 impl ObjectSubclass for DriveMountRow {
     const NAME: &'static str = "DriveMountRow";
     type Type = super::DriveMountRow;
-    type ParentType = gtk::Box;
+    type ParentType = gtk::ListBoxRow;
 }
 
 // ANCHOR: object_impl
@@ -54,6 +54,13 @@ impl ObjectImpl for DriveMountRow {
         // Bind label to number
         // `SYNC_CREATE` ensures that the label will be immediately set
         let obj = self.obj();
+
+        let action_row_content_box = gtk::Box::builder()
+            .orientation(Horizontal)
+            .spacing(0)
+            .vexpand(true)
+            .hexpand(true)
+            .build();
 
         let partition_row_expander_adw_listbox = gtk::ListBox::builder()
             .hexpand(true)
@@ -150,13 +157,13 @@ impl ObjectImpl for DriveMountRow {
 
         //
 
-        obj.append(&partition_row_expander_adw_listbox);
+        action_row_content_box.append(&partition_row_expander_adw_listbox);
 
-        obj.append(&mountpoint_entry_row_adw_listbox);
+        action_row_content_box.append(&mountpoint_entry_row_adw_listbox);
 
-        obj.append(&mountopts_entry_row_adw_listbox);
+        action_row_content_box.append(&mountopts_entry_row_adw_listbox);
 
-        obj.append(&partition_row_delete_button);
+        action_row_content_box.append(&partition_row_delete_button);
 
         obj.connect_sizegroup_notify(clone!(
             #[weak]
@@ -210,9 +217,11 @@ impl ObjectImpl for DriveMountRow {
                 }
             )
         );
+
+        obj.set_child(Some(&action_row_content_box));
     }
 }
 // Trait shared by all widgets
 impl WidgetImpl for DriveMountRow {}
 
-impl BoxImpl for DriveMountRow {}
+impl ListBoxRowImpl for DriveMountRow {}
