@@ -78,10 +78,12 @@ pub fn manual_partitioning_page(
         #[strong]
         partition_array_refcell,
         #[strong]
-        partition_method_manual_fstab_entry_array_refcell,
+        language_changed_action,
+        #[strong]
+        partition_changed_action,
         move |_|
             {
-                create_mount_row(&drive_mounts_adw_listbox, &drive_rows_size_group, &partition_array_refcell.borrow(), &partition_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell);
+                create_mount_row(&drive_mounts_adw_listbox, &drive_rows_size_group, &partition_array_refcell.borrow(), &partition_changed_action, &language_changed_action, &used_partition_array_refcell, &do_used_part_check_refcell);
             }
         )    
     );
@@ -154,6 +156,7 @@ fn create_mount_row(
     drive_rows_size_group: &gtk::SizeGroup,
     partition_array: &Vec<Partition>,
     partition_changed_action: &gio::SimpleAction,
+    language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
     do_used_part_check_refcell: &Rc<RefCell<bool>>,
 ) {
@@ -173,6 +176,8 @@ fn create_mount_row(
     row.set_deletable(true);
 
     row.set_sizegroup(drive_rows_size_group);
+
+    row.set_langaction(language_changed_action);
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 

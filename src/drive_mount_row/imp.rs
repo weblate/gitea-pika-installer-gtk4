@@ -1,4 +1,4 @@
-use std::{cell::RefCell, env, rc::Rc, sync::OnceLock};
+use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
 use gtk::{glib as glib, Orientation::Horizontal};
@@ -22,7 +22,9 @@ pub struct DriveMountRow {
     #[property(get, set)]
     partitionscroll: Rc<RefCell<gtk::ScrolledWindow>>,
     #[property(get, set)]
-    sizegroup: Rc<RefCell<Option<gtk::SizeGroup>>>,
+    sizegroup: RefCell<Option<gtk::SizeGroup>>,
+    #[property(get, set)]
+    langaction: RefCell<Option<gio::SimpleAction>>
 }
 // ANCHOR_END: custom_button
 
@@ -43,11 +45,6 @@ impl ObjectImpl for DriveMountRow {
         SIGNALS.get_or_init(|| vec![Signal::builder("row-deleted").build()])
     }
     fn constructed(&self) {
-        let current_locale = match env::var_os("LANG") {
-            Some(v) => v.into_string().unwrap(),
-            None => panic!("$LANG is not set"),
-        };
-        rust_i18n::set_locale(current_locale.strip_suffix(".UTF-8").unwrap());
 
         self.parent_constructed();
 
@@ -211,9 +208,49 @@ impl ObjectImpl for DriveMountRow {
         obj.connect_partitionscroll_notify(clone!(
             #[weak]
             obj,
+            #[weak]
+            partition_row_expander,
             move |_|
                 {
                     partition_row_expander.add_row(&obj.property::<gtk::ScrolledWindow>("partitionscroll"));
+                }
+            )
+        );
+
+        obj.connect_langaction_notify(clone!(
+            #[weak]
+            obj,
+            #[weak]
+            partition_row_expander,
+            #[weak]
+            mountpoint_entry_row,
+            #[weak]
+            mountopts_entry_row,
+            move |_|
+                {
+                    match obj.langaction() {
+                        Some(t) => {
+                            t.connect_activate(
+                                clone!(
+                                    #[weak]
+                                    partition_row_expander,
+                                    #[weak]
+                                    mountpoint_entry_row,
+                                    #[weak]
+                                    mountopts_entry_row,
+                                    move |_, _| 
+                                    {
+                                        partition_row_expander.set_subtitle(&t!("subtitle_partition"));
+                                        mountpoint_entry_row.set_title(&t!("title_mountpoint"));
+                                        mountopts_entry_row.set_title(&t!("title_mountopts"));
+                                    }
+                                )
+                            );
+                        }
+                        None => {
+
+                        }
+                    }
                 }
             )
         );
