@@ -152,7 +152,9 @@ fn create_mount_row(
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
     do_used_part_check_refcell: &Rc<RefCell<bool>>,
 ) -> DriveMountRow {
-    let partition_scroll_child = gtk::ListBox::builder().build();
+    let partition_scroll_child = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
 
     let partitions_scroll = gtk::ScrolledWindow::builder()
         .hexpand(true)
@@ -162,6 +164,8 @@ fn create_mount_row(
 
     // Create row
     let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+
+    row.set_deletable(true);
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 
@@ -205,8 +209,6 @@ fn create_mount_row(
         partition_button.connect_toggled(clone!(
             #[weak]
             row,
-            #[weak]
-            listbox,
             #[weak]
             partition_button,
             #[strong]
@@ -262,9 +264,15 @@ fn create_mount_row(
         closure_local!(
             #[strong]
             row,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            partition_changed_action,
             move |row: DriveMountRow| 
                 {
                     listbox_clone.remove(&row);
+                    (*used_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
+                    partition_changed_action.activate(None);
                 }
         ),
     );
