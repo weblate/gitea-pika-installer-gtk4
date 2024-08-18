@@ -14,7 +14,11 @@ use crate::partitioning_page::FstabEntry;
 #[properties(wrapper_type = super::DriveMountRow)]
 pub struct DriveMountRow {
     #[property(get, set)]
-    fstabentry: RefCell<FstabEntry>,
+    partition: RefCell<String>,
+    #[property(get, set)]
+    mountpoint: RefCell<String>,
+    #[property(get, set)]
+    mountopts: RefCell<String>,
     #[property(get, set)]
     deletable: RefCell<bool>,
     #[property(get, set)]

@@ -167,7 +167,8 @@ fn create_mount_row(
                     .activatable_widget(&partition_button)
                     .title(part_name)
                     .name(part_name)
-                    .subtitle(t!("part_need_mapper"))
+                    .subtitle(t!("part_need_mapper").to_string() + " " + &pretty_bytes::converter::convert(partition.part_size))
+                    .sensitive(false)
                     .build();
                 prow
             } else {
@@ -175,7 +176,7 @@ fn create_mount_row(
                     .activatable_widget(&partition_button)
                     .title(part_name)
                     .name(part_name)
-                    .subtitle(String::from(&partition.part_fs) + &pretty_bytes::converter::convert(partition.part_size))
+                    .subtitle(String::from(&partition.part_fs) + " " + &pretty_bytes::converter::convert(partition.part_size))
                     .build();
                 prow
             };
@@ -189,16 +190,11 @@ fn create_mount_row(
             partition_button,
             #[strong]
             partition,
-            #[strong]
-            fstab_refcell_array,
             move |_|
                 {
-                    let mut fstab_refcell_array_ref = RefCell::borrow_mut(&fstab_refcell_array);
                     if partition_button.is_active() == true {
                         let part_name = &partition.part_name;
-                        //row.set_partition(part_name.to_string());
-                    } else {
-                        
+                        row.set_partition(part_name.to_string());
                     }
                 }
             )

@@ -3,6 +3,8 @@ mod imp;
 use glib::Object;
 use gtk::glib;
 
+use crate::partitioning_page::FstabEntry;
+
 glib::wrapper! {
     pub struct DriveMountRow(ObjectSubclass<imp::DriveMountRow>)
         @extends adw::ActionRow, gtk::Widget, gtk::ListBoxRow, adw::PreferencesRow,
@@ -17,6 +19,13 @@ impl DriveMountRow {
         Object::builder()
             .property("partitionscroll", partitions_scroll)
             .build()
+    }
+    pub fn get_fstab_entry(&self) -> FstabEntry {
+        FstabEntry{
+            partition: self.partition(),
+            mountpoint: self.mountpoint(),
+            mountopt: self.mountopts()
+        }
     }
 }
 // ANCHOR_END: mod
