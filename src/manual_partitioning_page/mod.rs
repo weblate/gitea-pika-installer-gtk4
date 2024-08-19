@@ -11,7 +11,7 @@ const MINIMUM_EFI_BYTE_SIZE: f64 = 500000000.0;
 const MINIMUM_BOOT_BYTE_SIZE: f64 = 1000000000.0;
 const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
 
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 struct PartitionRow {
     widget: adw::ActionRow,
     used: Rc<std::cell::RefCell<bool>>,
@@ -765,7 +765,6 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
         #[strong]
         row,
         move |_| {
-            dbg!(&partition_row_struct);
             if row.mountpoint() == "[SWAP]" {
                 if partition.part_fs != "linux-swap" {
                     partition_row_struct.widget.set_sensitive(false);

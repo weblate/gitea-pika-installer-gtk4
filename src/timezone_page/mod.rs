@@ -53,7 +53,7 @@ pub fn timezone_page(
         .arg("show")
         .arg("--va")
         .arg("-p")
-        .arg("timezone_page_title")
+        .arg("Timezone")
         .stdin(std::process::Stdio::piped())
         .stdout(std::process::Stdio::piped())
         .spawn()
