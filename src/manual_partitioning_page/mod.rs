@@ -184,23 +184,21 @@ pub fn manual_partitioning_page(
                     println!("mountpoint empty");
                     break;
                 }
-                if fs_entry.mountpoint != "[SWAP]"
-                    || !fs_entry.mountpoint.starts_with("/")
-                    || fs_entry.mountpoint.starts_with("/dev")
-                {
+                if fs_entry.mountpoint == "[SWAP]" || fs_entry.mountpoint.starts_with("/") && !fs_entry.mountpoint.starts_with("/dev") {
+                } else {
                     errored = true;
                     println!("mountpoint invalid");
-                    //break;
+                    break;
                 }
                 if fs_entry.partition.part_name.is_empty() {
                     errored = true;
                     println!("partition empty");
-                    //break;
+                    break;
                 }
                 if !seen_mountpoints.insert(fs_entry.clone().mountpoint) {
                     errored = true;
                     println!("duplicate found");
-                    //break;
+                    break;
                 }
                 //
                 (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()).push(fs_entry);
