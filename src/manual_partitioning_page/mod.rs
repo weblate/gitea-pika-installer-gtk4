@@ -35,7 +35,7 @@ pub fn manual_partitioning_page(
 
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
     let used_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
-    let do_used_part_check_refcell = Rc::new(RefCell::new(true));
+    let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
 
     //
 
@@ -75,7 +75,7 @@ pub fn manual_partitioning_page(
         &partition_changed_action,
         &language_changed_action,
         &used_partition_array_refcell,
-        &do_used_part_check_refcell,
+        &subvol_partition_array_refcell,
     );
 
     content_box.append(&drive_mounts_viewport);
@@ -146,7 +146,7 @@ fn create_efi_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
-    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -266,7 +266,7 @@ fn create_efi_row(
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &do_used_part_check_refcell);
+        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -300,7 +300,7 @@ fn create_boot_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
-    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -420,7 +420,7 @@ fn create_boot_row(
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &do_used_part_check_refcell);
+        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -454,7 +454,7 @@ fn create_root_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
-    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -579,7 +579,7 @@ fn create_root_row(
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &do_used_part_check_refcell);
+        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -613,7 +613,7 @@ fn create_mount_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
-    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -703,7 +703,7 @@ fn create_mount_row(
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &do_used_part_check_refcell);
+        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -730,7 +730,7 @@ fn create_mount_row(
     );
 }
 
-fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionRow, partition_button: &gtk::CheckButton, partition_changed_action: &gio::SimpleAction, partition: &Partition,     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>, do_used_part_check_refcell: &Rc<RefCell<bool>>) {
+fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionRow, partition_button: &gtk::CheckButton, partition_changed_action: &gio::SimpleAction, partition: &Partition,     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>, subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>) {
     partition_row_struct.widget.add_prefix(partition_button);
     partition_button.connect_toggled(clone!(
         #[weak]
@@ -761,8 +761,6 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
         #[strong]
         partition,
         #[strong]
-        partition_changed_action,
-        #[strong]
         row,
         move |_| {
             if row.mountpoint() == "[SWAP]" {
@@ -777,6 +775,26 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
         }
     ));
 
+    row.connect_mountopts_notify(clone!(
+        #[strong]
+        partition,
+        #[strong]
+        partition_changed_action,
+        #[strong]
+        subvol_partition_array_refcell,
+        #[strong]
+        row,
+        move |_| {
+            if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
+                (*subvol_partition_array_refcell.borrow_mut()).push(partition.part_name.to_string());
+            } else {
+                (*subvol_partition_array_refcell.borrow_mut())
+                    .retain(|x| x != &partition.part_name);
+            }
+            partition_changed_action.activate(None);
+        }
+    ));
+
     partition_changed_action.connect_activate(clone!(
         #[strong]
         partition_row_struct,
@@ -787,22 +805,27 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
         #[strong]
         used_partition_array_refcell,
         #[strong]
-        do_used_part_check_refcell,
+        subvol_partition_array_refcell,
         move |_, _| {
-            if *do_used_part_check_refcell.borrow() == true {
                 let part_name = &partition.part_name;
                 let used_partition_array = used_partition_array_refcell.borrow();
+                let subvol_partition_array = subvol_partition_array_refcell.borrow();
                 if used_partition_array
                     .iter()
                     .any(|e| part_name == e && part_name != &row.partition())
                 {
                     partition_row_struct.widget.set_sensitive(false);
                     (*partition_row_struct.used.borrow_mut()) = true;
+                    if subvol_partition_array
+                    .iter()
+                    .any(|e| e == part_name)
+                    {
+                        partition_row_struct.widget.set_sensitive(true);
+                    }
                 } else if *partition_row_struct.never.borrow() == false {
                     partition_row_struct.widget.set_sensitive(true);
                     (*partition_row_struct.used.borrow_mut()) = false;
                 }
-            }
         }
     ));
 }
@@ -814,7 +837,7 @@ fn create_hardcoded_rows(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
-    do_used_part_check_refcell: &Rc<RefCell<bool>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
     let drive_mount_add_button = gtk::Button::builder()
         .icon_name("list-add")
@@ -829,7 +852,7 @@ fn create_hardcoded_rows(
         &partition_changed_action,
         &language_changed_action,
         &used_partition_array_refcell,
-        &do_used_part_check_refcell,
+        &subvol_partition_array_refcell,
     );
     create_boot_row(
         &drive_mounts_adw_listbox,
@@ -838,7 +861,7 @@ fn create_hardcoded_rows(
         &partition_changed_action,
         &language_changed_action,
         &used_partition_array_refcell,
-        &do_used_part_check_refcell,
+        &subvol_partition_array_refcell,
     );
     create_root_row(
         &drive_mounts_adw_listbox,
@@ -847,7 +870,7 @@ fn create_hardcoded_rows(
         &partition_changed_action,
         &language_changed_action,
         &used_partition_array_refcell,
-        &do_used_part_check_refcell,
+        &subvol_partition_array_refcell,
     );
 
     drive_mounts_adw_listbox.append(&drive_mount_add_button);
@@ -866,7 +889,7 @@ fn create_hardcoded_rows(
         #[strong]
         used_partition_array_refcell,
         #[strong]
-        do_used_part_check_refcell,
+        subvol_partition_array_refcell,
         move |_| {
             create_mount_row(
                 &drive_mounts_adw_listbox,
@@ -875,7 +898,7 @@ fn create_hardcoded_rows(
                 &partition_changed_action,
                 &language_changed_action,
                 &used_partition_array_refcell,
-                &do_used_part_check_refcell,
+                &subvol_partition_array_refcell,
             );
         }
     ));
