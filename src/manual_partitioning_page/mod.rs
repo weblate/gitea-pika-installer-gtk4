@@ -100,6 +100,52 @@ pub fn manual_partitioning_page(
     utility_buttons_box.append(&open_disk_utility_button);
     utility_buttons_box.append(&filesystem_table_refresh_button);
     utility_buttons_box.append(&filesystem_table_validate_button);
+
+
+    filesystem_table_refresh_button.connect_clicked(clone!(
+        #[weak]
+        drive_mounts_adw_listbox,
+        #[weak]
+        drive_rows_size_group,
+        #[strong]
+        partition_array_refcell,
+        #[strong]
+        partition_changed_action,
+        #[strong]
+        language_changed_action,
+        #[strong]
+        used_partition_array_refcell,
+        #[strong]
+        subvol_partition_array_refcell,
+        #[strong]
+        partition_method_manual_fstab_entry_array_refcell,
+        #[strong]
+        partition_method_manual_luks_enabled_refcell,
+        #[strong]
+        partition_method_manual_crypttab_entry_array_refcell,
+        move |_|
+            {
+                while let Some(row) = drive_mounts_adw_listbox.last_child() {
+                    drive_mounts_adw_listbox.remove(&row);
+                }
+
+                (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()) = Vec::new();
+                (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
+                (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
+                (*used_partition_array_refcell.borrow_mut()) = Vec::new();
+                (*subvol_partition_array_refcell.borrow_mut()) = Vec::new();
+                create_hardcoded_rows(
+                    &drive_mounts_adw_listbox,
+                    &drive_rows_size_group,
+                    &partition_array_refcell,
+                    &partition_changed_action,
+                    &language_changed_action,
+                    &used_partition_array_refcell,
+                    &subvol_partition_array_refcell,
+                );
+            }
+        )
+    );
     
     content_box.append(&drive_mounts_viewport);
     content_box.append(&utility_buttons_box);
