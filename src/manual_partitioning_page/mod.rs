@@ -14,7 +14,7 @@ const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
 #[derive(Clone)]
 struct PartitionRow {
     widget: adw::ActionRow,
-    used: Rc<std::cell::RefCell<bool>>,
+    used: Rc<std::cell::RefCell<i8>>,
     never: Rc<std::cell::RefCell<bool>>,
 }
 
@@ -193,7 +193,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else if used_partition_array_refcell
@@ -216,7 +216,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(true)),
+                used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
             }
         } else if partition.part_fs != "vfat" {
@@ -230,7 +230,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else if partition.part_size < MINIMUM_EFI_BYTE_SIZE {
@@ -244,7 +244,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else {
@@ -262,7 +262,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
@@ -347,7 +347,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else if used_partition_array_refcell
@@ -370,7 +370,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(true)),
+                used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
             }
         } else if partition.part_fs != "ext4" {
@@ -384,7 +384,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else if partition.part_size < MINIMUM_BOOT_BYTE_SIZE {
@@ -398,7 +398,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else {
@@ -416,7 +416,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
@@ -501,7 +501,7 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else if used_partition_array_refcell
@@ -524,7 +524,7 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(true)),
+                used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
             }
         } else  if partition.part_fs == "vfat"
@@ -543,7 +543,7 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else if partition.part_size < MINIMUM_ROOT_BYTE_SIZE {
@@ -557,7 +557,7 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else {
@@ -575,7 +575,7 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
@@ -658,7 +658,7 @@ fn create_mount_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
         } else if used_partition_array_refcell
@@ -681,7 +681,7 @@ fn create_mount_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(true)),
+                used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
             }
         } else {
@@ -699,7 +699,7 @@ fn create_mount_row(
                         .build();
                     prow
                 },
-                used: Rc::new(RefCell::new(false)),
+                used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
@@ -767,7 +767,7 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
                 if partition.part_fs != "linux-swap" {
                     partition_row_struct.widget.set_sensitive(false);
                 }
-            } else if *partition_row_struct.used.borrow() == false
+            } else if *partition_row_struct.used.borrow() != 1
                 && *partition_row_struct.never.borrow() == false
             {
                 partition_row_struct.widget.set_sensitive(true);
@@ -814,17 +814,19 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
                     .iter()
                     .any(|e| part_name == e && part_name != &row.partition())
                 {
-                    partition_row_struct.widget.set_sensitive(false);
-                    (*partition_row_struct.used.borrow_mut()) = true;
                     if subvol_partition_array
                     .iter()
                     .any(|e| e == part_name)
                     {
                         partition_row_struct.widget.set_sensitive(true);
+                        (*partition_row_struct.used.borrow_mut()) = 2;
+                    } else {
+                        partition_row_struct.widget.set_sensitive(false);
+                        (*partition_row_struct.used.borrow_mut()) = 1;
                     }
                 } else if *partition_row_struct.never.borrow() == false {
                     partition_row_struct.widget.set_sensitive(true);
-                    (*partition_row_struct.used.borrow_mut()) = false;
+                    (*partition_row_struct.used.borrow_mut()) = 0;
                 }
         }
     ));
