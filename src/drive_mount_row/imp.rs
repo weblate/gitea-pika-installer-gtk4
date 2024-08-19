@@ -234,7 +234,8 @@ impl ObjectImpl for DriveMountRow {
                             #[weak]
                             mountopts_entry_row,
                             move |_, _| {
-                                partition_row_expander.set_subtitle(&t!("partition_row_expander_subtitle"));
+                                partition_row_expander
+                                    .set_subtitle(&t!("partition_row_expander_subtitle"));
                                 mountpoint_entry_row.set_title(&t!("mountpoint_entry_row_title"));
                                 mountopts_entry_row.set_title(&t!("mountopts_entry_row_title"));
                             }

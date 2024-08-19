@@ -159,7 +159,8 @@ pub fn timezone_page(
             timezone_page.set_back_tooltip_label(t!("back"));
             timezone_page.set_next_tooltip_label(t!("next"));
             //
-            timezone_search_bar.set_placeholder_text(Some(&t!("timezone_search_bar_placeholder_text")));
+            timezone_search_bar
+                .set_placeholder_text(Some(&t!("timezone_search_bar_placeholder_text")));
         }
     ));
     //

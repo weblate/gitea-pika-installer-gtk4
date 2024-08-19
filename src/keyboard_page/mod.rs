@@ -189,7 +189,8 @@ pub fn keyboard_page(
             keyboard_page.set_back_tooltip_label(t!("back"));
             keyboard_page.set_next_tooltip_label(t!("next"));
             //
-            keyboard_search_bar.set_placeholder_text(Some(&t!("keyboard_search_bar_placeholder_text")));
+            keyboard_search_bar
+                .set_placeholder_text(Some(&t!("keyboard_search_bar_placeholder_text")));
             //
             keyboard_test_entry.set_title(&t!("keyboard_test_entry_title"))
         }

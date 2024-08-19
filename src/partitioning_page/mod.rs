@@ -46,10 +46,55 @@ pub fn partitioning_page(
 
     content_box.add_css_class("linked");
 
-    let automatic_method_button = gtk::Button::builder().icon_name("builder").build();
+    let manual_method_button_icon = gtk::Image::builder()
+        .icon_name("emblem-system-symbolic")
+        .margin_end(2)
+        .halign(gtk::Align::Start)
+        .build();
+
+    let manual_method_button_label = gtk::Label::builder()
+        .label(t!("manual_method_button_label"))
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .build();
+
+    let manual_method_button_child_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+
+    manual_method_button_child_box.append(&manual_method_button_icon);
+    manual_method_button_child_box.append(&manual_method_button_label);
+
+    let automatic_method_button_icon = gtk::Image::builder()
+        .icon_name("builder")
+        .margin_end(2)
+        .halign(gtk::Align::Start)
+        .build();
+
+    let automatic_method_button_label = gtk::Label::builder()
+        .label(t!("automatic_method_button_label"))
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .build();
+
+    let automatic_method_button_child_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+
+    automatic_method_button_child_box.append(&automatic_method_button_icon);
+    automatic_method_button_child_box.append(&automatic_method_button_label);
+
+    let method_labels_size_group = gtk::SizeGroup::new(gtk::SizeGroupMode::Both);
+    let method_icons_size_group = gtk::SizeGroup::new(gtk::SizeGroupMode::Both);
+
+    method_labels_size_group.add_widget(&manual_method_button_label);
+    method_labels_size_group.add_widget(&automatic_method_button_label);
+
+    method_icons_size_group.add_widget(&manual_method_button_icon);
+    method_icons_size_group.add_widget(&automatic_method_button_icon);
 
     let manual_method_button = gtk::Button::builder()
-        .icon_name("emblem-system-symbolics")
+        .child(&manual_method_button_child_box)
+        .build();
+
+    let automatic_method_button = gtk::Button::builder()
+        .child(&automatic_method_button_child_box)
         .build();
 
     automatic_method_button.connect_clicked(clone!(
@@ -79,9 +124,9 @@ pub fn partitioning_page(
             partitioning_page.set_back_tooltip_label(t!("back"));
             partitioning_page.set_next_tooltip_label(t!("next"));
             //
-            automatic_method_button.set_label(&t!("automatic_method_button_label"));
+            automatic_method_button_label.set_label(&t!("automatic_method_button_label"));
             //
-            manual_method_button.set_label(&t!("manual_method_button_label"));
+            manual_method_button_label.set_label(&t!("manual_method_button_label"));
         }
     ));
     //

@@ -195,7 +195,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -220,7 +220,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
@@ -236,7 +236,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(true)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -252,7 +252,7 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(true)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -272,13 +272,21 @@ fn create_efi_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
+        post_check_drive_mount(
+            &row,
+            &partition_row_struct,
+            &partition_button,
+            &partition_changed_action,
+            &partition,
+            &used_partition_array_refcell,
+            &subvol_partition_array_refcell,
+        );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -293,8 +301,7 @@ fn create_efi_row(
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
                 (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
             } else {
-                (*subvol_partition_array_refcell.borrow_mut())
-                    .retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
             partition_changed_action.activate(None);
         }
@@ -377,7 +384,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -402,7 +409,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
@@ -418,7 +425,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(true)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -434,7 +441,7 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(true)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -454,13 +461,21 @@ fn create_boot_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
+        post_check_drive_mount(
+            &row,
+            &partition_row_struct,
+            &partition_button,
+            &partition_changed_action,
+            &partition,
+            &used_partition_array_refcell,
+            &subvol_partition_array_refcell,
+        );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -475,8 +490,7 @@ fn create_boot_row(
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
                 (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
             } else {
-                (*subvol_partition_array_refcell.borrow_mut())
-                    .retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
             partition_changed_action.activate(None);
         }
@@ -559,7 +573,7 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -584,16 +598,16 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
             }
-        } else  if partition.part_fs == "vfat"
-        || partition.part_fs == "ntfs"
-        || partition.part_fs == "swap"
-        || partition.part_fs == "exfat"
-        || partition.part_fs == "BitLocker"
+        } else if partition.part_fs == "vfat"
+            || partition.part_fs == "ntfs"
+            || partition.part_fs == "swap"
+            || partition.part_fs == "exfat"
+            || partition.part_fs == "BitLocker"
         {
             PartitionRow {
                 widget: {
@@ -605,7 +619,7 @@ fn create_root_row(
                         .build();
                     prow
                 },
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(true)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
@@ -642,12 +656,20 @@ fn create_root_row(
                     prow
                 },
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
+        post_check_drive_mount(
+            &row,
+            &partition_row_struct,
+            &partition_button,
+            &partition_changed_action,
+            &partition,
+            &used_partition_array_refcell,
+            &subvol_partition_array_refcell,
+        );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -662,8 +684,7 @@ fn create_root_row(
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
                 (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
             } else {
-                (*subvol_partition_array_refcell.borrow_mut())
-                    .retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
             partition_changed_action.activate(None);
         }
@@ -745,7 +766,7 @@ fn create_mount_row(
                     prow
                 },
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(true)),
             }
@@ -770,7 +791,7 @@ fn create_mount_row(
                     prow
                 },
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(1)),
                 never: Rc::new(RefCell::new(false)),
             }
@@ -790,12 +811,20 @@ fn create_mount_row(
                     prow
                 },
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
-                swap_fs_error:  Rc::new(RefCell::new(false)),
+                swap_fs_error: Rc::new(RefCell::new(false)),
                 used: Rc::new(RefCell::new(0)),
                 never: Rc::new(RefCell::new(false)),
             }
         };
-        post_check_drive_mount(&row, &partition_row_struct, &partition_button, &partition_changed_action, &partition, &used_partition_array_refcell, &subvol_partition_array_refcell);
+        post_check_drive_mount(
+            &row,
+            &partition_row_struct,
+            &partition_button,
+            &partition_changed_action,
+            &partition,
+            &used_partition_array_refcell,
+            &subvol_partition_array_refcell,
+        );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
 
@@ -810,8 +839,7 @@ fn create_mount_row(
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
                 (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
             } else {
-                (*subvol_partition_array_refcell.borrow_mut())
-                    .retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
             partition_changed_action.activate(None);
         }
@@ -840,7 +868,15 @@ fn create_mount_row(
     );
 }
 
-fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionRow, partition_button: &gtk::CheckButton, partition_changed_action: &gio::SimpleAction, partition: &Partition,     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>, subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>) {
+fn post_check_drive_mount(
+    row: &DriveMountRow,
+    partition_row_struct: &PartitionRow,
+    partition_button: &gtk::CheckButton,
+    partition_changed_action: &gio::SimpleAction,
+    partition: &Partition,
+    used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+) {
     partition_row_struct.widget.add_prefix(partition_button);
     partition_button.connect_toggled(clone!(
         #[weak]
@@ -859,8 +895,7 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
                 row.set_partition(part_name.to_string());
                 (*used_partition_array_refcell.borrow_mut()).push(part_name.to_string());
             } else {
-                (*used_partition_array_refcell.borrow_mut())
-                    .retain(|x| x != &partition.part_name);
+                (*used_partition_array_refcell.borrow_mut()).retain(|x| x != &partition.part_name);
             }
             partition_changed_action.activate(None);
         }
@@ -876,7 +911,10 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
             if row.mountpoint() == "[SWAP]" {
                 if partition.part_fs == "linux-swap" {
                     (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
-                    if *partition_row_struct.never.borrow() == false && *partition_row_struct.swap_fs_error.borrow() == false && *partition_row_struct.hardcode_fs_error.borrow() == false {
+                    if *partition_row_struct.never.borrow() == false
+                        && *partition_row_struct.swap_fs_error.borrow() == false
+                        && *partition_row_struct.hardcode_fs_error.borrow() == false
+                    {
                         partition_row_struct.widget.set_sensitive(true);
                     }
                 } else {
@@ -905,29 +943,35 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
         #[strong]
         subvol_partition_array_refcell,
         move |_, _| {
-                let part_name = &partition.part_name;
-                let used_partition_array = used_partition_array_refcell.borrow();
-                let subvol_partition_array = subvol_partition_array_refcell.borrow();
-                if used_partition_array
+            let part_name = &partition.part_name;
+            let used_partition_array = used_partition_array_refcell.borrow();
+            let subvol_partition_array = subvol_partition_array_refcell.borrow();
+            if used_partition_array
+                .iter()
+                .any(|e| part_name == e && part_name != &row.partition())
+            {
+                if subvol_partition_array
                     .iter()
                     .any(|e| part_name == e && part_name != &row.partition())
                 {
-                    if subvol_partition_array
-                    .iter()
-                    .any(|e| part_name == e && part_name != &row.partition())
+                    if *partition_row_struct.never.borrow() == false
+                        && *partition_row_struct.swap_fs_error.borrow() == false
+                        && *partition_row_struct.hardcode_fs_error.borrow() == false
                     {
-                        if *partition_row_struct.never.borrow() == false && *partition_row_struct.swap_fs_error.borrow() == false && *partition_row_struct.hardcode_fs_error.borrow() == false {
-                            partition_row_struct.widget.set_sensitive(true);
-                        }
-                        (*partition_row_struct.used.borrow_mut()) = 2;
-                    } else {
-                        partition_row_struct.widget.set_sensitive(false);
-                        (*partition_row_struct.used.borrow_mut()) = 1;
+                        partition_row_struct.widget.set_sensitive(true);
                     }
-                } else if *partition_row_struct.never.borrow() == false && *partition_row_struct.swap_fs_error.borrow() == false && *partition_row_struct.hardcode_fs_error.borrow() == false  {
-                    partition_row_struct.widget.set_sensitive(true);
-                    (*partition_row_struct.used.borrow_mut()) = 0;
+                    (*partition_row_struct.used.borrow_mut()) = 2;
+                } else {
+                    partition_row_struct.widget.set_sensitive(false);
+                    (*partition_row_struct.used.borrow_mut()) = 1;
                 }
+            } else if *partition_row_struct.never.borrow() == false
+                && *partition_row_struct.swap_fs_error.borrow() == false
+                && *partition_row_struct.hardcode_fs_error.borrow() == false
+            {
+                partition_row_struct.widget.set_sensitive(true);
+                (*partition_row_struct.used.borrow_mut()) = 0;
+            }
         }
     ));
 }
@@ -941,7 +985,6 @@ fn create_hardcoded_rows(
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
     subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
-
     let drive_mount_add_button_icon = gtk::Image::builder()
         .icon_name("list-add")
         .halign(gtk::Align::Start)

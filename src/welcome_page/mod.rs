@@ -21,14 +21,55 @@ pub fn welcome_page(window: &adw::ApplicationWindow, main_carousel: &adw::Carous
 
     content_box.add_css_class("linked");
 
-    let live_media_button = gtk::Button::builder()
+    let live_media_button_icon = gtk::Image::builder()
         .icon_name("drive-optical")
+        .margin_end(2)
+        .halign(gtk::Align::Start)
+        .build();
+
+    let live_media_button_label = gtk::Label::builder()
         .label(t!("live_media_button_label"))
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .build();
+
+    let live_media_button_child_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+
+    live_media_button_child_box.append(&live_media_button_icon);
+    live_media_button_child_box.append(&live_media_button_label);
+
+    let install_media_button_icon = gtk::Image::builder()
+        .icon_name("drive-harddisk")
+        .margin_end(2)
+        .halign(gtk::Align::Start)
+        .build();
+
+    let install_media_button_label = gtk::Label::builder()
+        .label(t!("install_media_button_label"))
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .build();
+
+    let install_media_button_child_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+
+    install_media_button_child_box.append(&install_media_button_icon);
+    install_media_button_child_box.append(&install_media_button_label);
+
+    let media_labels_size_group = gtk::SizeGroup::new(gtk::SizeGroupMode::Both);
+    let media_icons_size_group = gtk::SizeGroup::new(gtk::SizeGroupMode::Both);
+
+    media_labels_size_group.add_widget(&live_media_button_label);
+    media_labels_size_group.add_widget(&install_media_button_label);
+
+    media_icons_size_group.add_widget(&live_media_button_icon);
+    media_icons_size_group.add_widget(&install_media_button_icon);
+
+    let live_media_button = gtk::Button::builder()
+        .child(&live_media_button_child_box)
         .build();
 
     let install_media_button = gtk::Button::builder()
-        .icon_name("drive-harddisk")
-        .label(t!("install_media_button_label"))
+        .child(&install_media_button_child_box)
         .build();
 
     install_media_button.connect_clicked(clone!(
