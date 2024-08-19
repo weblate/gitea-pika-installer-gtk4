@@ -14,14 +14,9 @@
     "manual_method_button_label": "Manually Partition The Drive",
     "automatic_method_button_label": "Automatically Partition\nThe Drive",
     "manual_partitioning_page_title": "Manual Disk Partitioning",
-    "manual_partitioning_page_subtitle": "Use This Page to Create a Custom Filesystem Table for PikaOS to install into.\nNotes:\n - This installer doesn't erase any data automatically, format your drives manually via gparted.\n - To Add a linux-swap partition set mountpoint to [SWAP]",
-    "open_gparted": "Open GPARTED",
-    "manual_part_note": " - Press the plus button below to begin adding filesystem entries.",
-    "refresh_part_table": "Refresh Partition Table",
-    "validate_fs_table": "Validate Filesystem Table",
+    "manual_partitioning_page_subtitle": "Use This Page to Create a Custom Filesystem Table for PikaOS to install into.\nNotes:\n - This Installer Doesn't Erase Any Data Automatically, Format Your Drives MANUALLY Via The Disk Utility.\n - To Add a linux-swap Partition Set Mountpoint to [SWAP]",
     "fstab_status_valid": "Filesystem Table Status: All entries are valid!",
     "partition_row_subtitle_needs_mapper": "This partition needs a mapper!",
-    "fstab_subvol_warn": "Filesystem Table Warning: Partition reuse check will be skipped due to subvol usage.",
     "fstab_multiple_part_mountpoint_err": "Filesystem Table Error: Multiple partitions are configured to the same mountpoint!",
     "fstab_no_mountpoint_err": "Filesystem Table Error: One or more partitions don't have a mountpoint configured!",
     "fstab_no_partition_err": "Filesystem Table Error: One or more entries don't have a partition configured!",
@@ -103,5 +98,8 @@
     "advanced_home_seperation_selection_checkbutton_partition_label": "Yes, via a Partition",
     "advanced_home_seperation_selection_checkbutton_none_label": "No",
     "fs_unknown": "Unknown",
-    "drive_mount_add_button_label": "Add A Custom FIlesystem Entry"
+    "drive_mount_add_button_label": "Add A Custom FIlesystem Entry",
+    "open_disk_utility_button_label": "Open Disk Partitioning Utility",
+    "filesystem_table_refresh_button_label": "Refresh Filesystem Table",
+    "filesystem_table_validate_button_label": "Validate Filesystem Table"
 }

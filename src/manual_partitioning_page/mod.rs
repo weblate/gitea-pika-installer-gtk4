@@ -4,7 +4,7 @@ use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partit
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
-use gtk::{glib, prelude::*};
+use gtk::{glib, prelude::*, Orientation};
 use std::{cell::RefCell, rc::Rc};
 
 mod func;
@@ -69,7 +69,40 @@ pub fn manual_partitioning_page(
         &subvol_partition_array_refcell,
     );
 
+    let open_disk_utility_button = gtk::Button::builder()
+        .label(t!("open_disk_utility_button_label"))
+        .margin_top(10)
+        .margin_end(5)
+        .halign(gtk::Align::Start)
+        .build();
+
+    let filesystem_table_refresh_button = gtk::Button::builder()
+        .label(t!("filesystem_table_refresh_button_label"))
+        .margin_top(10)
+        .margin_end(5)
+        .halign(gtk::Align::Start)
+        .build();
+    filesystem_table_refresh_button.add_css_class("destructive-action");
+
+    let filesystem_table_validate_button = gtk::Button::builder()
+        .label(t!("filesystem_table_validate_button_label"))
+        .margin_top(10)
+        .hexpand(true)
+        .halign(gtk::Align::End)
+        .build();
+    filesystem_table_validate_button.add_css_class("suggested-action");
+
+    let utility_buttons_box = gtk::Box::builder()
+        .orientation(Orientation::Horizontal)
+        .hexpand(true)
+        .build();
+
+    utility_buttons_box.append(&open_disk_utility_button);
+    utility_buttons_box.append(&filesystem_table_refresh_button);
+    utility_buttons_box.append(&filesystem_table_validate_button);
+    
     content_box.append(&drive_mounts_viewport);
+    content_box.append(&utility_buttons_box);
 
     //
     manual_partitioning_page.connect_closure(
