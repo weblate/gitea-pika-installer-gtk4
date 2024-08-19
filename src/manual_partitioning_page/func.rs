@@ -84,7 +84,11 @@ pub fn create_efi_row(
             .borrow()
             .iter()
             .any(|e| {
-                (part_name == &e.partition.part_name && part_name != &row.partition()) && (e.mountopts.contains("subvol=") || e.mountopts.contains("subvolid"))
+                (part_name == &e.partition.part_name && part_name != &row.partition())
+                    && (subvol_partition_array_refcell
+                        .borrow()
+                        .iter()
+                        .any(|e| part_name == e))
             })
         {
             PartitionRow {
@@ -97,7 +101,7 @@ pub fn create_efi_row(
                                 + " "
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
-                        .sensitive(false)
+                        .sensitive(true)
                         .build();
                     prow
                 },
@@ -301,7 +305,11 @@ pub fn create_boot_row(
             .borrow()
             .iter()
             .any(|e| {
-                (part_name == &e.partition.part_name && part_name != &row.partition()) && (e.mountopts.contains("subvol=") || e.mountopts.contains("subvolid"))
+                (part_name == &e.partition.part_name && part_name != &row.partition())
+                    && (subvol_partition_array_refcell
+                        .borrow()
+                        .iter()
+                        .any(|e| part_name == e))
             })
         {
             PartitionRow {
@@ -518,7 +526,11 @@ pub fn create_root_row(
             .borrow()
             .iter()
             .any(|e| {
-                (part_name == &e.partition.part_name && part_name != &row.partition()) && (e.mountopts.contains("subvol=") || e.mountopts.contains("subvolid"))
+                (part_name == &e.partition.part_name && part_name != &row.partition())
+                    && (subvol_partition_array_refcell
+                        .borrow()
+                        .iter()
+                        .any(|e| part_name == e))
             })
         {
             PartitionRow {
@@ -531,7 +543,7 @@ pub fn create_root_row(
                                 + " "
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
-                        .sensitive(false)
+                        .sensitive(true)
                         .build();
                     prow
                 },
@@ -738,7 +750,11 @@ pub fn create_mount_row(
             .borrow()
             .iter()
             .any(|e| {
-                (part_name == &e.partition.part_name && part_name != &row.partition()) && (e.mountopts.contains("subvol=") || e.mountopts.contains("subvolid"))
+                (part_name == &e.partition.part_name && part_name != &row.partition())
+                    && (subvol_partition_array_refcell
+                        .borrow()
+                        .iter()
+                        .any(|e| part_name == e))
             })
         {
             PartitionRow {
@@ -826,6 +842,11 @@ pub fn create_mount_row(
         #[strong]
         row,
         move |_| {
+            if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
+                (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
+            } else {
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
+            }
             partition_changed_action.activate(None);
         }
     ));
@@ -876,6 +897,15 @@ fn post_check_drive_mount(
         #[strong]
         partition,
         move |_| {
+            if partition_button.is_active() == true {
+                let part_name = &partition.part_name;
+                row.set_partition(part_name.to_string());
+                (*used_partition_array_refcell.borrow_mut())
+                    .push(DriveMountRow::get_fstab_entry(&row));
+            } else {
+                (*used_partition_array_refcell.borrow_mut())
+                    .retain(|x| &x.partition.part_name != &row.partition());
+            }
             partition_changed_action.activate(None);
         }
     ));
@@ -911,8 +941,6 @@ fn post_check_drive_mount(
     ));
 
     partition_changed_action.connect_activate(clone!(
-        #[weak]
-        partition_button,
         #[strong]
         partition_row_struct,
         #[strong]
@@ -924,40 +952,14 @@ fn post_check_drive_mount(
         #[strong]
         subvol_partition_array_refcell,
         move |_, _| {
-            if partition_button.is_active() == true {
-                let part_name = &partition.part_name;
-                row.set_partition(part_name.to_string());
-                (*used_partition_array_refcell.borrow_mut())
-                    .push(DriveMountRow::get_fstab_entry(&row));
-            } else {
-                (*used_partition_array_refcell.borrow_mut())
-                    .retain(|x| &x.partition.part_name != &partition.part_name);
-            }
-            if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
-                (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
-            } else {
-                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &partition.part_name);
-            }
             let part_name = &partition.part_name;
             let used_partition_array = used_partition_array_refcell.borrow();
             let subvol_partition_array = subvol_partition_array_refcell.borrow();
-            if used_partition_array
-                .iter()
-                .any(|e| part_name == &e.partition.part_name && part_name != &row.partition())
-            {
-            } else if *partition_row_struct.never.borrow() == false
-                && *partition_row_struct.swap_fs_error.borrow() == false
-                && *partition_row_struct.hardcode_fs_error.borrow() == false
-            {
-                partition_row_struct.widget.set_sensitive(true);
-                (*partition_row_struct.used.borrow_mut()) = 0;
-            }
 
-            if subvol_partition_array
-            .iter()
-            .any(|e| part_name == e && part_name != &row.partition())
-            {
-                println!("fuvk2");
+            if used_partition_array.iter().any(|e| {
+                (part_name == &e.partition.part_name && part_name != &row.partition())
+                    && (subvol_partition_array.iter().any(|e| part_name == e))
+            }) {
                 if *partition_row_struct.never.borrow() == false
                     && *partition_row_struct.swap_fs_error.borrow() == false
                     && *partition_row_struct.hardcode_fs_error.borrow() == false
@@ -965,10 +967,20 @@ fn post_check_drive_mount(
                     partition_row_struct.widget.set_sensitive(true);
                 }
                 (*partition_row_struct.used.borrow_mut()) = 2;
-            } else {
-                println!("fuvk");
+            } else if used_partition_array
+                .iter()
+                .any(|e| part_name == &e.partition.part_name && part_name != &row.partition())
+            {
                 partition_row_struct.widget.set_sensitive(false);
                 (*partition_row_struct.used.borrow_mut()) = 1;
+            } else {
+                if *partition_row_struct.never.borrow() == false
+                    && *partition_row_struct.swap_fs_error.borrow() == false
+                    && *partition_row_struct.hardcode_fs_error.borrow() == false
+                {
+                    partition_row_struct.widget.set_sensitive(true);
+                }
+                (*partition_row_struct.used.borrow_mut()) = 0;
             }
         }
     ));
