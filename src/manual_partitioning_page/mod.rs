@@ -1,13 +1,13 @@
 use crate::drive_mount_row::DriveMountRow;
 use crate::installer_stack_page;
 use crate::partitioning_page;
+use crate::partitioning_page::get_luks_uuid;
 use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition};
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
 use gtk::{glib, prelude::*, Orientation};
 use std::{cell::RefCell, collections::HashSet, rc::Rc};
-use crate::partitioning_page::get_luks_uuid;
 
 mod func;
 
@@ -25,10 +25,11 @@ pub fn manual_partitioning_page(
     manual_partitioning_page.set_back_visible(true);
     manual_partitioning_page.set_next_visible(true);
     manual_partitioning_page.set_back_sensitive(true);
-    manual_partitioning_page.set_next_sensitive(false);
+    //manual_partitioning_page.set_next_sensitive(false);
+    manual_partitioning_page.set_next_sensitive(true);
 
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
-    let used_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
+    let used_partition_array_refcell: Rc<RefCell<Vec<FstabEntry>>> = Rc::new(RefCell::default());
     let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
 
     //
@@ -176,6 +177,7 @@ pub fn manual_partitioning_page(
             (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
             (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
             let mut seen_mountpoints = HashSet::new();
+            let mut seen_crypts = HashSet::new();
 
             for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
@@ -184,7 +186,10 @@ pub fn manual_partitioning_page(
                     println!("mountpoint empty");
                     break;
                 }
-                if fs_entry.mountpoint == "[SWAP]" || fs_entry.mountpoint.starts_with("/") && !fs_entry.mountpoint.starts_with("/dev") {
+                if fs_entry.mountpoint == "[SWAP]"
+                    || fs_entry.mountpoint.starts_with("/")
+                        && !fs_entry.mountpoint.starts_with("/dev")
+                {
                 } else {
                     errored = true;
                     println!("mountpoint invalid");
@@ -205,10 +210,7 @@ pub fn manual_partitioning_page(
                 //
 
                 if fs_entry_clone0.partition.has_encryption
-                    && !partition_method_manual_crypttab_entry_array_refcell
-                        .borrow()
-                        .iter()
-                        .any(|x| x.partition == fs_entry_clone0.partition.part_name)
+                    && seen_crypts.insert(fs_entry_clone0.clone().partition.part_name)
                 {
                     let fs_entry = fs_entry_clone0.clone();
                     let (luks_manual_password_sender, luks_manual_password_receiver) =
@@ -276,29 +278,34 @@ pub fn manual_partitioning_page(
                         }
                     ));
 
-                    let partition_method_manual_crypttab_entry_array_refcell_clone0 = partition_method_manual_crypttab_entry_array_refcell.clone();
+                    let partition_method_manual_crypttab_entry_array_refcell_clone0 =
+                        partition_method_manual_crypttab_entry_array_refcell.clone();
+                    let partition_method_manual_luks_enabled_refcell_clone0 =
+                        partition_method_manual_luks_enabled_refcell.clone();
 
-                    crypttab_dialog.choose(None::<&gio::Cancellable>,
-                        move |choice|
-                        {   
-                            let part_name = fs_entry.partition.part_name;
-                            if choice == "crypttab_dialog_auto" {
-                                (*partition_method_manual_crypttab_entry_array_refcell_clone0.borrow_mut()).push(CrypttabEntry{
-                                    partition: part_name.clone(),
-                                    map: part_name.replace("mapper/", ""),
-                                    uuid: get_luks_uuid(&part_name),
-                                    password: None,
-                                });
-                            } else {
-                                (*partition_method_manual_crypttab_entry_array_refcell_clone0.borrow_mut()).push(CrypttabEntry{
-                                    partition: part_name.clone(),
-                                    map: part_name.replace("mapper/", ""),
-                                    uuid: get_luks_uuid(&part_name),
-                                    password: Some(crypttab_password.text().to_string()),
-                                });
-                            }
+                    crypttab_dialog.choose(None::<&gio::Cancellable>, move |choice| {
+                        let part_name = fs_entry.partition.part_name;
+                        if choice == "crypttab_dialog_auto" {
+                            (*partition_method_manual_crypttab_entry_array_refcell_clone0
+                                .borrow_mut())
+                            .push(CrypttabEntry {
+                                partition: part_name.clone(),
+                                map: part_name.replace("mapper/", ""),
+                                uuid: get_luks_uuid(&part_name),
+                                password: Some(crypttab_password.text().to_string()),
+                            });
+                        } else {
+                            (*partition_method_manual_crypttab_entry_array_refcell_clone0
+                                .borrow_mut())
+                            .push(CrypttabEntry {
+                                partition: part_name.clone(),
+                                map: part_name.replace("mapper/", ""),
+                                uuid: get_luks_uuid(&part_name),
+                                password: None,
+                            });
                         }
-                    );
+                        (*partition_method_manual_luks_enabled_refcell_clone0.borrow_mut()) = true;
+                    });
                 }
             }
         }
@@ -338,9 +345,9 @@ pub fn manual_partitioning_page(
                 *partition_method_type_refcell.borrow_mut() = String::from("manual");
                 //partition_carousel.scroll_to(&partition_carousel.nth_page(5), true)
                 dbg!(partition_method_type_refcell.borrow());
-                //dbg!(partition_method_manual_fstab_entry_array_refcell.borrow());
+                dbg!(partition_method_manual_fstab_entry_array_refcell.borrow());
                 dbg!(partition_method_manual_luks_enabled_refcell.borrow());
-                //dbg!(partition_method_manual_crypttab_entry_array_refcell.borrow());
+                dbg!(partition_method_manual_crypttab_entry_array_refcell.borrow());
             }
         ),
     );
@@ -372,7 +379,7 @@ fn create_hardcoded_rows(
     partition_array_refcell: &Rc<RefCell<Vec<Partition>>>,
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
-    used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
     let drive_mount_add_button_icon = gtk::Image::builder()

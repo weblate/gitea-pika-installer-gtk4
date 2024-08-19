@@ -175,7 +175,7 @@ pub struct BlockDevice {
     pub block_size_pretty: String,
 }
 
-#[derive(Clone, Default)]
+#[derive(Default, Clone, Debug)]
 pub struct Partition {
     pub part_name: String,
     pub part_fs: String,
@@ -186,13 +186,14 @@ pub struct Partition {
     pub part_size_pretty: String,
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct FstabEntry {
     pub partition: Partition,
     pub mountpoint: String,
     pub mountopts: String,
 }
 
+#[derive(Default, Clone, Debug)]
 pub struct CrypttabEntry {
     pub partition: String,
     pub map: String,
