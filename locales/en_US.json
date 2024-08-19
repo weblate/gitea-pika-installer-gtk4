@@ -102,5 +102,6 @@
     "advanced_home_seperation_selection_checkbutton_subvol_label": "Yes, via a Subvolume",
     "advanced_home_seperation_selection_checkbutton_partition_label": "Yes, via a Partition",
     "advanced_home_seperation_selection_checkbutton_none_label": "No",
-    "fs_unknown": "Unknown"
+    "fs_unknown": "Unknown",
+    "drive_mount_add_button_label": "Add A Custom FIlesystem Entry"
 }

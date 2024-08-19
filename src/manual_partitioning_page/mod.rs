@@ -887,6 +887,7 @@ fn post_check_drive_mount(row: &DriveMountRow, partition_row_struct: &PartitionR
                 && *partition_row_struct.never.borrow() == false
                 && *partition_row_struct.hardcode_fs_error.borrow() == false
             {
+                (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
                 partition_row_struct.widget.set_sensitive(true);
             }
         }
@@ -940,8 +941,25 @@ fn create_hardcoded_rows(
     used_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
     subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
 ) {
-    let drive_mount_add_button = gtk::Button::builder()
+
+    let drive_mount_add_button_icon = gtk::Image::builder()
         .icon_name("list-add")
+        .halign(gtk::Align::Start)
+        .build();
+
+    let drive_mount_add_button_label = gtk::Label::builder()
+        .label(t!("drive_mount_add_button_label"))
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .build();
+
+    let drive_mount_add_button_child_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+
+    drive_mount_add_button_child_box.append(&drive_mount_add_button_icon);
+    drive_mount_add_button_child_box.append(&drive_mount_add_button_label);
+
+    let drive_mount_add_button = gtk::Button::builder()
+        .child(&drive_mount_add_button_child_box)
         .vexpand(true)
         .hexpand(true)
         .build();
