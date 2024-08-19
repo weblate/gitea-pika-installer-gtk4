@@ -101,6 +101,18 @@ pub fn manual_partitioning_page(
     utility_buttons_box.append(&filesystem_table_refresh_button);
     utility_buttons_box.append(&filesystem_table_validate_button);
 
+    open_disk_utility_button.connect_clicked(clone!(
+        #[weak]
+        filesystem_table_refresh_button,
+        move |_|
+            {
+                let command = std::process::Command::new("blivet-gui").status();
+                if command.unwrap().success() {
+                    filesystem_table_refresh_button.emit_by_name("clicked", &[])
+                }
+            }
+        )
+    );
 
     filesystem_table_refresh_button.connect_clicked(clone!(
         #[weak]
