@@ -3,6 +3,7 @@ mod imp;
 use glib::Object;
 use gtk::glib;
 
+use crate::partitioning_page::create_parition_struct;
 use crate::partitioning_page::FstabEntry;
 
 glib::wrapper! {
@@ -22,7 +23,7 @@ impl DriveMountRow {
     }
     pub fn get_fstab_entry(&self) -> FstabEntry {
         FstabEntry {
-            partition: self.partition(),
+            partition: create_parition_struct(&self.partition()),
             mountpoint: self.mountpoint(),
             mountopts: self.mountopts(),
         }

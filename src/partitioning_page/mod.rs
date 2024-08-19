@@ -8,6 +8,7 @@ use std::{cell::RefCell, rc::Rc};
 
 pub fn partitioning_page(
     main_carousel: &adw::Carousel,
+    window: adw::ApplicationWindow,
     partition_method_type_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_target_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_target_fs_refcell: &Rc<RefCell<String>>,
@@ -145,6 +146,7 @@ pub fn partitioning_page(
     );
     manual_partitioning_page::manual_partitioning_page(
         &partitioning_carousel,
+        window,
         &partition_method_type_refcell,
         &partition_method_manual_fstab_entry_array_refcell,
         &partition_method_manual_luks_enabled_refcell,
@@ -173,24 +175,26 @@ pub struct BlockDevice {
     pub block_size_pretty: String,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct Partition {
     pub part_name: String,
     pub part_fs: String,
+    pub part_uuid: String,
     pub has_encryption: bool,
     pub need_mapper: bool,
     pub part_size: f64,
     pub part_size_pretty: String,
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct FstabEntry {
-    pub partition: String,
+    pub partition: Partition,
     pub mountpoint: String,
     pub mountopts: String,
 }
 
 pub struct CrypttabEntry {
+    pub partition: String,
     pub map: String,
     pub uuid: String,
     pub password: Option<String>,
@@ -268,18 +272,7 @@ pub fn get_partitions() -> Vec<Partition> {
         Some(t) => {
             for partition in std::io::BufReader::new(t).lines() {
                 match partition {
-                    Ok(r) => {
-                        let part_size = get_part_size(&r);
-                        let part_fs = get_part_fs(&r);
-                        partitions.push(Partition {
-                            has_encryption: is_encrypted(&r),
-                            need_mapper: is_needs_mapper(&part_fs),
-                            part_name: r,
-                            part_fs: part_fs,
-                            part_size: part_size,
-                            part_size_pretty: pretty_bytes::converter::convert(part_size),
-                        })
-                    }
+                    Ok(r) => partitions.push(create_parition_struct(&r)),
                     Err(_) => return partitions,
                 }
             }
@@ -288,6 +281,20 @@ pub fn get_partitions() -> Vec<Partition> {
     };
 
     partitions
+}
+
+pub fn create_parition_struct(part_dev: &str) -> Partition {
+    let part_size = get_part_size(&part_dev);
+    let part_fs = get_part_fs(&part_dev);
+    Partition {
+        has_encryption: is_encrypted(&part_dev),
+        need_mapper: is_needs_mapper(&part_fs),
+        part_uuid: get_part_uuid(&part_dev),
+        part_name: part_dev.to_string(),
+        part_fs: part_fs,
+        part_size: part_size,
+        part_size_pretty: pretty_bytes::converter::convert(part_size),
+    }
 }
 
 fn get_part_size(part_dev: &str) -> f64 {
@@ -350,4 +357,59 @@ fn is_encrypted(part_dev: &str) -> bool {
     } else {
         false
     }
+}
+
+pub fn test_luks_passwd(part_dev: &str, passwd: &str) -> bool {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("test_luks_passwd")
+        .arg(part_dev)
+        .arg(passwd)
+        .output()
+    {
+        Ok(t) => t,
+        Err(_) => return false,
+    };
+
+    if command.status.success() {
+        true
+    } else {
+        false
+    }
+}
+
+fn get_part_uuid(part_dev: &str) -> String {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_part_uuid")
+        .arg(part_dev)
+        .output()
+    {
+        Ok(t) => t,
+        Err(_) => return String::from(""),
+    };
+    let fs = match String::from_utf8(command.stdout) {
+        Ok(t) => t.trim().to_owned(),
+        Err(_) => String::from(""),
+    };
+
+    fs
+}
+
+pub fn get_luks_uuid(part_dev: &str) -> String {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_luks_uuid")
+        .arg(part_dev)
+        .output()
+    {
+        Ok(t) => t,
+        Err(_) => return String::from(""),
+    };
+    let fs = match String::from_utf8(command.stdout) {
+        Ok(t) => t.trim().to_owned(),
+        Err(_) => String::from(""),
+    };
+
+    fs
 }

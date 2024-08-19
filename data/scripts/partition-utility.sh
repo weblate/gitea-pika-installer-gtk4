@@ -36,6 +36,16 @@ then
 	fi
 fi
 
+if [[ "$1" = "get_part_uuid" ]]
+then
+        echo "$(blkid /dev/$2 -s UUID -o value)"
+fi
+
+if [[ "$1" = "get_luks_uuid" ]]
+then
+        echo "$(blkid "$(lsblk -sJp | jq -r --arg dsk /dev/"$2" '.blockdevices | .[] | select(.name == $dsk) | .children | .[0] | .name')" -s UUID -o value)"
+fi
+
 if [[ "$1" = "get_partitions" ]]
 then
   lsblk -ln -o NAME,TYPE | grep -E "part|crypt|lvm" |  awk '{print $1}' | while read i ; do

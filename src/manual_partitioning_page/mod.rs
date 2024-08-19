@@ -1,16 +1,19 @@
 use crate::drive_mount_row::DriveMountRow;
 use crate::installer_stack_page;
+use crate::partitioning_page;
 use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition};
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
 use gtk::{glib, prelude::*, Orientation};
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, collections::HashSet, rc::Rc};
+use crate::partitioning_page::get_luks_uuid;
 
 mod func;
 
 pub fn manual_partitioning_page(
     partition_carousel: &adw::Carousel,
+    window: adw::ApplicationWindow,
     partition_method_type_refcell: &Rc<RefCell<String>>,
     partition_method_manual_fstab_entry_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     partition_method_manual_luks_enabled_refcell: &Rc<RefCell<bool>>,
@@ -104,15 +107,13 @@ pub fn manual_partitioning_page(
     open_disk_utility_button.connect_clicked(clone!(
         #[weak]
         filesystem_table_refresh_button,
-        move |_|
-            {
-                let command = std::process::Command::new("blivet-gui").status();
-                if command.unwrap().success() {
-                    filesystem_table_refresh_button.emit_by_name("clicked", &[])
-                }
+        move |_| {
+            let command = std::process::Command::new("blivet-gui").status();
+            if command.unwrap().success() {
+                filesystem_table_refresh_button.emit_by_name("clicked", &[])
             }
-        )
-    );
+        }
+    ));
 
     filesystem_table_refresh_button.connect_clicked(clone!(
         #[weak]
@@ -135,30 +136,176 @@ pub fn manual_partitioning_page(
         partition_method_manual_luks_enabled_refcell,
         #[strong]
         partition_method_manual_crypttab_entry_array_refcell,
-        move |_|
-            {
-                while let Some(row) = drive_mounts_adw_listbox.last_child() {
-                    drive_mounts_adw_listbox.remove(&row);
-                }
-
-                (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()) = Vec::new();
-                (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
-                (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
-                (*used_partition_array_refcell.borrow_mut()) = Vec::new();
-                (*subvol_partition_array_refcell.borrow_mut()) = Vec::new();
-                create_hardcoded_rows(
-                    &drive_mounts_adw_listbox,
-                    &drive_rows_size_group,
-                    &partition_array_refcell,
-                    &partition_changed_action,
-                    &language_changed_action,
-                    &used_partition_array_refcell,
-                    &subvol_partition_array_refcell,
-                );
+        move |_| {
+            while let Some(row) = drive_mounts_adw_listbox.last_child() {
+                drive_mounts_adw_listbox.remove(&row);
             }
-        )
-    );
-    
+
+            (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()) = Vec::new();
+            (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
+            (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
+            (*used_partition_array_refcell.borrow_mut()) = Vec::new();
+            (*subvol_partition_array_refcell.borrow_mut()) = Vec::new();
+            create_hardcoded_rows(
+                &drive_mounts_adw_listbox,
+                &drive_rows_size_group,
+                &partition_array_refcell,
+                &partition_changed_action,
+                &language_changed_action,
+                &used_partition_array_refcell,
+                &subvol_partition_array_refcell,
+            );
+        }
+    ));
+
+    filesystem_table_validate_button.connect_clicked(clone!(
+        #[weak]
+        drive_mounts_adw_listbox,
+        #[strong]
+        window,
+        #[strong]
+        partition_method_manual_fstab_entry_array_refcell,
+        #[strong]
+        partition_method_manual_luks_enabled_refcell,
+        #[strong]
+        partition_method_manual_crypttab_entry_array_refcell,
+        move |_| {
+            let mut errored = false;
+
+            (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()) = Vec::new();
+            (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
+            (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
+            let mut seen_mountpoints = HashSet::new();
+
+            for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
+                let fs_entry_clone0 = fs_entry.clone();
+                if fs_entry.mountpoint.is_empty() {
+                    errored = true;
+                    println!("mountpoint empty");
+                    break;
+                }
+                if fs_entry.mountpoint != "[SWAP]"
+                    || !fs_entry.mountpoint.starts_with("/")
+                    || fs_entry.mountpoint.starts_with("/dev")
+                {
+                    errored = true;
+                    println!("mountpoint invalid");
+                    //break;
+                }
+                if fs_entry.partition.part_name.is_empty() {
+                    errored = true;
+                    println!("partition empty");
+                    //break;
+                }
+                if !seen_mountpoints.insert(fs_entry.clone().mountpoint) {
+                    errored = true;
+                    println!("duplicate found");
+                    //break;
+                }
+                //
+                (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()).push(fs_entry);
+                //
+
+                if fs_entry_clone0.partition.has_encryption
+                    && !partition_method_manual_crypttab_entry_array_refcell
+                        .borrow()
+                        .iter()
+                        .any(|x| x.partition == fs_entry_clone0.partition.part_name)
+                {
+                    let fs_entry = fs_entry_clone0.clone();
+                    let (luks_manual_password_sender, luks_manual_password_receiver) =
+                        async_channel::unbounded::<bool>();
+                    let crypttab_password_listbox = gtk::ListBox::builder()
+                        .margin_top(10)
+                        .margin_bottom(10)
+                        .margin_start(10)
+                        .margin_end(10)
+                        .build();
+                    crypttab_password_listbox.add_css_class("boxed-list");
+                    let crypttab_password = adw::PasswordEntryRow::builder()
+                        .title(t!("luks_password_for").to_string() + &fs_entry.partition.part_name)
+                        .build();
+                    crypttab_password.set_show_apply_button(true);
+                    crypttab_password_listbox.append(&crypttab_password);
+                    let crypttab_dialog = adw::MessageDialog::builder()
+                        .transient_for(&window)
+                        .hide_on_close(true)
+                        .extra_child(&crypttab_password_listbox)
+                        .width_request(400)
+                        .height_request(200)
+                        .heading(
+                            t!("luks_how_should").to_string()
+                                + &fs_entry.partition.part_name
+                                + &t!("be_added_crypttab"),
+                        )
+                        .build();
+                    crypttab_dialog
+                        .add_response("crypttab_dialog_boot", &t!("unlock_boot_manually"));
+                    crypttab_dialog.add_response("crypttab_dialog_auto", &t!("unlock_boot_manual"));
+                    crypttab_dialog.set_response_enabled("crypttab_dialog_auto", false);
+                    crypttab_password.connect_apply(clone!(
+                        #[weak]
+                        crypttab_password,
+                        #[strong]
+                        fs_entry,
+                        #[weak]
+                        crypttab_dialog,
+                        move |_| {
+                            let luks_manual_password_sender = luks_manual_password_sender.clone();
+                            let luks_password = crypttab_password.text().to_string();
+
+                            let fs_entry_clone1 = fs_entry.clone();
+
+                            std::thread::spawn(move || {
+                                luks_manual_password_sender
+                                    .send_blocking(partitioning_page::test_luks_passwd(
+                                        &fs_entry_clone1.partition.part_name,
+                                        &luks_password,
+                                    ))
+                                    .expect("The channel needs to be open.");
+                            });
+                        }
+                    ));
+                    let luks_manual_password_main_context = glib::MainContext::default();
+                    // The main loop executes the asynchronous block
+                    luks_manual_password_main_context.spawn_local(clone!(
+                        #[weak]
+                        crypttab_dialog,
+                        async move {
+                            while let Ok(state) = luks_manual_password_receiver.recv().await {
+                                crypttab_dialog.set_response_enabled("crypttab_dialog_auto", state);
+                            }
+                        }
+                    ));
+
+                    let partition_method_manual_crypttab_entry_array_refcell_clone0 = partition_method_manual_crypttab_entry_array_refcell.clone();
+
+                    crypttab_dialog.choose(None::<&gio::Cancellable>,
+                        move |choice|
+                        {   
+                            let part_name = fs_entry.partition.part_name;
+                            if choice == "crypttab_dialog_auto" {
+                                (*partition_method_manual_crypttab_entry_array_refcell_clone0.borrow_mut()).push(CrypttabEntry{
+                                    partition: part_name.clone(),
+                                    map: part_name.replace("mapper/", ""),
+                                    uuid: get_luks_uuid(&part_name),
+                                    password: None,
+                                });
+                            } else {
+                                (*partition_method_manual_crypttab_entry_array_refcell_clone0.borrow_mut()).push(CrypttabEntry{
+                                    partition: part_name.clone(),
+                                    map: part_name.replace("mapper/", ""),
+                                    uuid: get_luks_uuid(&part_name),
+                                    password: Some(crypttab_password.text().to_string()),
+                                });
+                            }
+                        }
+                    );
+                }
+            }
+        }
+    ));
+
     content_box.append(&drive_mounts_viewport);
     content_box.append(&utility_buttons_box);
 
@@ -309,4 +456,19 @@ fn create_hardcoded_rows(
             );
         }
     ));
+}
+
+fn generate_filesystem_table_array(drive_mounts_adw_listbox: &gtk::ListBox) -> Vec<FstabEntry> {
+    let mut fstab_array: Vec<FstabEntry> = Vec::new();
+    let mut widget_counter = drive_mounts_adw_listbox.first_child();
+    while let Some(ref child) = widget_counter {
+        match child.clone().downcast::<DriveMountRow>() {
+            Ok(t) => {
+                fstab_array.push(DriveMountRow::get_fstab_entry(&t));
+            }
+            Err(_) => {}
+        }
+        widget_counter = child.next_sibling();
+    }
+    fstab_array
 }

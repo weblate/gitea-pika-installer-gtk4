@@ -100,6 +100,7 @@ pub fn build_ui(app: &adw::Application) {
 
     partitioning_page::partitioning_page(
         &carousel,
+        window.clone(),
         &partition_method_type_refcell,
         &partition_method_automatic_target_refcell,
         &partition_method_automatic_target_fs_refcell,
