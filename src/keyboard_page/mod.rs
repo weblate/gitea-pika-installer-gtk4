@@ -5,6 +5,11 @@ use gnome_desktop::XkbInfoExt;
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
 
+struct PikaKeymap {
+    name: String,
+    pretty_name: String
+}
+
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
     keymap_base_data_refcell: &Rc<RefCell<String>>,
@@ -69,9 +74,18 @@ pub fn keyboard_page(
 
     let keymap_list = gnome_desktop::XkbInfo::all_layouts(&xkbinfo);
 
+    let mut sorted_keymap_vec = Vec::new();
     for keymap in keymap_list.iter() {
-        let keymap = keymap.to_string();
-        let keymap_name = xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string();
+        sorted_keymap_vec.push(PikaKeymap{
+            name: keymap.to_string(),
+            pretty_name: xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string()
+        })
+    }
+    sorted_keymap_vec.sort_by_key(|k| k.pretty_name.clone());
+
+    for pika_keymap in sorted_keymap_vec {
+        let keymap = pika_keymap.name;
+        let keymap_name = pika_keymap.pretty_name;
         let keymap_split: Vec<String> = keymap.split("+").map(|s| s.into()).collect();
         let keymap_base = keymap_split.get(0).unwrap().clone();
         let mut keymap_variant = String::new();

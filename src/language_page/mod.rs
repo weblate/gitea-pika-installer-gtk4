@@ -4,6 +4,11 @@ use glib::{clone, closure_local};
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, env, fs, path::Path, process::Command, rc::Rc};
 
+struct PikaLocale {
+    name: String,
+    pretty_name: String
+}
+
 pub fn language_page(
     main_carousel: &adw::Carousel,
     lang_data_refcell: &Rc<RefCell<String>>,
@@ -82,12 +87,21 @@ pub fn language_page(
         "cy_GB", "wo_SN", "fy_NL", "xh_ZA", "yi_US", "yo_NG", "zu_ZA", "zu_ZA", "pt_BR", "pt_PT",
     ];
 
+    let mut sorted_locale_vec = Vec::new();
     for locale in locale_list.iter() {
-        let locale = locale.to_string();
-        let locale_name = gnome_desktop::language_from_locale(&locale, None)
+        sorted_locale_vec.push(PikaLocale{
+            name: locale.to_string(),
+            pretty_name: gnome_desktop::language_from_locale(&locale, None)
             .unwrap_or(locale.clone().into())
-            .to_string();
-        let locale_clone = locale.clone();
+            .to_string()
+        })
+    }
+    sorted_locale_vec.sort_by_key(|k| k.pretty_name.clone());
+
+    for pika_locale in sorted_locale_vec {
+        let locale = pika_locale.name;
+        let locale_clone0 = locale.clone();
+        let locale_name = pika_locale.pretty_name;
         let locale_checkbutton = gtk::CheckButton::builder()
             .valign(gtk::Align::Center)
             .can_focus(false)
@@ -114,7 +128,7 @@ pub fn language_page(
                 }
             }
         ));
-        if &current_locale == &locale_clone
+        if &current_locale == &locale_clone0
             && current_locale != "C.UTF-8"
             && current_locale != "C"
             && current_locale != "C.utf8"
