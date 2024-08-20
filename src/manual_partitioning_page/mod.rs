@@ -9,6 +9,8 @@ use glib::{clone, closure_local, ffi::gboolean};
 use gtk::glib::Variant;
 use gtk::{glib, prelude::*, Orientation};
 use std::{cell::RefCell, collections::HashSet, rc::Rc};
+use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 
 mod func;
 
@@ -108,17 +110,30 @@ pub fn manual_partitioning_page(
     let partition_method_manual_mountpoint_empty_error_label = gtk::Label::builder()
         .halign(gtk::Align::Start)
         .valign(gtk::Align::End)
+        .visible(false)
         .build();
+    partition_method_manual_mountpoint_empty_error_label.add_css_class("small_error_text");
 
     let partition_method_manual_mountpoint_invalid_error_label = gtk::Label::builder()
         .halign(gtk::Align::Start)
         .valign(gtk::Align::End)
+        .visible(false)
         .build();
+    partition_method_manual_mountpoint_invalid_error_label.add_css_class("small_error_text");
 
     let partition_method_manual_partition_empty_error_label = gtk::Label::builder()
         .halign(gtk::Align::Start)
         .valign(gtk::Align::End)
+        .visible(false)
         .build();
+    partition_method_manual_partition_empty_error_label.add_css_class("small_error_text");
+
+    let partition_method_manual_mountpoint_duplicate_label = gtk::Label::builder()
+        .halign(gtk::Align::Start)
+        .valign(gtk::Align::End)
+        .visible(false)
+        .build();
+    partition_method_manual_mountpoint_duplicate_label.add_css_class("small_error_text");
 
     utility_buttons_box.append(&open_disk_utility_button);
     utility_buttons_box.append(&filesystem_table_refresh_button);
@@ -197,161 +212,105 @@ pub fn manual_partitioning_page(
         partition_method_manual_crypttab_entry_array_refcell,
         #[strong]
         subvol_partition_array_refcell,
+        #[weak]
+        partition_method_manual_mountpoint_empty_error_label,
+        #[weak]
+        partition_method_manual_mountpoint_invalid_error_label,
+        #[weak]
+        partition_method_manual_partition_empty_error_label,
+        #[weak]
+        partition_method_manual_mountpoint_duplicate_label,
         move |_| {
-            let mut errored = false;
+            let errored = Arc::new(AtomicBool::new(false));
 
             (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()) = Vec::new();
             (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
             (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
             let mut seen_mountpoints = HashSet::new();
             let mut seen_partitions = HashSet::new();
-            let mut seen_crypts = HashSet::new();
+            let mut seen_crypts: Rc<RefCell<HashSet<String>>> = Rc::new(RefCell::new(HashSet::new()));
+
+            partition_method_manual_mountpoint_empty_error_label.set_visible(false);
+            partition_method_manual_mountpoint_invalid_error_label.set_visible(false);
+            partition_method_manual_partition_empty_error_label.set_visible(false);
+            partition_method_manual_mountpoint_duplicate_label.set_visible(false);
 
             for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
                 if subvol_partition_array_refcell.borrow().is_empty() {
                     if !seen_partitions.insert(fs_entry.clone().partition.part_name) {
-                        errored = true;
+                        (errored.store(true, std::sync::atomic::Ordering::Relaxed));
                         filesystem_table_refresh_button.emit_by_name_with_values("clicked", &[]);
-                        break;
                     }
                 }
                 if fs_entry.mountpoint == "[SWAP]" && fs_entry.partition.part_fs != "linux-swap" {
-                    errored = true;
+                    (errored.store(true, std::sync::atomic::Ordering::Relaxed));
                     filesystem_table_refresh_button.emit_by_name_with_values("clicked", &[]);
-                    break;
                 }
                 if fs_entry.mountpoint.is_empty() {
-                    errored = true;
-                    println!("mountpoint empty");
-                    break;
+                    (errored.store(true, std::sync::atomic::Ordering::Relaxed));
+                    partition_method_manual_mountpoint_empty_error_label.set_visible(true);
                 }
                 if fs_entry.mountpoint == "[SWAP]"
                     || fs_entry.mountpoint.starts_with("/")
                         && !fs_entry.mountpoint.starts_with("/dev")
                 {
                 } else {
-                    errored = true;
-                    println!("mountpoint invalid");
-                    break;
+                    (errored.store(true, std::sync::atomic::Ordering::Relaxed));
+                    partition_method_manual_mountpoint_invalid_error_label.set_visible(true);
+                    
                 }
                 if fs_entry.partition.part_name.is_empty() {
-                    errored = true;
-                    println!("partition empty");
-                    break;
+                    (errored.store(true, std::sync::atomic::Ordering::Relaxed));
+                    partition_method_manual_partition_empty_error_label.set_visible(true);
+                    
                 }
                 if !seen_mountpoints.insert(fs_entry.clone().mountpoint) {
-                    errored = true;
-                    break;
+                    (errored.store(true, std::sync::atomic::Ordering::Relaxed));
+                    partition_method_manual_mountpoint_duplicate_label.set_visible(true);
                 }
                 //
                 (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()).push(fs_entry);
                 //
-
-                if fs_entry_clone0.partition.has_encryption
-                    && seen_crypts.insert(fs_entry_clone0.clone().partition.part_name)
-                {
-                    let fs_entry = fs_entry_clone0.clone();
-                    let (luks_manual_password_sender, luks_manual_password_receiver) =
-                        async_channel::unbounded::<bool>();
-                    let crypttab_password_listbox = gtk::ListBox::builder()
-                        .margin_top(10)
-                        .margin_bottom(10)
-                        .margin_start(10)
-                        .margin_end(10)
-                        .build();
-                    crypttab_password_listbox.add_css_class("boxed-list");
-                    let crypttab_password = adw::PasswordEntryRow::builder()
-                        .title(t!("luks_password_for").to_string() + &fs_entry.partition.part_name)
-                        .build();
-                    crypttab_password.set_show_apply_button(true);
-                    crypttab_password_listbox.append(&crypttab_password);
-                    let crypttab_dialog = adw::MessageDialog::builder()
-                        .transient_for(&window)
-                        .hide_on_close(true)
-                        .extra_child(&crypttab_password_listbox)
-                        .width_request(400)
-                        .height_request(200)
-                        .heading(
-                            t!("luks_how_should").to_string()
-                                + &fs_entry.partition.part_name
-                                + &t!("be_added_crypttab"),
-                        )
-                        .build();
-                    crypttab_dialog
-                        .add_response("crypttab_dialog_boot", &t!("unlock_boot_manually"));
-                    crypttab_dialog.add_response("crypttab_dialog_auto", &t!("unlock_boot_manual"));
-                    crypttab_dialog.set_response_enabled("crypttab_dialog_auto", false);
-                    crypttab_password.connect_apply(clone!(
-                        #[weak]
-                        crypttab_password,
-                        #[strong]
-                        fs_entry,
-                        #[weak]
-                        crypttab_dialog,
-                        move |_| {
-                            let luks_manual_password_sender = luks_manual_password_sender.clone();
-                            let luks_password = crypttab_password.text().to_string();
-
-                            let fs_entry_clone1 = fs_entry.clone();
-
-                            std::thread::spawn(move || {
-                                luks_manual_password_sender
-                                    .send_blocking(partitioning_page::test_luks_passwd(
-                                        &fs_entry_clone1.partition.part_name,
-                                        &luks_password,
-                                    ))
-                                    .expect("The channel needs to be open.");
-                            });
-                        }
-                    ));
-                    let luks_manual_password_main_context = glib::MainContext::default();
-                    // The main loop executes the asynchronous block
-                    luks_manual_password_main_context.spawn_local(clone!(
-                        #[weak]
-                        crypttab_dialog,
-                        async move {
-                            while let Ok(state) = luks_manual_password_receiver.recv().await {
-                                crypttab_dialog.set_response_enabled("crypttab_dialog_auto", state);
+                let (check_delay_sender, check_delay_receiver) = async_channel::unbounded();
+                let errored_clone0 = Arc::clone(&errored);
+                std::thread::spawn(move || {
+                    std::thread::sleep(std::time::Duration::from_millis(100));
+                    check_delay_sender
+                        .send_blocking((errored_clone0))
+                        .expect("The channel needs to be open.");
+                });
+    
+                let check_delay_main_context = glib::MainContext::default();
+                check_delay_main_context.spawn_local(clone!(
+                    #[strong]
+                    window,
+                    #[strong]
+                    partition_method_manual_luks_enabled_refcell,
+                    #[strong]
+                    partition_method_manual_crypttab_entry_array_refcell,
+                    #[strong]
+                    fs_entry_clone0,
+                    #[strong]
+                    seen_crypts,
+                    async move {
+                        while let Ok(state) = check_delay_receiver.recv().await {
+                            if state.load(std::sync::atomic::Ordering::Relaxed) == false {
+                                set_crypttab_entries(&fs_entry_clone0, &seen_crypts, window.clone(), &partition_method_manual_crypttab_entry_array_refcell, &partition_method_manual_luks_enabled_refcell);
                             }
                         }
-                    ));
-
-                    let partition_method_manual_crypttab_entry_array_refcell_clone0 =
-                        partition_method_manual_crypttab_entry_array_refcell.clone();
-                    let partition_method_manual_luks_enabled_refcell_clone0 =
-                        partition_method_manual_luks_enabled_refcell.clone();
-
-                    crypttab_dialog.choose(None::<&gio::Cancellable>, move |choice| {
-                        let part_name = fs_entry.partition.part_name;
-                        if choice == "crypttab_dialog_auto" {
-                            (*partition_method_manual_crypttab_entry_array_refcell_clone0
-                                .borrow_mut())
-                            .push(CrypttabEntry {
-                                partition: part_name.clone(),
-                                map: part_name.replace("mapper/", ""),
-                                uuid: get_luks_uuid(&part_name),
-                                password: Some(crypttab_password.text().to_string()),
-                            });
-                        } else {
-                            (*partition_method_manual_crypttab_entry_array_refcell_clone0
-                                .borrow_mut())
-                            .push(CrypttabEntry {
-                                partition: part_name.clone(),
-                                map: part_name.replace("mapper/", ""),
-                                uuid: get_luks_uuid(&part_name),
-                                password: None,
-                            });
-                        }
-                        (*partition_method_manual_luks_enabled_refcell_clone0.borrow_mut()) = true;
-                    });
-                }
+                    }
+                ));
             }
         }
     ));
 
     content_box.append(&drive_mounts_viewport);
     content_box.append(&utility_buttons_box);
+    content_box.append(&partition_method_manual_mountpoint_empty_error_label);
+    content_box.append(&partition_method_manual_mountpoint_invalid_error_label);
+    content_box.append(&partition_method_manual_partition_empty_error_label);
+    content_box.append(&partition_method_manual_mountpoint_duplicate_label);
 
     //
     manual_partitioning_page.connect_closure(
@@ -402,11 +361,24 @@ pub fn manual_partitioning_page(
     language_changed_action.connect_activate(clone!(
         #[weak]
         manual_partitioning_page,
+        #[weak]
+        partition_method_manual_mountpoint_empty_error_label,
+        #[weak]
+        partition_method_manual_mountpoint_invalid_error_label,
+        #[weak]
+        partition_method_manual_partition_empty_error_label,
+        #[weak]
+        partition_method_manual_mountpoint_duplicate_label,
         move |_, _| {
             manual_partitioning_page.set_page_title(t!("manual_partitioning_page_title"));
             manual_partitioning_page.set_page_subtitle(t!("manual_partitioning_page_subtitle"));
             manual_partitioning_page.set_back_tooltip_label(t!("back"));
             manual_partitioning_page.set_next_tooltip_label(t!("next"));
+            //
+            partition_method_manual_mountpoint_empty_error_label.set_label(&t!("partition_method_manual_mountpoint_empty_error_label_label"));
+            partition_method_manual_mountpoint_invalid_error_label.set_label(&t!("partition_method_manual_mountpoint_invalid_error_label_label"));
+            partition_method_manual_partition_empty_error_label.set_label(&t!("partition_method_manual_partition_empty_error_label_label"));
+            partition_method_manual_mountpoint_duplicate_label.set_label(&t!("partition_method_manual_mountpoint_duplicate_label_label"));
         }
     ));
     //
@@ -519,4 +491,111 @@ fn generate_filesystem_table_array(drive_mounts_adw_listbox: &gtk::ListBox) -> V
         widget_counter = child.next_sibling();
     }
     fstab_array
+}
+
+fn set_crypttab_entries(
+    fs_entry: &FstabEntry,
+    seen_crypts: &Rc<RefCell<HashSet<String>>>,
+    window: adw::ApplicationWindow,
+    partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<Vec<CrypttabEntry>>>,
+    partition_method_manual_luks_enabled_refcell: &Rc<RefCell<bool>>,
+    ) {
+    if fs_entry.partition.has_encryption
+    && (*seen_crypts.borrow_mut()).insert(fs_entry.clone().partition.part_name)
+{
+    let fs_entry = fs_entry.clone();
+    let (luks_manual_password_sender, luks_manual_password_receiver) =
+        async_channel::unbounded::<bool>();
+    let crypttab_password_listbox = gtk::ListBox::builder()
+        .margin_top(10)
+        .margin_bottom(10)
+        .margin_start(10)
+        .margin_end(10)
+        .build();
+    crypttab_password_listbox.add_css_class("boxed-list");
+    let crypttab_password = adw::PasswordEntryRow::builder()
+        .title(t!("luks_password_for").to_string() + &fs_entry.partition.part_name)
+        .build();
+    crypttab_password.set_show_apply_button(true);
+    crypttab_password_listbox.append(&crypttab_password);
+    let crypttab_dialog = adw::MessageDialog::builder()
+        .transient_for(&window)
+        .hide_on_close(true)
+        .extra_child(&crypttab_password_listbox)
+        .width_request(400)
+        .height_request(200)
+        .heading(
+            t!("luks_how_should").to_string()
+                + &fs_entry.partition.part_name
+                + &t!("be_added_crypttab"),
+        )
+        .build();
+    crypttab_dialog
+        .add_response("crypttab_dialog_boot", &t!("unlock_boot_manually"));
+    crypttab_dialog.add_response("crypttab_dialog_auto", &t!("unlock_boot_manual"));
+    crypttab_dialog.set_response_enabled("crypttab_dialog_auto", false);
+    crypttab_password.connect_apply(clone!(
+        #[weak]
+        crypttab_password,
+        #[strong]
+        fs_entry,
+        #[weak]
+        crypttab_dialog,
+        move |_| {
+            let luks_manual_password_sender = luks_manual_password_sender.clone();
+            let luks_password = crypttab_password.text().to_string();
+
+            let fs_entry_clone1 = fs_entry.clone();
+
+            std::thread::spawn(move || {
+                luks_manual_password_sender
+                    .send_blocking(partitioning_page::test_luks_passwd(
+                        &fs_entry_clone1.partition.part_name,
+                        &luks_password,
+                    ))
+                    .expect("The channel needs to be open.");
+            });
+        }
+    ));
+    let luks_manual_password_main_context = glib::MainContext::default();
+    // The main loop executes the asynchronous block
+    luks_manual_password_main_context.spawn_local(clone!(
+        #[weak]
+        crypttab_dialog,
+        async move {
+            while let Ok(state) = luks_manual_password_receiver.recv().await {
+                crypttab_dialog.set_response_enabled("crypttab_dialog_auto", state);
+            }
+        }
+    ));
+
+    let partition_method_manual_crypttab_entry_array_refcell_clone0 =
+        partition_method_manual_crypttab_entry_array_refcell.clone();
+    let partition_method_manual_luks_enabled_refcell_clone0 =
+        partition_method_manual_luks_enabled_refcell.clone();
+
+    crypttab_dialog.choose(None::<&gio::Cancellable>, move |choice| {
+        let part_name = fs_entry.partition.part_name;
+        if choice == "crypttab_dialog_auto" {
+            (*partition_method_manual_crypttab_entry_array_refcell_clone0
+                .borrow_mut())
+            .push(CrypttabEntry {
+                partition: part_name.clone(),
+                map: part_name.replace("mapper/", ""),
+                uuid: get_luks_uuid(&part_name),
+                password: Some(crypttab_password.text().to_string()),
+            });
+        } else {
+            (*partition_method_manual_crypttab_entry_array_refcell_clone0
+                .borrow_mut())
+            .push(CrypttabEntry {
+                partition: part_name.clone(),
+                map: part_name.replace("mapper/", ""),
+                uuid: get_luks_uuid(&part_name),
+                password: None,
+            });
+        }
+        (*partition_method_manual_luks_enabled_refcell_clone0.borrow_mut()) = true;
+    });
+}
 }
