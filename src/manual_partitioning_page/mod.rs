@@ -32,7 +32,7 @@ pub fn manual_partitioning_page(
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
     let used_partition_array_refcell: Rc<RefCell<Vec<FstabEntry>>> = Rc::new(RefCell::default());
     let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
-    //let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
+    let extra_mount_id_refcell: Rc<RefCell<i32>> = Rc::new(RefCell::default());
 
     //
 
@@ -73,6 +73,7 @@ pub fn manual_partitioning_page(
         &language_changed_action,
         &used_partition_array_refcell,
         &subvol_partition_array_refcell,
+        &extra_mount_id_refcell
     );
 
     let open_disk_utility_button = gtk::Button::builder()
@@ -154,6 +155,8 @@ pub fn manual_partitioning_page(
         partition_method_manual_luks_enabled_refcell,
         #[strong]
         partition_method_manual_crypttab_entry_array_refcell,
+        #[strong]
+        extra_mount_id_refcell,
         move |_| {
             while let Some(row) = drive_mounts_adw_listbox.last_child() {
                 drive_mounts_adw_listbox.remove(&row);
@@ -172,6 +175,7 @@ pub fn manual_partitioning_page(
                 &language_changed_action,
                 &used_partition_array_refcell,
                 &subvol_partition_array_refcell,
+                &extra_mount_id_refcell
             );
         }
     ));
@@ -414,6 +418,7 @@ fn create_hardcoded_rows(
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    extra_mount_id_refcell: &Rc<RefCell<i32>>,
 ) {
     let drive_mount_add_button_icon = gtk::Image::builder()
         .icon_name("list-add")
@@ -482,6 +487,8 @@ fn create_hardcoded_rows(
         used_partition_array_refcell,
         #[strong]
         subvol_partition_array_refcell,
+        #[strong]
+        extra_mount_id_refcell,
         move |_| {
             func::create_mount_row(
                 &drive_mounts_adw_listbox,
@@ -491,6 +498,7 @@ fn create_hardcoded_rows(
                 &language_changed_action,
                 &used_partition_array_refcell,
                 &subvol_partition_array_refcell,
+                &extra_mount_id_refcell
             );
         }
     ));

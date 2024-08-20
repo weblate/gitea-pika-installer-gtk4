@@ -740,6 +740,10 @@ pub fn create_mount_row(
 
     row.set_langaction(language_changed_action);
 
+    row.set_id(*extra_mount_id_refcell.borrow());
+
+    (*extra_mount_id_refcell.borrow_mut()) += 1;
+
     let null_checkbutton = gtk::CheckButton::builder().build();
 
 
