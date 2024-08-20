@@ -19,3 +19,4 @@ serde = { version = "1.0", features = ["derive"] }
 gnome-desktop = "0.4.2"
 rust-i18n = "3.0.1"
 sys-locale = "0.3.1"
+strfmt = "0.2.4"

@@ -28,8 +28,7 @@ pub fn manual_partitioning_page(
     manual_partitioning_page.set_back_visible(true);
     manual_partitioning_page.set_next_visible(true);
     manual_partitioning_page.set_back_sensitive(true);
-    //manual_partitioning_page.set_next_sensitive(false);
-    manual_partitioning_page.set_next_sensitive(true);
+    manual_partitioning_page.set_next_sensitive(false);
 
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
     let used_partition_array_refcell: Rc<RefCell<Vec<FstabEntry>>> = Rc::new(RefCell::default());
@@ -80,14 +79,12 @@ pub fn manual_partitioning_page(
     );
 
     let open_disk_utility_button = gtk::Button::builder()
-        .label(t!("open_disk_utility_button_label"))
         .margin_top(10)
         .margin_end(5)
         .halign(gtk::Align::Start)
         .build();
 
     let filesystem_table_refresh_button = gtk::Button::builder()
-        .label(t!("filesystem_table_refresh_button_label"))
         .margin_top(10)
         .margin_end(5)
         .halign(gtk::Align::Start)
@@ -95,7 +92,6 @@ pub fn manual_partitioning_page(
     filesystem_table_refresh_button.add_css_class("destructive-action");
 
     let filesystem_table_validate_button = gtk::Button::builder()
-        .label(t!("filesystem_table_validate_button_label"))
         .margin_top(10)
         .hexpand(true)
         .halign(gtk::Align::End)
@@ -134,6 +130,13 @@ pub fn manual_partitioning_page(
         .visible(false)
         .build();
     partition_method_manual_mountpoint_duplicate_label.add_css_class("small_error_text");
+
+    let partition_method_manual_valid_label = gtk::Label::builder()
+        .halign(gtk::Align::Start)
+        .valign(gtk::Align::End)
+        .visible(false)
+        .build();
+    partition_method_manual_valid_label.add_css_class("small_valid_text");
 
     utility_buttons_box.append(&open_disk_utility_button);
     utility_buttons_box.append(&filesystem_table_refresh_button);
@@ -207,6 +210,8 @@ pub fn manual_partitioning_page(
         #[strong]
         partition_method_manual_fstab_entry_array_refcell,
         #[strong]
+        manual_partitioning_page,
+        #[strong]
         partition_method_manual_luks_enabled_refcell,
         #[strong]
         partition_method_manual_crypttab_entry_array_refcell,
@@ -220,6 +225,8 @@ pub fn manual_partitioning_page(
         partition_method_manual_partition_empty_error_label,
         #[weak]
         partition_method_manual_mountpoint_duplicate_label,
+        #[strong]
+        partition_method_manual_valid_label,
         move |_| {
             let errored = Arc::new(AtomicBool::new(false));
 
@@ -228,24 +235,23 @@ pub fn manual_partitioning_page(
             (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
             let mut seen_mountpoints = HashSet::new();
             let mut seen_partitions = HashSet::new();
-            let mut seen_crypts: Rc<RefCell<HashSet<String>>> = Rc::new(RefCell::new(HashSet::new()));
+            let seen_crypts: Rc<RefCell<HashSet<String>>> = Rc::new(RefCell::new(HashSet::new()));
 
             partition_method_manual_mountpoint_empty_error_label.set_visible(false);
             partition_method_manual_mountpoint_invalid_error_label.set_visible(false);
             partition_method_manual_partition_empty_error_label.set_visible(false);
             partition_method_manual_mountpoint_duplicate_label.set_visible(false);
+            partition_method_manual_valid_label.set_visible(false);
 
             for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
                 if subvol_partition_array_refcell.borrow().is_empty() {
                     if !seen_partitions.insert(fs_entry.clone().partition.part_name) {
                         (errored.store(true, std::sync::atomic::Ordering::Relaxed));
-                        filesystem_table_refresh_button.emit_by_name_with_values("clicked", &[]);
                     }
                 }
                 if fs_entry.mountpoint == "[SWAP]" && fs_entry.partition.part_fs != "linux-swap" {
                     (errored.store(true, std::sync::atomic::Ordering::Relaxed));
-                    filesystem_table_refresh_button.emit_by_name_with_values("clicked", &[]);
                 }
                 if fs_entry.mountpoint.is_empty() {
                     (errored.store(true, std::sync::atomic::Ordering::Relaxed));
@@ -290,13 +296,21 @@ pub fn manual_partitioning_page(
                     #[strong]
                     partition_method_manual_crypttab_entry_array_refcell,
                     #[strong]
+                    manual_partitioning_page,
+                    #[strong]
                     fs_entry_clone0,
                     #[strong]
                     seen_crypts,
+                    #[strong]
+                    partition_method_manual_valid_label,
                     async move {
                         while let Ok(state) = check_delay_receiver.recv().await {
                             if state.load(std::sync::atomic::Ordering::Relaxed) == false {
+                                partition_method_manual_valid_label.set_visible(true);
                                 set_crypttab_entries(&fs_entry_clone0, &seen_crypts, window.clone(), &partition_method_manual_crypttab_entry_array_refcell, &partition_method_manual_luks_enabled_refcell);
+                                manual_partitioning_page.set_next_sensitive(true);
+                            } else {
+                                manual_partitioning_page.set_next_sensitive(false);
                             }
                         }
                     }
@@ -311,6 +325,7 @@ pub fn manual_partitioning_page(
     content_box.append(&partition_method_manual_mountpoint_invalid_error_label);
     content_box.append(&partition_method_manual_partition_empty_error_label);
     content_box.append(&partition_method_manual_mountpoint_duplicate_label);
+    content_box.append(&partition_method_manual_valid_label);
 
     //
     manual_partitioning_page.connect_closure(
@@ -369,6 +384,14 @@ pub fn manual_partitioning_page(
         partition_method_manual_partition_empty_error_label,
         #[weak]
         partition_method_manual_mountpoint_duplicate_label,
+        #[weak]
+        partition_method_manual_valid_label,
+        #[weak]
+        open_disk_utility_button,
+        #[weak]
+        filesystem_table_refresh_button,
+        #[weak]
+        filesystem_table_validate_button,
         move |_, _| {
             manual_partitioning_page.set_page_title(t!("manual_partitioning_page_title"));
             manual_partitioning_page.set_page_subtitle(t!("manual_partitioning_page_subtitle"));
@@ -379,6 +402,11 @@ pub fn manual_partitioning_page(
             partition_method_manual_mountpoint_invalid_error_label.set_label(&t!("partition_method_manual_mountpoint_invalid_error_label_label"));
             partition_method_manual_partition_empty_error_label.set_label(&t!("partition_method_manual_partition_empty_error_label_label"));
             partition_method_manual_mountpoint_duplicate_label.set_label(&t!("partition_method_manual_mountpoint_duplicate_label_label"));
+            partition_method_manual_valid_label.set_label(&t!("partition_method_manual_valid_label_label"));
+            //
+            open_disk_utility_button.set_label(&t!("open_disk_utility_button_label"));
+            filesystem_table_refresh_button.set_label(&t!("filesystem_table_refresh_button_label"));
+            filesystem_table_validate_button.set_label(&t!("filesystem_table_validate_button_label"))
         }
     ));
     //
@@ -515,11 +543,11 @@ fn set_crypttab_entries(
     let crypttab_password_status_label = gtk::Label::builder()
         .build();
     crypttab_password_listbox.add_css_class("boxed-list");
-    let crypttab_password = adw::PasswordEntryRow::builder()
-        .title(t!("luks_password_for").to_string() + &fs_entry.partition.part_name)
+    let crypttab_password_entry_row = adw::PasswordEntryRow::builder()
+        .title(strfmt::strfmt(&t!("crypttab_password_entry_row_title"), &std::collections::HashMap::from([("LUKS_NAME".to_string(), fs_entry.clone().partition.part_name)])).unwrap())
         .build();
-    crypttab_password.set_show_apply_button(true);
-    crypttab_password_listbox.append(&crypttab_password);
+    crypttab_password_entry_row.set_show_apply_button(true);
+    crypttab_password_listbox.append(&crypttab_password_entry_row);
     let crypttab_password_child_box = gtk::Box::new(Orientation::Vertical, 0);
     crypttab_password_child_box.append(&crypttab_password_listbox);
     crypttab_password_child_box.append(&crypttab_password_status_label);
@@ -529,19 +557,15 @@ fn set_crypttab_entries(
         .extra_child(&crypttab_password_child_box)
         .width_request(400)
         .height_request(200)
-        .heading(
-            t!("luks_how_should").to_string()
-                + &fs_entry.partition.part_name
-                + &t!("be_added_crypttab"),
-        )
+        .heading(strfmt::strfmt(&t!("crypttab_password_entry_row_title"), &std::collections::HashMap::from([("LUKS_NAME".to_string(), fs_entry.clone().partition.part_name)])).unwrap())
         .build();
     crypttab_dialog
-        .add_response("crypttab_dialog_boot", &t!("unlock_boot_manually"));
-    crypttab_dialog.add_response("crypttab_dialog_auto", &t!("unlock_boot_manual"));
+        .add_response("crypttab_dialog_boot", &t!("crypttab_dialog_response_crypttab_dialog_boot"));
+    crypttab_dialog.add_response("crypttab_dialog_auto", &t!("crypttab_dialog_response_crypttab_dialog_auto"));
     crypttab_dialog.set_response_enabled("crypttab_dialog_auto", false);
-    crypttab_password.connect_apply(clone!(
+    crypttab_password_entry_row.connect_apply(clone!(
         #[weak]
-        crypttab_password,
+        crypttab_password_entry_row,
         #[strong]
         fs_entry,
         #[weak]
@@ -550,7 +574,7 @@ fn set_crypttab_entries(
         crypttab_dialog,
         move |_| {
             let luks_manual_password_sender = luks_manual_password_sender.clone();
-            let luks_password = crypttab_password.text().to_string();
+            let luks_password = crypttab_password_entry_row.text().to_string();
 
             let fs_entry_clone1 = fs_entry.clone();
 
@@ -599,7 +623,7 @@ fn set_crypttab_entries(
                 partition: part_name.clone(),
                 map: part_name.replace("mapper/", ""),
                 uuid: get_luks_uuid(&part_name),
-                password: Some(crypttab_password.text().to_string()),
+                password: Some(crypttab_password_entry_row.text().to_string()),
             });
         } else {
             (*partition_method_manual_crypttab_entry_array_refcell_clone0
