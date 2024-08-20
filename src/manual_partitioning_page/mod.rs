@@ -176,6 +176,18 @@ pub fn manual_partitioning_page(
         partition_method_manual_crypttab_entry_array_refcell,
         #[strong]
         extra_mount_id_refcell,
+        #[weak]
+        partition_method_manual_mountpoint_empty_error_label,
+        #[weak]
+        partition_method_manual_mountpoint_invalid_error_label,
+        #[weak]
+        partition_method_manual_partition_empty_error_label,
+        #[weak]
+        partition_method_manual_mountpoint_duplicate_label,
+        #[strong]
+        partition_method_manual_valid_label,
+        #[strong]
+        manual_partitioning_page,
         move |_| {
             while let Some(row) = drive_mounts_adw_listbox.last_child() {
                 drive_mounts_adw_listbox.remove(&row);
@@ -187,6 +199,12 @@ pub fn manual_partitioning_page(
             (*used_partition_array_refcell.borrow_mut()) = Vec::new();
             (*subvol_partition_array_refcell.borrow_mut()) = Vec::new();
             (*extra_mount_id_refcell.borrow_mut()) = 3;
+            partition_method_manual_mountpoint_empty_error_label.set_visible(false);
+            partition_method_manual_mountpoint_invalid_error_label.set_visible(false);
+            partition_method_manual_partition_empty_error_label.set_visible(false);
+            partition_method_manual_mountpoint_duplicate_label.set_visible(false);
+            partition_method_manual_valid_label.set_visible(false);
+            manual_partitioning_page.set_next_sensitive(false);
             create_hardcoded_rows(
                 &drive_mounts_adw_listbox,
                 &drive_rows_size_group,
@@ -242,6 +260,7 @@ pub fn manual_partitioning_page(
             partition_method_manual_partition_empty_error_label.set_visible(false);
             partition_method_manual_mountpoint_duplicate_label.set_visible(false);
             partition_method_manual_valid_label.set_visible(false);
+            manual_partitioning_page.set_next_sensitive(false);
 
             for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
@@ -309,8 +328,6 @@ pub fn manual_partitioning_page(
                                 partition_method_manual_valid_label.set_visible(true);
                                 set_crypttab_entries(&fs_entry_clone0, &seen_crypts, window.clone(), &partition_method_manual_crypttab_entry_array_refcell, &partition_method_manual_luks_enabled_refcell);
                                 manual_partitioning_page.set_next_sensitive(true);
-                            } else {
-                                manual_partitioning_page.set_next_sensitive(false);
                             }
                         }
                     }
