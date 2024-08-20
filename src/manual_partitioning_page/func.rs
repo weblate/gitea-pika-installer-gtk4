@@ -5,8 +5,7 @@ use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
 use gtk::{glib, prelude::*};
-use std::borrow::Borrow;
-use std::{cell::{RefCell}, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 const MINIMUM_EFI_BYTE_SIZE: f64 = 500000000.0;
 const MINIMUM_BOOT_BYTE_SIZE: f64 = 1000000000.0;
@@ -740,8 +739,6 @@ pub fn create_mount_row(
     row.set_sizegroup(drive_rows_size_group);
 
     row.set_langaction(language_changed_action);
-
-    row.set_id(extra_mount_id_refcell.borrow());
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 

@@ -32,6 +32,7 @@ pub fn manual_partitioning_page(
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
     let used_partition_array_refcell: Rc<RefCell<Vec<FstabEntry>>> = Rc::new(RefCell::default());
     let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
+    //let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
 
     //
 
