@@ -101,6 +101,21 @@ pub fn manual_partitioning_page(
         .hexpand(true)
         .build();
 
+    let partition_method_manual_mountpoint_empty_error_label = gtk::Label::builder()
+        .halign(gtk::Align::Start)
+        .valign(gtk::Align::End)
+        .build();
+
+    let partition_method_manual_mountpoint_invalid_error_label = gtk::Label::builder()
+        .halign(gtk::Align::Start)
+        .valign(gtk::Align::End)
+        .build();
+
+    let partition_method_manual_partition_empty_error_label = gtk::Label::builder()
+        .halign(gtk::Align::Start)
+        .valign(gtk::Align::End)
+        .build();
+
     utility_buttons_box.append(&open_disk_utility_button);
     utility_buttons_box.append(&filesystem_table_refresh_button);
     utility_buttons_box.append(&filesystem_table_validate_button);
@@ -163,6 +178,8 @@ pub fn manual_partitioning_page(
         #[weak]
         drive_mounts_adw_listbox,
         #[strong]
+        filesystem_table_refresh_button,
+        #[strong]
         window,
         #[strong]
         partition_method_manual_fstab_entry_array_refcell,
@@ -170,6 +187,8 @@ pub fn manual_partitioning_page(
         partition_method_manual_luks_enabled_refcell,
         #[strong]
         partition_method_manual_crypttab_entry_array_refcell,
+        #[strong]
+        subvol_partition_array_refcell,
         move |_| {
             let mut errored = false;
 
@@ -177,10 +196,23 @@ pub fn manual_partitioning_page(
             (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
             (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
             let mut seen_mountpoints = HashSet::new();
+            let mut seen_partitions = HashSet::new();
             let mut seen_crypts = HashSet::new();
 
             for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
+                if subvol_partition_array_refcell.borrow().is_empty() {
+                    if !seen_partitions.insert(fs_entry.clone().partition.part_name) {
+                        errored = true;
+                        filesystem_table_refresh_button.emit_by_name_with_values("clicked", &[]);
+                        break;
+                    }
+                }
+                if fs_entry.mountpoint == "[SWAP]" && fs_entry.partition.part_fs != "linux-swap" {
+                    errored = true;
+                    filesystem_table_refresh_button.emit_by_name_with_values("clicked", &[]);
+                    break;
+                }
                 if fs_entry.mountpoint.is_empty() {
                     errored = true;
                     println!("mountpoint empty");
@@ -202,7 +234,6 @@ pub fn manual_partitioning_page(
                 }
                 if !seen_mountpoints.insert(fs_entry.clone().mountpoint) {
                     errored = true;
-                    println!("duplicate found");
                     break;
                 }
                 //
