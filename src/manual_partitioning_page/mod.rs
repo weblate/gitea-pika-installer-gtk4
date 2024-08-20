@@ -512,16 +512,21 @@ fn set_crypttab_entries(
         .margin_start(10)
         .margin_end(10)
         .build();
+    let crypttab_password_status_label = gtk::Label::builder()
+        .build();
     crypttab_password_listbox.add_css_class("boxed-list");
     let crypttab_password = adw::PasswordEntryRow::builder()
         .title(t!("luks_password_for").to_string() + &fs_entry.partition.part_name)
         .build();
     crypttab_password.set_show_apply_button(true);
     crypttab_password_listbox.append(&crypttab_password);
+    let crypttab_password_child_box = gtk::Box::new(Orientation::Vertical, 0);
+    crypttab_password_child_box.append(&crypttab_password_listbox);
+    crypttab_password_child_box.append(&crypttab_password_status_label);
     let crypttab_dialog = adw::MessageDialog::builder()
         .transient_for(&window)
         .hide_on_close(true)
-        .extra_child(&crypttab_password_listbox)
+        .extra_child(&crypttab_password_child_box)
         .width_request(400)
         .height_request(200)
         .heading(
@@ -540,12 +545,16 @@ fn set_crypttab_entries(
         #[strong]
         fs_entry,
         #[weak]
+        crypttab_password_status_label,
+        #[weak]
         crypttab_dialog,
         move |_| {
             let luks_manual_password_sender = luks_manual_password_sender.clone();
             let luks_password = crypttab_password.text().to_string();
 
             let fs_entry_clone1 = fs_entry.clone();
+
+            crypttab_password_status_label.set_label(&t!("crypttab_password_status_label_label_checking"));
 
             std::thread::spawn(move || {
                 luks_manual_password_sender
@@ -562,9 +571,16 @@ fn set_crypttab_entries(
     luks_manual_password_main_context.spawn_local(clone!(
         #[weak]
         crypttab_dialog,
+        #[weak]
+        crypttab_password_status_label,
         async move {
             while let Ok(state) = luks_manual_password_receiver.recv().await {
                 crypttab_dialog.set_response_enabled("crypttab_dialog_auto", state);
+                if state == false {
+                    crypttab_password_status_label.set_label(&t!("crypttab_password_status_label_label_wrong_password"))
+                } else {
+                    crypttab_password_status_label.set_label("")
+                }
             }
         }
     ));
