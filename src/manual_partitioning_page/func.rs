@@ -1,6 +1,6 @@
 use crate::drive_mount_row::DriveMountRow;
 use crate::installer_stack_page;
-use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition};
+use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition, SubvolDeclaration};
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
@@ -27,7 +27,7 @@ pub fn create_efi_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
-    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<SubvolDeclaration>>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -90,7 +90,7 @@ pub fn create_efi_row(
                     && (subvol_partition_array_refcell
                         .borrow()
                         .iter()
-                        .any(|e| part_name == e))
+                        .any(|e| *e.part_name.borrow() == *part_name))
             })
         {
             PartitionRow {
@@ -212,9 +212,13 @@ pub fn create_efi_row(
         row,
         move |_| {
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
-                (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).push(SubvolDeclaration{
+                    part_name: Rc::new(RefCell::new(row.partition())),
+                    made_by: Rc::new(RefCell::new(row.id()))
+                }
+                );
             } else {
-                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| *x.made_by.borrow() != row.id());
             }
             partition_changed_action.activate(None);
         }
@@ -250,7 +254,7 @@ pub fn create_boot_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
-    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<SubvolDeclaration>>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -313,7 +317,7 @@ pub fn create_boot_row(
                     && (subvol_partition_array_refcell
                         .borrow()
                         .iter()
-                        .any(|e| part_name == e))
+                        .any(|e| *e.part_name.borrow() == *part_name))
             })
         {
             PartitionRow {
@@ -435,9 +439,13 @@ pub fn create_boot_row(
         row,
         move |_| {
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
-                (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).push(SubvolDeclaration{
+                    part_name: Rc::new(RefCell::new(row.partition())),
+                    made_by: Rc::new(RefCell::new(row.id()))
+                }
+                );
             } else {
-                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| *x.made_by.borrow() != row.id());
             }
             partition_changed_action.activate(None);
         }
@@ -473,7 +481,7 @@ pub fn create_root_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
-    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<SubvolDeclaration>>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -536,7 +544,7 @@ pub fn create_root_row(
                     && (subvol_partition_array_refcell
                         .borrow()
                         .iter()
-                        .any(|e| part_name == e))
+                        .any(|e| *e.part_name.borrow() == *part_name))
             })
         {
             PartitionRow {
@@ -663,9 +671,13 @@ pub fn create_root_row(
         row,
         move |_| {
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
-                (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).push(SubvolDeclaration{
+                    part_name: Rc::new(RefCell::new(row.partition())),
+                    made_by: Rc::new(RefCell::new(row.id()))
+                }
+                );
             } else {
-                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| *x.made_by.borrow() != row.id());
             }
             partition_changed_action.activate(None);
         }
@@ -701,7 +713,7 @@ pub fn create_mount_row(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
-    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<SubvolDeclaration>>>,
     extra_mount_id_refcell: &Rc<RefCell<i32>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
@@ -765,7 +777,7 @@ pub fn create_mount_row(
                     && (subvol_partition_array_refcell
                         .borrow()
                         .iter()
-                        .any(|e| part_name == e))
+                        .any(|e| *e.part_name.borrow() == *part_name))
             })
         {
             PartitionRow {
@@ -855,9 +867,13 @@ pub fn create_mount_row(
         row,
         move |_| {
             if row.mountopts().contains("subvol=") || row.mountopts().contains("subvolid") {
-                (*subvol_partition_array_refcell.borrow_mut()).push(row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).push(SubvolDeclaration{
+                    part_name: Rc::new(RefCell::new(row.partition())),
+                    made_by: Rc::new(RefCell::new(row.id()))
+                }
+                );
             } else {
-                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
+                (*subvol_partition_array_refcell.borrow_mut()).retain(|x| *x.made_by.borrow() != row.id());
             }
             partition_changed_action.activate(None);
         }
@@ -894,7 +910,7 @@ fn post_check_drive_mount(
     partition_changed_action: &gio::SimpleAction,
     partition: &Partition,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
-    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<SubvolDeclaration>>>,
 ) {
     partition_row_struct.widget.add_prefix(partition_button);
     partition_button.connect_toggled(clone!(
@@ -1027,7 +1043,7 @@ fn post_check_drive_mount(
 
             if used_partition_array.iter().any(|e| {
                 (part_name == &e.partition.part_name && part_name != &row.partition())
-                    && (subvol_partition_array.iter().any(|e| part_name == e))
+                    && (subvol_partition_array.iter().any(|e| *e.part_name.borrow() == *part_name))
             }) {
                 if *partition_row_struct.never.borrow() == false
                     && *partition_row_struct.swap_fs_error.borrow() == false
@@ -1039,7 +1055,7 @@ fn post_check_drive_mount(
             } else if used_partition_array.iter().any(|e| {
                 part_name == &e.partition.part_name
                     && e.used_by != row.id()
-                    && !subvol_partition_array.iter().any(|e| part_name == e)
+                    && !subvol_partition_array.iter().any(|e| *e.part_name.borrow() == *part_name)
             }) {
                 if &row.partition() == part_name {
                     null_checkbutton.set_active(true);

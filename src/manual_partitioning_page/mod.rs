@@ -2,7 +2,7 @@ use crate::drive_mount_row::DriveMountRow;
 use crate::installer_stack_page;
 use crate::partitioning_page;
 use crate::partitioning_page::get_luks_uuid;
-use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition};
+use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition, SubvolDeclaration};
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
@@ -33,7 +33,7 @@ pub fn manual_partitioning_page(
 
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
     let used_partition_array_refcell: Rc<RefCell<Vec<FstabEntry>>> = Rc::new(RefCell::default());
-    let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
+    let subvol_partition_array_refcell: Rc<RefCell<Vec<SubvolDeclaration>>> = Rc::new(RefCell::default());
     let extra_mount_id_refcell: Rc<RefCell<i32>> = Rc::new(RefCell::new(3));
 
     //
@@ -391,7 +391,7 @@ fn create_hardcoded_rows(
     partition_changed_action: &gio::SimpleAction,
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
-    subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    subvol_partition_array_refcell: &Rc<RefCell<Vec<SubvolDeclaration>>>,
     extra_mount_id_refcell: &Rc<RefCell<i32>>,
 ) {
     let drive_mount_add_button_icon = gtk::Image::builder()

@@ -202,6 +202,11 @@ pub struct CrypttabEntry {
     pub password: Option<String>,
 }
 
+pub struct SubvolDeclaration {
+    pub part_name: Rc<std::cell::RefCell<String>>,
+    pub made_by: Rc<std::cell::RefCell<i32>>,
+}
+
 pub fn get_block_devices() -> Vec<BlockDevice> {
     let mut block_devices = Vec::new();
 
