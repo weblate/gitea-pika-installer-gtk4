@@ -26,6 +26,7 @@ impl DriveMountRow {
             partition: create_parition_struct(&self.partition()),
             mountpoint: self.mountpoint(),
             mountopts: self.mountopts(),
+            used_by: self.id(),
         }
     }
 }

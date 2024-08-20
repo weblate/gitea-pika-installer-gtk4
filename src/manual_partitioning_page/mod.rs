@@ -32,11 +32,12 @@ pub fn manual_partitioning_page(
     let partition_array_refcell = Rc::new(RefCell::new(get_partitions()));
     let used_partition_array_refcell: Rc<RefCell<Vec<FstabEntry>>> = Rc::new(RefCell::default());
     let subvol_partition_array_refcell: Rc<RefCell<Vec<String>>> = Rc::new(RefCell::default());
-    let extra_mount_id_refcell: Rc<RefCell<i32>> = Rc::new(RefCell::default());
+    let extra_mount_id_refcell: Rc<RefCell<i32>> = Rc::new(RefCell::new(3));
 
     //
 
-    let partition_changed_action = gio::SimpleAction::new("partition-changed", Some(glib::VariantTy::STRING));
+    let partition_changed_action =
+        gio::SimpleAction::new("partition-changed", Some(glib::VariantTy::STRING));
 
     //
 
@@ -73,7 +74,7 @@ pub fn manual_partitioning_page(
         &language_changed_action,
         &used_partition_array_refcell,
         &subvol_partition_array_refcell,
-        &extra_mount_id_refcell
+        &extra_mount_id_refcell,
     );
 
     let open_disk_utility_button = gtk::Button::builder()
@@ -167,6 +168,7 @@ pub fn manual_partitioning_page(
             (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
             (*used_partition_array_refcell.borrow_mut()) = Vec::new();
             (*subvol_partition_array_refcell.borrow_mut()) = Vec::new();
+            (*extra_mount_id_refcell.borrow_mut()) = 3;
             create_hardcoded_rows(
                 &drive_mounts_adw_listbox,
                 &drive_rows_size_group,
@@ -175,7 +177,7 @@ pub fn manual_partitioning_page(
                 &language_changed_action,
                 &used_partition_array_refcell,
                 &subvol_partition_array_refcell,
-                &extra_mount_id_refcell
+                &extra_mount_id_refcell,
             );
         }
     ));
@@ -498,7 +500,7 @@ fn create_hardcoded_rows(
                 &language_changed_action,
                 &used_partition_array_refcell,
                 &subvol_partition_array_refcell,
-                &extra_mount_id_refcell
+                &extra_mount_id_refcell,
             );
         }
     ));

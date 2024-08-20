@@ -191,6 +191,7 @@ pub struct FstabEntry {
     pub partition: Partition,
     pub mountpoint: String,
     pub mountopts: String,
+    pub used_by: i32,
 }
 
 #[derive(Default, Clone, Debug)]

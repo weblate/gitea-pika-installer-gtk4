@@ -1,4 +1,4 @@
-use std::{cell::{RefCell}, rc::Rc, sync::OnceLock};
+use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
