@@ -1,4 +1,4 @@
-use std::{cell::RefCell, rc::Rc, sync::OnceLock};
+use std::{cell::{RefCell}, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
@@ -25,6 +25,8 @@ pub struct DriveMountRow {
     sizegroup: RefCell<Option<gtk::SizeGroup>>,
     #[property(get, set)]
     langaction: RefCell<Option<gio::SimpleAction>>,
+    #[property(get, set)]
+    id: RefCell<i32>,
 }
 // ANCHOR_END: custom_button
 

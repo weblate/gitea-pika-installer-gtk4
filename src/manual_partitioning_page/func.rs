@@ -5,13 +5,14 @@ use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
 use gtk::{glib, prelude::*};
-use std::{cell::RefCell, rc::Rc};
+use std::borrow::Borrow;
+use std::{cell::{RefCell}, rc::Rc};
 
 const MINIMUM_EFI_BYTE_SIZE: f64 = 500000000.0;
 const MINIMUM_BOOT_BYTE_SIZE: f64 = 1000000000.0;
 const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 struct PartitionRow {
     widget: adw::ActionRow,
     swap_fs_error: Rc<std::cell::RefCell<bool>>,
@@ -49,6 +50,8 @@ pub fn create_efi_row(
     row.set_langaction(language_changed_action);
 
     row.set_mountpoint("/boot/efi");
+
+    row.set_id(0);
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 
@@ -191,6 +194,7 @@ pub fn create_efi_row(
         post_check_drive_mount(
             &row,
             &partition_row_struct,
+            &null_checkbutton,
             &partition_button,
             &partition_changed_action,
             &partition,
@@ -213,7 +217,9 @@ pub fn create_efi_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(None);
+            partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+                            ));
         }
     ));
 
@@ -235,7 +241,9 @@ pub fn create_efi_row(
                 listbox.remove(&row);
                 (*used_partition_array_refcell.borrow_mut())
                     .retain(|x| &x.partition.part_name != &row.partition());
-                partition_changed_action.activate(None);
+                partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+                            ));
             }
         ),
     );
@@ -271,7 +279,10 @@ pub fn create_boot_row(
 
     row.set_mountpoint("/boot");
 
+    row.set_id(1);
+
     let null_checkbutton = gtk::CheckButton::builder().build();
+
 
     for partition in partition_array {
         let part_name = &partition.part_name.to_owned();
@@ -412,6 +423,7 @@ pub fn create_boot_row(
         post_check_drive_mount(
             &row,
             &partition_row_struct,
+            &null_checkbutton,
             &partition_button,
             &partition_changed_action,
             &partition,
@@ -434,7 +446,9 @@ pub fn create_boot_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(None);
+            partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+            ));
         }
     ));
 
@@ -456,7 +470,9 @@ pub fn create_boot_row(
                 listbox.remove(&row);
                 (*used_partition_array_refcell.borrow_mut())
                     .retain(|x| &x.partition.part_name != &row.partition());
-                partition_changed_action.activate(None);
+                partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+                            ));
             }
         ),
     );
@@ -492,7 +508,10 @@ pub fn create_root_row(
 
     row.set_mountpoint("/");
 
+    row.set_id(2);
+
     let null_checkbutton = gtk::CheckButton::builder().build();
+
 
     for partition in partition_array {
         let part_name = &partition.part_name.to_owned();
@@ -638,6 +657,7 @@ pub fn create_root_row(
         post_check_drive_mount(
             &row,
             &partition_row_struct,
+            &null_checkbutton,
             &partition_button,
             &partition_changed_action,
             &partition,
@@ -660,7 +680,9 @@ pub fn create_root_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(None);
+            partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+                            ));
         }
     ));
 
@@ -682,7 +704,9 @@ pub fn create_root_row(
                 listbox.remove(&row);
                 (*used_partition_array_refcell.borrow_mut())
                     .retain(|x| &x.partition.part_name != &row.partition());
-                partition_changed_action.activate(None);
+                partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+                            ));
             }
         ),
     );
@@ -696,6 +720,7 @@ pub fn create_mount_row(
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     subvol_partition_array_refcell: &Rc<RefCell<Vec<String>>>,
+    extra_mount_id_refcell: &Rc<RefCell<i32>>,
 ) {
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
@@ -716,7 +741,10 @@ pub fn create_mount_row(
 
     row.set_langaction(language_changed_action);
 
+    row.set_id(extra_mount_id_refcell.borrow());
+
     let null_checkbutton = gtk::CheckButton::builder().build();
+
 
     for partition in partition_array {
         let part_name = &partition.part_name.to_owned();
@@ -825,6 +853,7 @@ pub fn create_mount_row(
         post_check_drive_mount(
             &row,
             &partition_row_struct,
+            &null_checkbutton,
             &partition_button,
             &partition_changed_action,
             &partition,
@@ -847,7 +876,9 @@ pub fn create_mount_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(None);
+            partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+            ));
         }
     ));
 
@@ -869,7 +900,9 @@ pub fn create_mount_row(
                 listbox.remove(&row);
                 (*used_partition_array_refcell.borrow_mut())
                     .retain(|x| &x.partition.part_name != &row.partition());
-                partition_changed_action.activate(None);
+                partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+                            ));
             }
         ),
     );
@@ -878,6 +911,7 @@ pub fn create_mount_row(
 fn post_check_drive_mount(
     row: &DriveMountRow,
     partition_row_struct: &PartitionRow,
+    null_checkbutton: &gtk::CheckButton,
     partition_button: &gtk::CheckButton,
     partition_changed_action: &gio::SimpleAction,
     partition: &Partition,
@@ -888,6 +922,10 @@ fn post_check_drive_mount(
     partition_button.connect_toggled(clone!(
         #[weak]
         row,
+        #[strong]
+        null_checkbutton,
+        #[strong]
+        partition_row_struct,
         #[weak]
         partition_button,
         #[strong]
@@ -897,21 +935,56 @@ fn post_check_drive_mount(
         #[strong]
         partition,
         move |_| {
-            if partition_button.is_active() == true {
-                let part_name = &partition.part_name;
-                row.set_partition(part_name.to_string());
-                (*used_partition_array_refcell.borrow_mut())
-                    .push(DriveMountRow::get_fstab_entry(&row));
-            } else {
-                (*used_partition_array_refcell.borrow_mut())
-                    .retain(|x| &x.partition.part_name != &row.partition());
-            }
-            partition_changed_action.activate(None);
+            let (check_delay_sender, check_delay_receiver) = async_channel::unbounded::<bool>();
+            std::thread::spawn(move || {
+                std::thread::sleep(std::time::Duration::from_millis(100));
+                check_delay_sender
+                    .send_blocking(true)
+                    .expect("The channel needs to be open.");
+            });
+
+            let check_delay_main_context = glib::MainContext::default();
+            check_delay_main_context.spawn_local(clone!(
+                #[weak]
+                row,
+                #[strong]
+                null_checkbutton,
+                #[strong]
+                partition_row_struct,
+                #[weak]
+                partition_button,
+                #[strong]
+                partition_changed_action,
+                #[strong]
+                used_partition_array_refcell,
+                #[strong]
+                partition,
+                async move {
+                    while let Ok(_state) = check_delay_receiver.recv().await {
+                        if !null_checkbutton.is_active() {
+                            if partition_button.is_active() == true {
+                                let part_name = &partition.part_name;
+                                row.set_partition(part_name.to_string());
+                                (*used_partition_array_refcell.borrow_mut())
+                                    .push(DriveMountRow::get_fstab_entry(&row));
+                            } else {
+                                (*used_partition_array_refcell.borrow_mut())
+                                    .retain(|x| &x.partition.part_name != &row.partition());
+                            }
+                            partition_changed_action.activate(Some(
+                                &glib::variant::Variant::from_data_with_type(row.id().to_string(), glib::VariantTy::STRING)
+                            ));
+                        }
+                    }
+                }
+            ));
         }
     ));
     row.connect_mountpoint_notify(clone!(
         #[strong]
         partition_row_struct,
+        #[strong]
+        null_checkbutton,
         #[strong]
         partition,
         #[strong]
@@ -928,14 +1001,17 @@ fn post_check_drive_mount(
                     }
                 } else {
                     (*partition_row_struct.swap_fs_error.borrow_mut()) = true;
+                    null_checkbutton.set_active(true);
                     partition_row_struct.widget.set_sensitive(false);
                 }
-            } else if *partition_row_struct.used.borrow() != 1
-                && *partition_row_struct.never.borrow() == false
-                && *partition_row_struct.hardcode_fs_error.borrow() == false
-            {
-                (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
-                partition_row_struct.widget.set_sensitive(true);
+            } else {
+                if *partition_row_struct.used.borrow() != 1
+                    && *partition_row_struct.never.borrow() == false
+                    && *partition_row_struct.hardcode_fs_error.borrow() == false
+                {
+                    (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
+                    partition_row_struct.widget.set_sensitive(true);
+                }
             }
         }
     ));
@@ -944,6 +1020,8 @@ fn post_check_drive_mount(
         #[strong]
         partition_row_struct,
         #[strong]
+        null_checkbutton,
+        #[strong]
         row,
         #[strong]
         partition,
@@ -951,13 +1029,15 @@ fn post_check_drive_mount(
         used_partition_array_refcell,
         #[strong]
         subvol_partition_array_refcell,
-        move |_, _| {
+        move |_, varient| {
             let part_name = &partition.part_name;
             let used_partition_array = used_partition_array_refcell.borrow();
             let subvol_partition_array = subvol_partition_array_refcell.borrow();
 
+            let action_id = String::from_utf8_lossy(varient.unwrap().data()).parse::<i32>().unwrap();
+
             if used_partition_array.iter().any(|e| {
-                (part_name == &e.partition.part_name && part_name != &row.partition())
+                (part_name == &e.partition.part_name)
                     && (subvol_partition_array.iter().any(|e| part_name == e))
             }) {
                 if *partition_row_struct.never.borrow() == false
@@ -969,9 +1049,12 @@ fn post_check_drive_mount(
                 (*partition_row_struct.used.borrow_mut()) = 2;
             } else if used_partition_array
                 .iter()
-                .any(|e| part_name == &e.partition.part_name && part_name != &row.partition())
+                .any(|e| part_name == &e.partition.part_name)
             {
-                partition_row_struct.widget.set_sensitive(false);
+                if action_id != row.id() {
+                    null_checkbutton.set_active(true);
+                    partition_row_struct.widget.set_sensitive(false);
+                }
                 (*partition_row_struct.used.borrow_mut()) = 1;
             } else {
                 if *partition_row_struct.never.borrow() == false

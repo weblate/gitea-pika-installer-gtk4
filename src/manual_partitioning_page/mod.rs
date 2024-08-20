@@ -6,6 +6,7 @@ use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partit
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
+use gtk::glib::Variant;
 use gtk::{glib, prelude::*, Orientation};
 use std::{cell::RefCell, collections::HashSet, rc::Rc};
 
@@ -34,7 +35,7 @@ pub fn manual_partitioning_page(
 
     //
 
-    let partition_changed_action = gio::SimpleAction::new("partition-changed", None);
+    let partition_changed_action = gio::SimpleAction::new("partition-changed", Some(glib::VariantTy::STRING));
 
     //
 
