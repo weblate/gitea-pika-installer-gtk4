@@ -239,8 +239,8 @@ pub fn create_efi_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                (*used_partition_array_refcell.borrow_mut())
-                    .retain(|x| &x.partition.part_name != &row.partition());
+                                (*used_partition_array_refcell.borrow_mut())
+                                    .retain(|x| x.used_by != row.id());
                 partition_changed_action.activate(Some(
                     &glib::variant::Variant::from_data_with_type(
                         row.id().to_string(),
@@ -471,8 +471,8 @@ pub fn create_boot_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                (*used_partition_array_refcell.borrow_mut())
-                    .retain(|x| &x.partition.part_name != &row.partition());
+                                (*used_partition_array_refcell.borrow_mut())
+                                    .retain(|x| x.used_by != row.id());
                 partition_changed_action.activate(Some(
                     &glib::variant::Variant::from_data_with_type(
                         row.id().to_string(),
@@ -708,8 +708,8 @@ pub fn create_root_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                (*used_partition_array_refcell.borrow_mut())
-                    .retain(|x| &x.partition.part_name != &row.partition());
+                                (*used_partition_array_refcell.borrow_mut())
+                                    .retain(|x| x.used_by != row.id());
                 partition_changed_action.activate(Some(
                     &glib::variant::Variant::from_data_with_type(
                         row.id().to_string(),
@@ -909,8 +909,8 @@ pub fn create_mount_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                (*used_partition_array_refcell.borrow_mut())
-                    .retain(|x| &x.partition.part_name != &row.partition());
+                                (*used_partition_array_refcell.borrow_mut())
+                                    .retain(|x| x.used_by != row.id());
                 partition_changed_action.activate(Some(
                     &glib::variant::Variant::from_data_with_type(
                         row.id().to_string(),
@@ -989,7 +989,7 @@ fn post_check_drive_mount(
                                 }
                             } else {
                                 (*used_partition_array_refcell.borrow_mut())
-                                    .retain(|x| &x.partition.part_name != &row.partition());
+                                    .retain(|x| x.used_by != row.id());
                             }
                             partition_changed_action.activate(Some(
                                 &glib::variant::Variant::from_data_with_type(
@@ -1009,6 +1009,12 @@ fn post_check_drive_mount(
         #[strong]
         null_checkbutton,
         #[strong]
+        null_checkbutton,
+        #[strong]
+        used_partition_array_refcell,
+        #[strong]
+        partition_changed_action,
+        #[strong]
         partition,
         #[strong]
         row,
@@ -1024,7 +1030,15 @@ fn post_check_drive_mount(
                     }
                 } else {
                     (*partition_row_struct.swap_fs_error.borrow_mut()) = true;
+                    (*used_partition_array_refcell.borrow_mut()).retain(|x| x.used_by != row.id());
                     null_checkbutton.set_active(true);
+                    row.set_partition("");
+                    partition_changed_action.activate(Some(
+                        &glib::variant::Variant::from_data_with_type(
+                            row.id().to_string(),
+                            glib::VariantTy::STRING,
+                        ),
+                    ));
                     partition_row_struct.widget.set_sensitive(false);
                 }
             } else {
