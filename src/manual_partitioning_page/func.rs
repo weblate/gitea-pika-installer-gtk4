@@ -216,10 +216,7 @@ pub fn create_efi_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(Some(&glib::variant::Variant::from_data_with_type(
-                row.id().to_string(),
-                glib::VariantTy::STRING,
-            )));
+            partition_changed_action.activate(None);
         }
     ));
 
@@ -239,14 +236,8 @@ pub fn create_efi_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                                (*used_partition_array_refcell.borrow_mut())
-                                    .retain(|x| x.used_by != row.id());
-                partition_changed_action.activate(Some(
-                    &glib::variant::Variant::from_data_with_type(
-                        row.id().to_string(),
-                        glib::VariantTy::STRING,
-                    ),
-                ));
+                (*used_partition_array_refcell.borrow_mut()).retain(|x| x.used_by != row.id());
+                partition_changed_action.activate(None);
             }
         ),
     );
@@ -448,10 +439,7 @@ pub fn create_boot_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(Some(&glib::variant::Variant::from_data_with_type(
-                row.id().to_string(),
-                glib::VariantTy::STRING,
-            )));
+            partition_changed_action.activate(None);
         }
     ));
 
@@ -471,14 +459,8 @@ pub fn create_boot_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                                (*used_partition_array_refcell.borrow_mut())
-                                    .retain(|x| x.used_by != row.id());
-                partition_changed_action.activate(Some(
-                    &glib::variant::Variant::from_data_with_type(
-                        row.id().to_string(),
-                        glib::VariantTy::STRING,
-                    ),
-                ));
+                (*used_partition_array_refcell.borrow_mut()).retain(|x| x.used_by != row.id());
+                partition_changed_action.activate(None);
             }
         ),
     );
@@ -685,10 +667,7 @@ pub fn create_root_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(Some(&glib::variant::Variant::from_data_with_type(
-                row.id().to_string(),
-                glib::VariantTy::STRING,
-            )));
+            partition_changed_action.activate(None);
         }
     ));
 
@@ -708,14 +687,8 @@ pub fn create_root_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                                (*used_partition_array_refcell.borrow_mut())
-                                    .retain(|x| x.used_by != row.id());
-                partition_changed_action.activate(Some(
-                    &glib::variant::Variant::from_data_with_type(
-                        row.id().to_string(),
-                        glib::VariantTy::STRING,
-                    ),
-                ));
+                (*used_partition_array_refcell.borrow_mut()).retain(|x| x.used_by != row.id());
+                partition_changed_action.activate(None);
             }
         ),
     );
@@ -886,10 +859,7 @@ pub fn create_mount_row(
             } else {
                 (*subvol_partition_array_refcell.borrow_mut()).retain(|x| x != &row.partition());
             }
-            partition_changed_action.activate(Some(&glib::variant::Variant::from_data_with_type(
-                row.id().to_string(),
-                glib::VariantTy::STRING,
-            )));
+            partition_changed_action.activate(None);
         }
     ));
 
@@ -909,14 +879,8 @@ pub fn create_mount_row(
             partition_changed_action,
             move |row: DriveMountRow| {
                 listbox.remove(&row);
-                                (*used_partition_array_refcell.borrow_mut())
-                                    .retain(|x| x.used_by != row.id());
-                partition_changed_action.activate(Some(
-                    &glib::variant::Variant::from_data_with_type(
-                        row.id().to_string(),
-                        glib::VariantTy::STRING,
-                    ),
-                ));
+                (*used_partition_array_refcell.borrow_mut()).retain(|x| x.used_by != row.id());
+                partition_changed_action.activate(None);
             }
         ),
     );
@@ -991,12 +955,7 @@ fn post_check_drive_mount(
                                 (*used_partition_array_refcell.borrow_mut())
                                     .retain(|x| x.used_by != row.id());
                             }
-                            partition_changed_action.activate(Some(
-                                &glib::variant::Variant::from_data_with_type(
-                                    row.id().to_string(),
-                                    glib::VariantTy::STRING,
-                                ),
-                            ));
+                            partition_changed_action.activate(None);
                         }
                     }
                 }
@@ -1033,12 +992,7 @@ fn post_check_drive_mount(
                     (*used_partition_array_refcell.borrow_mut()).retain(|x| x.used_by != row.id());
                     null_checkbutton.set_active(true);
                     row.set_partition("");
-                    partition_changed_action.activate(Some(
-                        &glib::variant::Variant::from_data_with_type(
-                            row.id().to_string(),
-                            glib::VariantTy::STRING,
-                        ),
-                    ));
+                    partition_changed_action.activate(None);
                     partition_row_struct.widget.set_sensitive(false);
                 }
             } else {
@@ -1066,16 +1020,10 @@ fn post_check_drive_mount(
         used_partition_array_refcell,
         #[strong]
         subvol_partition_array_refcell,
-        move |_, varient| {
+        move |_, _| {
             let part_name = &partition.part_name;
             let used_partition_array = used_partition_array_refcell.borrow();
             let subvol_partition_array = subvol_partition_array_refcell.borrow();
-
-            //dbg!(&used_partition_array);
-
-            let action_id = String::from_utf8_lossy(varient.unwrap().data())
-                .parse::<i32>()
-                .unwrap();
 
             if used_partition_array.iter().any(|e| {
                 (part_name == &e.partition.part_name && part_name != &row.partition())
@@ -1088,10 +1036,11 @@ fn post_check_drive_mount(
                     partition_row_struct.widget.set_sensitive(true);
                 }
                 (*partition_row_struct.used.borrow_mut()) = 2;
-            } else if used_partition_array
-                .iter()
-                .any(|e| part_name == &e.partition.part_name && e.used_by != row.id() && !subvol_partition_array.iter().any(|e| part_name == e))
-            {
+            } else if used_partition_array.iter().any(|e| {
+                part_name == &e.partition.part_name
+                    && e.used_by != row.id()
+                    && !subvol_partition_array.iter().any(|e| part_name == e)
+            }) {
                 if &row.partition() == part_name {
                     null_checkbutton.set_active(true);
                     row.set_partition("");
@@ -1099,13 +1048,13 @@ fn post_check_drive_mount(
                 partition_row_struct.widget.set_sensitive(false);
                 (*partition_row_struct.used.borrow_mut()) = 1;
             } else {
-                        if *partition_row_struct.never.borrow() == false
-                            && *partition_row_struct.swap_fs_error.borrow() == false
-                            && *partition_row_struct.hardcode_fs_error.borrow() == false
-                        {
-                            partition_row_struct.widget.set_sensitive(true);
-                        }
-                        (*partition_row_struct.used.borrow_mut()) = 0;
+                if *partition_row_struct.never.borrow() == false
+                    && *partition_row_struct.swap_fs_error.borrow() == false
+                    && *partition_row_struct.hardcode_fs_error.borrow() == false
+                {
+                    partition_row_struct.widget.set_sensitive(true);
+                }
+                (*partition_row_struct.used.borrow_mut()) = 0;
             }
         }
     ));

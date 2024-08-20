@@ -37,7 +37,7 @@ pub fn manual_partitioning_page(
     //
 
     let partition_changed_action =
-        gio::SimpleAction::new("partition-changed", Some(glib::VariantTy::STRING));
+        gio::SimpleAction::new("partition-changed", None);
 
     //
 
