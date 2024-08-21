@@ -38,14 +38,12 @@ override_dh_install:
 	chmod 755 debian/pika-installer-gtk4/usr/lib/pika/pika-installer-gtk4/scripts/*.py
 	mkdir -p debian/pika-installer-gtk4/usr/share/applications
 	mkdir -p debian/pika-installer-gtk4/usr/share/icons/hicolor/scalable/apps
-	#cp -vf data/pika-drivers.svg debian/pika-installer-gtk4/usr/share/icons/hicolor/scalable/apps/
-	#cp -vf data/com.pika.drivers.desktop  debian/pika-installer-gtk4/usr/share/applications/
+	cp -vf data/com.github.pikaos-linux.pikainstallergtk4.desktop debian/pika-installer-gtk4/usr/share/applications/
 	#makepot debian/pika-installer-gtk4/usr/share/locale
 	mkdir -pv debian/pika-installer-gtk4/usr/share/applications/
 	mkdir -pv debian/pika-installer-gtk4/etc/xdg/autostart/
 	mkdir -pv debian/pika-installer-gtk4/usr/bin/
 	mkdir -pv debian/pika-installer-gtk4/etc/pika-installer-gtk4/
-	cp -vf debian/extras/pika-installer.desktop debian/pika-installer-gtk4/usr/share/applications/
 	cp -vf debian/extras/pika-installer-autostart.desktop debian/pika-installer-gtk4/etc/xdg/autostart/
 	cp -vf debian/extras/pika-installer debian/pika-installer-gtk4/usr/bin/
 	chmod +x debian/pika-installer-gtk4/usr/bin/pika-installer

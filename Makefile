@@ -21,8 +21,7 @@ install:
 	chmod 755 $(DESTDIR)/usr/lib/pika/pika-installer-gtk4/scripts/*.py
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/icons/hicolor/scalable/apps
-	#cp -vf data/pika-drivers.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/
-	#cp -vf data/com.pika.drivers.desktop  $(DESTDIR)/usr/share/applications/
+	cp -vf data/com.github.pikaos-linux.pikainstallergtk4.desktop $(DESTDIR)/usr/share/applications/
 	#makepot $(DESTDIR)/usr/share/locale
 
 install_no_build_debug:
@@ -40,6 +39,5 @@ install_no_build_debug:
 	chmod 755 $(DESTDIR)/usr/lib/pika/pika-installer-gtk4/scripts/*.py
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/icons/hicolor/scalable/apps
-	#cp -vf data/pika-drivers.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/apps/
-	#cp -vf data/com.pika.drivers.desktop  $(DESTDIR)/usr/share/applications/
+	cp -vf data/com.github.pikaos-linux.pikainstallergtk4.desktop $(DESTDIR)/usr/share/applications/
 	#makepot $(DESTDIR)/usr/share/locale
