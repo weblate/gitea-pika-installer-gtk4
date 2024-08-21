@@ -3,8 +3,7 @@ mod imp;
 use glib::Object;
 use gtk::glib;
 
-use crate::partitioning_page::create_parition_struct;
-use crate::partitioning_page::FstabEntry;
+use crate::{build_ui::{FstabEntry}, partitioning_page::create_parition_struct};
 
 glib::wrapper! {
     pub struct DriveMountRow(ObjectSubclass<imp::DriveMountRow>)

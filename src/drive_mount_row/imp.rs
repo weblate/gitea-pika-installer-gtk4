@@ -4,7 +4,7 @@ use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
 use gtk::{glib, Orientation::Horizontal};
 
-use crate::partitioning_page::FstabEntry;
+use crate::{build_ui::{FstabEntry}};
 
 // ANCHOR: custom_button
 // Object holding the state

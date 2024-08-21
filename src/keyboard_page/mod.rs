@@ -63,6 +63,7 @@ pub fn keyboard_page(
     keyboard_test_entry_boxed_list.add_css_class("round-border-only-bottom");
 
     let current_keymap = "us";
+    let current_keymap_variant: Option<String> = None;
 
     let xkbinfo = gnome_desktop::XkbInfo::new();
 
@@ -147,7 +148,7 @@ pub fn keyboard_page(
                 }
             }
         ));
-        if current_keymap == keymap_clone1.name {
+        if current_keymap == keymap_clone1.name && current_keymap_variant == keymap_clone1.variant {
             keymap_checkbutton.set_active(true);
         }
     }
