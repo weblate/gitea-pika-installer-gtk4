@@ -1,10 +1,9 @@
 use crate::drive_mount_row::DriveMountRow;
-use crate::installer_stack_page;
-use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition, SubvolDeclaration};
+use crate::{build_ui::{CrypttabEntry, FstabEntry, Partition, SubvolDeclaration}, partitioning_page::{get_partitions}};
 use adw::gio;
 use adw::prelude::*;
-use glib::{clone, closure_local, ffi::gboolean};
-use gtk::{glib, prelude::*};
+use glib::{clone, closure_local};
+use gtk::glib;
 use std::{cell::RefCell, rc::Rc};
 
 const MINIMUM_EFI_BYTE_SIZE: f64 = 500000000.0;

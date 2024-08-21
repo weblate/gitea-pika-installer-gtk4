@@ -1,13 +1,9 @@
 use crate::drive_mount_row::DriveMountRow;
-use crate::installer_stack_page;
-use crate::partitioning_page;
-use crate::partitioning_page::get_luks_uuid;
-use crate::partitioning_page::{get_partitions, CrypttabEntry, FstabEntry, Partition, SubvolDeclaration};
+use crate::{build_ui::{CrypttabEntry, FstabEntry, Partition, SubvolDeclaration}, installer_stack_page, partitioning_page::{get_partitions, get_luks_uuid, test_luks_passwd}};
 use adw::gio;
 use adw::prelude::*;
-use glib::{clone, closure_local, ffi::gboolean};
-use gtk::glib::Variant;
-use gtk::{glib, prelude::*, Orientation};
+use glib::{clone, closure_local};
+use gtk::{glib, Orientation};
 use std::{cell::RefCell, collections::HashSet, rc::Rc};
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
@@ -599,7 +595,7 @@ fn set_crypttab_entries(
 
             std::thread::spawn(move || {
                 luks_manual_password_sender
-                    .send_blocking(partitioning_page::test_luks_passwd(
+                    .send_blocking(test_luks_passwd(
                         &fs_entry_clone1.partition.part_name,
                         &luks_password,
                     ))

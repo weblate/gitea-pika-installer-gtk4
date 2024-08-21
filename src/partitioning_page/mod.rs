@@ -1,6 +1,4 @@
-use crate::drive_mount_row::DriveMountRow;
-use crate::installer_stack_page;
-use crate::{automatic_partitioning_page, manual_partitioning_page};
+use crate::{build_ui::{FstabEntry, CrypttabEntry, BlockDevice, SubvolDeclaration, Partition}, installer_stack_page, automatic_partitioning_page, manual_partitioning_page};
 use glib::{clone, closure_local, Properties};
 use gtk::{gio, glib, prelude::*};
 use std::io::BufRead;
@@ -167,44 +165,6 @@ pub fn partitioning_page(
     );
 
     main_carousel.append(&partitioning_carousel)
-}
-
-pub struct BlockDevice {
-    pub block_name: String,
-    pub block_size: f64,
-    pub block_size_pretty: String,
-}
-
-#[derive(Default, Clone, Debug)]
-pub struct Partition {
-    pub part_name: String,
-    pub part_fs: String,
-    pub part_uuid: String,
-    pub has_encryption: bool,
-    pub need_mapper: bool,
-    pub part_size: f64,
-    pub part_size_pretty: String,
-}
-
-#[derive(Default, Clone, Debug)]
-pub struct FstabEntry {
-    pub partition: Partition,
-    pub mountpoint: String,
-    pub mountopts: String,
-    pub used_by: i32,
-}
-
-#[derive(Default, Clone, Debug)]
-pub struct CrypttabEntry {
-    pub partition: String,
-    pub map: String,
-    pub uuid: String,
-    pub password: Option<String>,
-}
-
-pub struct SubvolDeclaration {
-    pub part_name: Rc<std::cell::RefCell<String>>,
-    pub made_by: Rc<std::cell::RefCell<i32>>,
 }
 
 pub fn get_block_devices() -> Vec<BlockDevice> {

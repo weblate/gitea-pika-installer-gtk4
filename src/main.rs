@@ -3,20 +3,23 @@ use gtk::{gdk, glib, prelude::*, CssProvider, STYLE_PROVIDER_PRIORITY_APPLICATIO
 use std::env;
 mod build_ui;
 mod config;
-mod efi_error_page;
-mod installer_stack_page;
-
 //
-
-mod automatic_partitioning_page;
+mod installer_stack_page;
 mod drive_mount_row;
+//
+mod welcome_page;
+mod efi_error_page;
+//
 mod eula_page;
 mod keyboard_page;
 mod language_page;
-mod manual_partitioning_page;
-mod partitioning_page;
 mod timezone_page;
-mod welcome_page;
+//
+mod partitioning_page;
+mod automatic_partitioning_page;
+mod manual_partitioning_page;
+//
+mod installation_summary_page;
 
 #[macro_use]
 extern crate rust_i18n;

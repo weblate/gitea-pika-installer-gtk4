@@ -1,20 +1,25 @@
-use crate::installer_stack_page;
+use crate::{build_ui::{PikaLocale, PikaKeymap, FstabEntry, CrypttabEntry} installer_stack_page};
 use adw::prelude::*;
 use glib::{clone, closure_local};
-use gnome_desktop::XkbInfoExt;
-use gtk::{gio, glib, prelude::*};
+use gtk::{gio, glib};
 use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
-
-struct PikaKeymap {
-    name: String,
-    pretty_name: String
-}
 
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
-    keymap_base_data_refcell: &Rc<RefCell<String>>,
-    keymap_variant_data_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction,
+    language_selection_text_refcell: Rc<RefCell<PikaLocale>>,
+    keymap_selection_text_refcell: Rc<RefCell<PikaKeymap>>,
+    timezone_selection_text_refcell: Rc<RefCell<String>>,
+    partition_method_type_refcell: Rc<RefCell<String>>,
+    partition_method_automatic_target_refcell: Rc<RefCell<String>>,
+    partition_method_automatic_target_fs_refcell: Rc<RefCell<String>>,
+    partition_method_automatic_luks_enabled_refcell: Rc<RefCell<bool>>,
+    partition_method_automatic_luks_refcell: Rc<RefCell<String>>,
+    partition_method_automatic_ratio_refcell: Rc<RefCell<f64>>,
+    partition_method_automatic_seperation_refcell: Rc<RefCell<String>>,
+    partition_method_manual_fstab_entry_array_refcell: Rc<RefCell<Vec<FstabEntry>>>,
+    partition_method_manual_luks_enabled_refcell: Rc<RefCell<bool>>,
+    partition_method_manual_crypttab_entry_array_refcell: Rc<RefCell<Vec<CrypttabEntry>>>
 ) {
     let keyboard_page = installer_stack_page::InstallerStackPage::new();
     keyboard_page.set_page_icon("keyboard-symbolic");

@@ -1,8 +1,12 @@
 use crate::{
-    config::APP_ID, efi_error_page, eula_page, keyboard_page, language_page, partitioning_page::{self, CrypttabEntry, FstabEntry}, timezone_page, welcome_page
+    config::APP_ID, efi_error_page, eula_page, keyboard_page, language_page, timezone_page, welcome_page, partitioning_page
 };
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, path::Path, rc::Rc};
+
+// Custom Installer Data types
+
+/// Locale Data types
 
 #[derive(Default, Clone, Debug)]
 pub struct PikaLocale {
@@ -10,11 +14,53 @@ pub struct PikaLocale {
     pub pretty_name: String
 }
 
+/// Keyboard Data types
+
 #[derive(Default, Clone, Debug)]
 pub struct PikaKeymap {
     pub name: String,
     pub variant: Option<String>,
     pub pretty_name: String
+}
+
+pub struct BlockDevice {
+    pub block_name: String,
+    pub block_size: f64,
+    pub block_size_pretty: String,
+}
+
+/// Partitioning Data types
+
+#[derive(Default, Clone, Debug)]
+pub struct Partition {
+    pub part_name: String,
+    pub part_fs: String,
+    pub part_uuid: String,
+    pub has_encryption: bool,
+    pub need_mapper: bool,
+    pub part_size: f64,
+    pub part_size_pretty: String,
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct FstabEntry {
+    pub partition: Partition,
+    pub mountpoint: String,
+    pub mountopts: String,
+    pub used_by: i32,
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct CrypttabEntry {
+    pub partition: String,
+    pub map: String,
+    pub uuid: String,
+    pub password: Option<String>,
+}
+
+pub struct SubvolDeclaration {
+    pub part_name: Rc<std::cell::RefCell<String>>,
+    pub made_by: Rc<std::cell::RefCell<i32>>,
 }
 
 pub fn build_ui(app: &adw::Application) {
