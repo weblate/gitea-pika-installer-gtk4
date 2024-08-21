@@ -1,17 +1,12 @@
-use crate::installer_stack_page;
+use crate::{build_ui::PikaLocale, installer_stack_page};
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, env, fs, path::Path, process::Command, rc::Rc};
 
-struct PikaLocale {
-    name: String,
-    pretty_name: String
-}
-
 pub fn language_page(
     main_carousel: &adw::Carousel,
-    lang_data_refcell: &Rc<RefCell<String>>,
+    lang_data_refcell: &Rc<RefCell<PikaLocale>>,
     language_changed_action: &gio::SimpleAction,
 ) {
     let language_page = installer_stack_page::InstallerStackPage::new();
@@ -99,6 +94,7 @@ pub fn language_page(
     sorted_locale_vec.sort_by_key(|k| k.pretty_name.clone());
 
     for pika_locale in sorted_locale_vec {
+        let pika_locale_clone0 = pika_locale.clone();
         let locale = pika_locale.name;
         let locale_clone0 = locale.clone();
         let locale_name = pika_locale.pretty_name;
@@ -119,12 +115,14 @@ pub fn language_page(
             locale_checkbutton,
             #[strong]
             lang_data_refcell,
+            #[strong]
+            pika_locale_clone0,
             #[weak]
             language_page,
             move |_| {
                 if locale_checkbutton.is_active() == true {
                     language_page.set_next_sensitive(true);
-                    *lang_data_refcell.borrow_mut() = String::from(&locale);
+                    *lang_data_refcell.borrow_mut() = pika_locale_clone0.clone();
                 }
             }
         ));
@@ -208,7 +206,7 @@ pub fn language_page(
                 //                    .arg("LANG=".to_owned() + &locale + ".UTF-8")
                 //                    .spawn()
                 //                    .expect("locale failed to start");
-                rust_i18n::set_locale(&locale);
+                rust_i18n::set_locale(&locale.name);
                 language_changed_action.activate(None);
                 main_carousel.scroll_to(&main_carousel.nth_page(2), true)
             }

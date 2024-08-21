@@ -1,13 +1,19 @@
-use crate::{build_ui::PikaKeymap, installer_stack_page};
+use crate::installer_stack_page;
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gnome_desktop::XkbInfoExt;
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
 
+struct PikaKeymap {
+    name: String,
+    pretty_name: String
+}
+
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
-    keymap_data_refcell: &Rc<RefCell<PikaKeymap>>,
+    keymap_base_data_refcell: &Rc<RefCell<String>>,
+    keymap_variant_data_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction,
 ) {
     let keyboard_page = installer_stack_page::InstallerStackPage::new();
@@ -72,35 +78,26 @@ pub fn keyboard_page(
     for keymap in keymap_list.iter() {
         sorted_keymap_vec.push(PikaKeymap{
             name: keymap.to_string(),
-            pretty_name: xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string(),
-            variant: {
-                let keymap_split: Vec<String> = keymap.split("+").map(|s| s.into()).collect();
-                let keymap_base = keymap_split.get(0).unwrap().clone();
-                let mut keymap_variant = String::new();
-                let mut split_index = 0;
-                for split in keymap_split {
-                    split_index += 1;
-                    if split_index == 1 {
-                        continue;
-                    }
-                    keymap_variant.push_str(&split)
-                }
-                if keymap_variant.is_empty() {
-                    None
-                } else {
-                    Some(keymap_variant)
-                }
-            }
+            pretty_name: xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string()
         })
     }
     sorted_keymap_vec.sort_by_key(|k| k.pretty_name.clone());
 
     for pika_keymap in sorted_keymap_vec {
-        let keymap_clone0 = pika_keymap.clone();
-        let keymap_clone1 = pika_keymap.clone();
         let keymap = pika_keymap.name;
         let keymap_name = pika_keymap.pretty_name;
-        let keymap_variant = pika_keymap.variant;
+        let keymap_split: Vec<String> = keymap.split("+").map(|s| s.into()).collect();
+        let keymap_base = keymap_split.get(0).unwrap().clone();
+        let mut keymap_variant = String::new();
+        let mut split_index = 0;
+        for split in keymap_split {
+            split_index += 1;
+            if split_index == 1 {
+                continue;
+            }
+            keymap_variant.push_str(&split)
+        }
+        let keymap_clone = keymap.clone();
         let keymap_checkbutton = gtk::CheckButton::builder()
             .valign(gtk::Align::Center)
             .can_focus(false)
@@ -117,37 +114,36 @@ pub fn keyboard_page(
             #[weak]
             keymap_checkbutton,
             #[strong]
-            keymap_data_refcell,
+            keymap_base_data_refcell,
             #[strong]
-            keymap_clone0,
+            keymap_variant_data_refcell,
             #[weak]
             keyboard_page,
             move |_| {
                 if keymap_checkbutton.is_active() == true {
-                    *keymap_data_refcell.borrow_mut() = keymap_clone0.clone();
                     keyboard_page.set_next_sensitive(true);
-                    match keymap_variant.clone() {
-                        Some(t) => {
-                            Command::new("setxkbmap")
-                                .arg("-layout")
-                                .arg(&keymap_clone0.name)
-                                .arg("-variant")
-                                .arg(t)
-                                .spawn()
-                                .expect("keyboard failed to start");
-                        }
-                        None => {
-                            Command::new("setxkbmap")
-                                .arg("-layout")
-                                .arg(&keymap_clone0.name)
-                                .spawn()
-                                .expect("keyboard failed to start");
-                        }
+                    if keymap_variant.is_empty() {
+                        *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
+                        Command::new("setxkbmap")
+                            .arg("-layout")
+                            .arg(keymap_base.clone())
+                            .spawn()
+                            .expect("keyboard failed to start");
+                    } else {
+                        *keymap_base_data_refcell.borrow_mut() = String::from(&keymap_base);
+                        *keymap_variant_data_refcell.borrow_mut() = String::from(&keymap_variant);
+                        Command::new("setxkbmap")
+                            .arg("-layout")
+                            .arg(keymap_base.clone())
+                            .arg("-variant")
+                            .arg(keymap_variant.clone())
+                            .spawn()
+                            .expect("keyboard failed to start");
                     }
                 }
             }
         ));
-        if current_keymap == keymap_clone1.name {
+        if current_keymap == keymap_clone {
             keymap_checkbutton.set_active(true);
         }
     }

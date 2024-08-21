@@ -6,6 +6,19 @@ use crate::{
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, path::Path, rc::Rc};
 
+#[derive(Default, Clone, Debug)]
+pub struct PikaLocale {
+    pub name: String,
+    pub pretty_name: String
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct PikaKeymap {
+    pub name: String,
+    pub variant: Option<String>,
+    pub pretty_name: String
+}
+
 pub fn build_ui(app: &adw::Application) {
     glib::set_prgname(Some("application_name"));
     glib::set_application_name(&t!("application_name"));
@@ -53,9 +66,8 @@ pub fn build_ui(app: &adw::Application) {
         _ => efi_error_page::efi_error_page(&window, &carousel),
     }
 
-    let language_selection_text_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
-    let keymap_base_selection_text_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
-    let keymap_varient_selection_text_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
+    let language_selection_text_refcell: Rc<RefCell<PikaLocale>> = Rc::new(RefCell::default());
+    let keymap_selection_text_refcell: Rc<RefCell<PikaKeymap>> = Rc::new(RefCell::default());
     let timezone_selection_text_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_type_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_automatic_target_refcell: Rc<RefCell<String>> =
@@ -87,8 +99,7 @@ pub fn build_ui(app: &adw::Application) {
 
     keyboard_page::keyboard_page(
         &carousel,
-        &keymap_base_selection_text_refcell,
-        &keymap_varient_selection_text_refcell,
+        &keymap_selection_text_refcell,
         &language_changed_action,
     );
 
