@@ -1,7 +1,5 @@
 use crate::{
-    efi_error_page, eula_page, keyboard_page, language_page,
-    partitioning_page::{self, CrypttabEntry, FstabEntry},
-    timezone_page, welcome_page,
+    config::APP_ID, efi_error_page, eula_page, keyboard_page, language_page, partitioning_page::{self, CrypttabEntry, FstabEntry}, timezone_page, welcome_page
 };
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, path::Path, rc::Rc};
@@ -20,7 +18,7 @@ pub struct PikaKeymap {
 }
 
 pub fn build_ui(app: &adw::Application) {
-    glib::set_prgname(Some("application_name"));
+    glib::set_prgname(Some(t!("application_name").to_string()));
     glib::set_application_name(&t!("application_name"));
 
     let carousel = adw::Carousel::builder()
@@ -58,7 +56,7 @@ pub fn build_ui(app: &adw::Application) {
         .default_height(500)
         .deletable(false)
         .content(&toolbarview)
-        .startup_id("pika-installer-gtk4")
+        .startup_id(APP_ID)
         .build();
 
     match Path::new("/sys/firmware/efi/efivars").exists() {
