@@ -11,6 +11,7 @@ use std::sync::atomic::AtomicBool;
 mod func;
 
 pub fn manual_partitioning_page(
+    main_carousel: &adw::Carousel,
     partition_carousel: &adw::Carousel,
     window: adw::ApplicationWindow,
     partition_method_type_refcell: &Rc<RefCell<String>>,
@@ -358,7 +359,7 @@ pub fn manual_partitioning_page(
         false,
         closure_local!(
             #[weak]
-            partition_carousel,
+            main_carousel,
             #[strong]
             partition_method_type_refcell,
             #[strong]
@@ -369,11 +370,7 @@ pub fn manual_partitioning_page(
             partition_method_manual_crypttab_entry_array_refcell,
             move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage| {
                 *partition_method_type_refcell.borrow_mut() = String::from("manual");
-                //partition_carousel.scroll_to(&partition_carousel.nth_page(5), true)
-                dbg!(partition_method_type_refcell.borrow());
-                dbg!(partition_method_manual_fstab_entry_array_refcell.borrow());
-                dbg!(partition_method_manual_luks_enabled_refcell.borrow());
-                dbg!(partition_method_manual_crypttab_entry_array_refcell.borrow());
+                main_carousel.scroll_to(&main_carousel.nth_page(6), true)
             }
         ),
     );

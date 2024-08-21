@@ -22,8 +22,9 @@ pub fn partitioning_page(
     let partitioning_page = installer_stack_page::InstallerStackPage::new();
     partitioning_page.set_page_icon("media-floppy-symbolic");
     partitioning_page.set_back_sensitive(true);
+    partitioning_page.set_next_sensitive(false);
     partitioning_page.set_back_visible(true);
-    partitioning_page.set_next_visible(false);
+    partitioning_page.set_next_visible(true);
 
     let partitioning_carousel = adw::Carousel::builder()
         .allow_long_swipes(false)
@@ -132,6 +133,7 @@ pub fn partitioning_page(
 
     partitioning_carousel.append(&partitioning_page);
     automatic_partitioning_page::automatic_partitioning_page(
+        &main_carousel,
         &partitioning_carousel,
         &partition_method_type_refcell,
         &partition_method_automatic_target_refcell,
@@ -143,6 +145,7 @@ pub fn partitioning_page(
         &language_changed_action,
     );
     manual_partitioning_page::manual_partitioning_page(
+        &main_carousel,
         &partitioning_carousel,
         window,
         &partition_method_type_refcell,

@@ -1,5 +1,5 @@
 use crate::{
-    config::APP_ID, efi_error_page, eula_page, keyboard_page, language_page, timezone_page, welcome_page, partitioning_page
+    config::APP_ID, efi_error_page, eula_page, keyboard_page, language_page, timezone_page, welcome_page, partitioning_page, installation_summary_page
 };
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, path::Path, rc::Rc};
@@ -168,6 +168,8 @@ pub fn build_ui(app: &adw::Application) {
         &partition_method_manual_crypttab_entry_array_refcell,
         &language_changed_action,
     );
+
+    installation_summary_page::installation_summary_page(&carousel, &language_changed_action, &language_selection_text_refcell, &keymap_selection_text_refcell, &timezone_selection_text_refcell, &partition_method_type_refcell, &partition_method_automatic_target_refcell, &partition_method_automatic_target_fs_refcell, &partition_method_automatic_luks_enabled_refcell, &partition_method_automatic_luks_refcell, &partition_method_automatic_ratio_refcell, &partition_method_automatic_seperation_refcell, &partition_method_manual_fstab_entry_array_refcell, &partition_method_manual_luks_enabled_refcell, &partition_method_manual_crypttab_entry_array_refcell);
 
     window.present()
 }
