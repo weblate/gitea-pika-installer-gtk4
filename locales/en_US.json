@@ -112,6 +112,9 @@
     "install_confirm_detail_partition_method_automatic_seperation_title": "Seperate /home ?",
     "install_confirm_detail_partition_method_automatic_ratio_title": "/ to /home Ratio",
     "install_confirm_detail_partition_method_automatic_ratio_subtitle": "(/) Will Have {ROOT_PER}% of Usable Disk Space ({ROOT_SIZE})\n(/home) Will Have {HOME_PER}% of Usable Disk Space ({HOME_SIZE})",
+    "install_confirm_detail_partition_method_manual_crypttab_entry_title": "Manual Crypttab Entry",
+    "install_confirm_detail_partition_method_manual_crypttab_entry_subtitle_auto": "{LUKS_NAME} Unlocked Automatically With Root Unlock",
+    "install_confirm_detail_partition_method_manual_crypttab_entry_subtitle_manual": "{LUKS_NAME} Unlocked Manually Via Password On System Startup",
     "mounted_on_detail": " mounted on ",
     "install_target_detail": "Install Target:",
     "install_confirm_button_label": "Confirm & Install PikaOS"

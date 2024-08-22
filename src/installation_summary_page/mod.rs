@@ -91,6 +91,8 @@ pub fn installation_summary_page(
         partition_method_automatic_seperation_refcell,
         #[strong]
         partition_method_automatic_ratio_refcell,
+        #[strong]
+        partition_method_manual_crypttab_entry_array_refcell,
         move|_, action_arg|
             {
                 let action_arg = String::from_utf8_lossy(action_arg.unwrap().data());
@@ -147,68 +149,94 @@ pub fn installation_summary_page(
                     install_confirm_detail_partition_method_type.add_css_class("property");
                     installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_type);
                     //
-                    if &*partition_method_type_refcell.borrow().as_str() == "automatic" {
-                        let install_confirm_detail_partition_method_automatic_target = adw::ActionRow::builder()
-                            .title(t!("install_confirm_detail_partition_method_automatic_target_title"))
-                            .subtitle(strfmt::strfmt(&t!("install_confirm_detail_partition_method_automatic_target_subtitle"), &std::collections::HashMap::from([("DISK_SIZE".to_string(), partition_method_automatic_target_refcell.borrow().block_size_pretty.as_str()), ("DISK_NAME".to_string(), partition_method_automatic_target_refcell.borrow().block_name.as_str())])).unwrap())
-                            .build();
-                        install_confirm_detail_partition_method_automatic_target.add_css_class("property");
-                        installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_target);
-                        //
-                        let install_confirm_detail_partition_method_automatic_target_fs = adw::ActionRow::builder()
-                            .title(t!("install_confirm_detail_partition_method_automatic_target_fs_title"))
-                            .subtitle(partition_method_automatic_target_fs_refcell.borrow().to_uppercase())
-                            .build();
-                        install_confirm_detail_partition_method_automatic_target_fs.add_css_class("property");
-                        installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_target_fs);
-                        //
-                        match &*partition_method_automatic_seperation_refcell.borrow().as_str() {
-                            "subvol" => {
-                                let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
-                                    .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
-                                    .subtitle(t!("advanced_home_seperation_selection_checkbutton_subvol_label"))
-                                    .build();
-                                install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
-                                installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
+                    match &*partition_method_type_refcell.borrow().as_str() {
+                        "automatic" => {
+                            let install_confirm_detail_partition_method_automatic_target = adw::ActionRow::builder()
+                                .title(t!("install_confirm_detail_partition_method_automatic_target_title"))
+                                .subtitle(strfmt::strfmt(&t!("install_confirm_detail_partition_method_automatic_target_subtitle"), &std::collections::HashMap::from([("DISK_SIZE".to_string(), partition_method_automatic_target_refcell.borrow().block_size_pretty.as_str()), ("DISK_NAME".to_string(), partition_method_automatic_target_refcell.borrow().block_name.as_str())])).unwrap())
+                                .build();
+                            install_confirm_detail_partition_method_automatic_target.add_css_class("property");
+                            installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_target);
+                            //
+                            let install_confirm_detail_partition_method_automatic_target_fs = adw::ActionRow::builder()
+                                .title(t!("install_confirm_detail_partition_method_automatic_target_fs_title"))
+                                .subtitle(partition_method_automatic_target_fs_refcell.borrow().to_uppercase())
+                                .build();
+                            install_confirm_detail_partition_method_automatic_target_fs.add_css_class("property");
+                            installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_target_fs);
+                            //
+                            match &*partition_method_automatic_seperation_refcell.borrow().as_str() {
+                                "subvol" => {
+                                    let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
+                                        .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
+                                        .subtitle(t!("advanced_home_seperation_selection_checkbutton_subvol_label"))
+                                        .build();
+                                    install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
+                                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
+                                }
+                                "partition" => {
+                                    let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
+                                        .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
+                                        .subtitle(t!("advanced_home_seperation_selection_checkbutton_partition_label"))
+                                        .build();
+                                    install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
+                                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
+                                    //
+                                    let usable_disk_space = partition_method_automatic_target_refcell.borrow().block_size - (MINIMUM_EFI_BYTE_SIZE + MINIMUM_BOOT_BYTE_SIZE);
+                                    let root_part_size = *partition_method_automatic_ratio_refcell.borrow();
+                                    let home_part_size = usable_disk_space - root_part_size;
+                                    let root_part_percent = (root_part_size/usable_disk_space) * 100.0;
+                                    let home_part_percent = (home_part_size/usable_disk_space) * 100.0;
+                                    let install_confirm_detail_partition_method_automatic_ratio = adw::ActionRow::builder()
+                                        .title(t!("install_confirm_detail_partition_method_automatic_ratio_title"))
+                                        .subtitle(strfmt::strfmt(
+                                                &t!("install_confirm_detail_partition_method_automatic_ratio_subtitle"),
+                                                &std::collections::HashMap::from([
+                                                    ("ROOT_PER".to_string(), (root_part_percent.round() as i64).to_string().as_str()),
+                                                    ("ROOT_SIZE".to_string(), &pretty_bytes::converter::convert(root_part_size)),
+                                                    ("HOME_PER".to_string(), (home_part_percent.round() as i64).to_string().as_str()),
+                                                    ("HOME_SIZE".to_string(), &pretty_bytes::converter::convert(home_part_size))
+                                                ])
+                                        ).unwrap())
+                                        .build();
+                                    install_confirm_detail_partition_method_automatic_ratio.add_css_class("property");
+                                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_ratio);
+                                }
+                                "none" => {
+                                    let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
+                                        .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
+                                        .subtitle(t!("advanced_home_seperation_selection_checkbutton_none_label"))
+                                        .build();
+                                    install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
+                                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
+                                }
+                                _ => panic!()
                             }
-                            "partition" => {
-                                let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
-                                    .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
-                                    .subtitle(t!("advanced_home_seperation_selection_checkbutton_partition_label"))
-                                    .build();
-                                install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
-                                installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
-                                //
-                                let usable_disk_space = partition_method_automatic_target_refcell.borrow().block_size - (MINIMUM_EFI_BYTE_SIZE + MINIMUM_BOOT_BYTE_SIZE);
-                                let root_part_size = *partition_method_automatic_ratio_refcell.borrow();
-                                let home_part_size = usable_disk_space - root_part_size;
-                                let root_part_percent = (root_part_size/usable_disk_space) * 100.0;
-                                let home_part_percent = (home_part_size/usable_disk_space) * 100.0;
-                                let install_confirm_detail_partition_method_automatic_ratio = adw::ActionRow::builder()
-                                    .title(t!("install_confirm_detail_partition_method_automatic_ratio_title"))
-                                    .subtitle(strfmt::strfmt(
-                                            &t!("install_confirm_detail_partition_method_automatic_ratio_subtitle"),
-                                            &std::collections::HashMap::from([
-                                                ("ROOT_PER".to_string(), (root_part_percent.round() as i64).to_string().as_str()),
-                                                ("ROOT_SIZE".to_string(), &pretty_bytes::converter::convert(root_part_size)),
-                                                ("HOME_PER".to_string(), (home_part_percent.round() as i64).to_string().as_str()),
-                                                ("HOME_SIZE".to_string(), &pretty_bytes::converter::convert(home_part_size))
-                                            ])
-                                    ).unwrap())
-                                    .build();
-                                install_confirm_detail_partition_method_automatic_ratio.add_css_class("property");
-                                installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_ratio);
-                            }
-                            "none" => {
-                                let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
-                                    .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
-                                    .subtitle(t!("advanced_home_seperation_selection_checkbutton_none_label"))
-                                    .build();
-                                install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
-                                installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
-                            }
-                            _ => panic!()
                         }
+                        "manual" => {
+                            if *partition_method_manual_luks_enabled {
+                                for crypttab_entry in partition_method_manual_crypttab_entry_array_refcell.borrow().iter() {
+                                    let crypttab_entry_map = &crypttab_entry.map;
+                                    let install_confirm_detail_partition_method_manual_crypttab_entry_subtitle = if crypttab_entry.password.is_some() {
+                                        t!("install_confirm_detail_partition_method_manual_crypttab_entry_subtitle_auto")
+                                    } else {
+                                        t!("install_confirm_detail_partition_method_manual_crypttab_entry_subtitle_manual")
+                                    };
+                                    let install_confirm_detail_partition_method_manual_crypttab_entry = adw::ActionRow::builder()
+                                        .title(t!("install_confirm_detail_partition_method_manual_crypttab_entry_title"))
+                                        .subtitle(strfmt::strfmt(
+                                            &install_confirm_detail_partition_method_manual_crypttab_entry_subtitle,
+                                            &std::collections::HashMap::from([
+                                                ("LUKS_NAME".to_string(), (crypttab_entry_map).to_string().as_str()),
+                                            ])
+                                        ).unwrap())
+                                        .build();
+                                    install_confirm_detail_partition_method_manual_crypttab_entry.add_css_class("property");
+                                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_manual_crypttab_entry);
+                                }
+                            }
+                        }
+                        _ => panic!()
                     }
                 }
             }
