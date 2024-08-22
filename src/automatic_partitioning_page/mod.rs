@@ -1,19 +1,18 @@
 use crate::installer_stack_page;
 use crate::partitioning_page::get_block_devices;
+use crate::config::{MINIMUM_EFI_BYTE_SIZE, MINIMUM_BOOT_BYTE_SIZE, MINIMUM_ROOT_BYTE_SIZE};
+use crate::build_ui::BlockDevice;
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
 use gtk::{glib, prelude::*};
 use std::{cell::RefCell, rc::Rc};
 
-const BOOT_AND_EFI_BYTE_SIZE: f64 = 1611661312.0;
-const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
-
 pub fn automatic_partitioning_page(
     main_carousel: &adw::Carousel,
     partition_carousel: &adw::Carousel,
     partition_method_type_refcell: &Rc<RefCell<String>>,
-    partition_method_automatic_target_refcell: &Rc<RefCell<String>>,
+    partition_method_automatic_target_refcell: &Rc<RefCell<BlockDevice>>,
     partition_method_automatic_target_fs_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_luks_enabled_refcell: &Rc<RefCell<bool>>,
     partition_method_automatic_luks_refcell: &Rc<RefCell<String>>,
@@ -398,6 +397,8 @@ pub fn automatic_partitioning_page(
             #[strong]
             partition_method_automatic_target_refcell,
             #[strong]
+            device,
+            #[strong]
             error_labels,
             #[weak]
             automatic_partitioning_page,
@@ -410,7 +411,7 @@ pub fn automatic_partitioning_page(
                     device.block_size,
                 );
                 partition_method_automatic_disk_nodisk_error_label.set_visible(false);
-                let usable_disk_space = device.block_size - BOOT_AND_EFI_BYTE_SIZE;
+                let usable_disk_space = device.block_size - (MINIMUM_EFI_BYTE_SIZE + MINIMUM_BOOT_BYTE_SIZE);
                 let default_root_size = if (usable_disk_space * 40.0) / 100.0 > 100000000000.0 {
                     100000000000.0
                 } else if (usable_disk_space * 40.0) / 100.0 < MINIMUM_ROOT_BYTE_SIZE {
@@ -419,14 +420,14 @@ pub fn automatic_partitioning_page(
                     (usable_disk_space * 40.0) / 100.0
                 };
                 advanced_home_part_ratio_selection_slider
-                    .set_range(MINIMUM_ROOT_BYTE_SIZE, device.block_size - 10000000000.0);
+                    .set_range(MINIMUM_ROOT_BYTE_SIZE, usable_disk_space - 10000000000.0);
                 advanced_home_part_ratio_selection_slider.set_value(default_root_size);
                 advanced_home_part_ratio_selection_slider.emit_by_name_with_values(
                     "change_value",
                     &[gtk::ScrollType::None.into(), default_root_size.into()],
                 );
                 *partition_method_automatic_target_refcell.borrow_mut() =
-                    String::from(&device.block_name);
+                    device.clone();
                 if check_for_errors(&error_labels) {
                     automatic_partitioning_page.set_next_sensitive(true)
                 } else {

@@ -23,6 +23,7 @@ pub struct PikaKeymap {
     pub pretty_name: String
 }
 
+#[derive(Default, Clone, Debug)]
 pub struct BlockDevice {
     pub block_name: String,
     pub block_size: f64,
@@ -114,7 +115,7 @@ pub fn build_ui(app: &adw::Application) {
     let keymap_selection_text_refcell: Rc<RefCell<PikaKeymap>> = Rc::new(RefCell::default());
     let timezone_selection_text_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
     let partition_method_type_refcell: Rc<RefCell<String>> = Rc::new(RefCell::default());
-    let partition_method_automatic_target_refcell: Rc<RefCell<String>> =
+    let partition_method_automatic_target_refcell: Rc<RefCell<BlockDevice>> =
         Rc::new(RefCell::default());
     let partition_method_automatic_target_fs_refcell: Rc<RefCell<String>> =
         Rc::new(RefCell::default());

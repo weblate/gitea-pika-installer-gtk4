@@ -8,7 +8,7 @@ pub fn partitioning_page(
     main_carousel: &adw::Carousel,
     window: adw::ApplicationWindow,
     partition_method_type_refcell: &Rc<RefCell<String>>,
-    partition_method_automatic_target_refcell: &Rc<RefCell<String>>,
+    partition_method_automatic_target_refcell: &Rc<RefCell<BlockDevice>>,
     partition_method_automatic_target_fs_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_luks_enabled_refcell: &Rc<RefCell<bool>>,
     partition_method_automatic_luks_refcell: &Rc<RefCell<String>>,

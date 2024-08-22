@@ -107,8 +107,9 @@
     "install_confirm_detail_partition_method_type_subtitle_manual_luks": "Manual w/ LUKS",
     "install_confirm_detail_partition_method_type_subtitle_manual": "Manual",
     "install_confirm_detail_partition_method_automatic_target_title": "Automatic Partitioning Target Disk",
-    "install_confirm_detail_partition_method_automatic_target_subtitle": "{DISK} (WILL BE WIPED CLEAN!)",
+    "install_confirm_detail_partition_method_automatic_target_subtitle": "{DISK_SIZE} {DISK_NAME} (WILL BE WIPED CLEAN!)",
     "install_confirm_detail_partition_method_automatic_target_fs_title": "Automatic Partitioning Target Disk Filesystem",
+    "install_confirm_detail_partition_method_automatic_seperation_title": "Seperate /home ?",
     "mounted_on_detail": " mounted on ",
     "install_target_detail": "Install Target:",
     "install_confirm_button_label": "Confirm & Install PikaOS"

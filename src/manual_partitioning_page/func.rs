@@ -1,14 +1,25 @@
 use crate::drive_mount_row::DriveMountRow;
-use crate::{build_ui::{CrypttabEntry, FstabEntry, Partition, SubvolDeclaration}, partitioning_page::{get_partitions}};
+use crate::{
+    build_ui::{
+        CrypttabEntry,
+        FstabEntry,
+        Partition,
+        SubvolDeclaration
+    },
+    partitioning_page::{
+        get_partitions
+    },
+    config::{
+        MINIMUM_EFI_BYTE_SIZE,
+        MINIMUM_BOOT_BYTE_SIZE,
+        MINIMUM_ROOT_BYTE_SIZE,
+    }
+};
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gtk::glib;
 use std::{cell::RefCell, rc::Rc};
-
-const MINIMUM_EFI_BYTE_SIZE: f64 = 500000000.0;
-const MINIMUM_BOOT_BYTE_SIZE: f64 = 1000000000.0;
-const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
 
 #[derive(Clone, Debug)]
 struct PartitionRow {
