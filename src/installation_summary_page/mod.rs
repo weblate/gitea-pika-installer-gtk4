@@ -86,11 +86,13 @@ pub fn installation_summary_page(
         #[strong]
         partition_method_automatic_target_refcell,
         #[strong]
-        partition_method_manual_luks_enabled_refcell,
-        #[strong]
         partition_method_automatic_seperation_refcell,
         #[strong]
         partition_method_automatic_ratio_refcell,
+        #[strong]
+        partition_method_manual_fstab_entry_array_refcell,
+        #[strong]
+        partition_method_manual_luks_enabled_refcell,
         #[strong]
         partition_method_manual_crypttab_entry_array_refcell,
         move|_, action_arg|
@@ -234,6 +236,22 @@ pub fn installation_summary_page(
                                     install_confirm_detail_partition_method_manual_crypttab_entry.add_css_class("property");
                                     installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_manual_crypttab_entry);
                                 }
+                            }
+                            for fstab_entry in partition_method_manual_fstab_entry_array_refcell.borrow().iter() {
+                                let install_confirm_detail_partition_method_manual_fstab_entry = adw::ActionRow::builder()
+                                .title(t!("install_confirm_detail_partition_method_manual_fstab_entry_title"))
+                                .subtitle(strfmt::strfmt(
+                                    &t!("install_confirm_detail_partition_method_manual_fstab_entry_subtitle"),
+                                    &std::collections::HashMap::from([
+                                        ("PART_NAME".to_string(), fstab_entry.partition.part_name.as_str()),
+                                        ("PART_SIZE".to_string(), fstab_entry.partition.part_size_pretty.as_str()),
+                                        ("PART_FS".to_string(), fstab_entry.partition.part_fs.as_str()),
+                                        ("MOUNTPOINT".to_string(), fstab_entry.mountpoint.as_str()),
+                                    ])
+                                ).unwrap())
+                                .build();
+                            install_confirm_detail_partition_method_manual_fstab_entry.add_css_class("property");
+                            installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_manual_fstab_entry);
                             }
                         }
                         _ => panic!()

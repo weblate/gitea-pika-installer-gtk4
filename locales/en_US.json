@@ -115,6 +115,8 @@
     "install_confirm_detail_partition_method_manual_crypttab_entry_title": "Manual Crypttab Entry",
     "install_confirm_detail_partition_method_manual_crypttab_entry_subtitle_auto": "{LUKS_NAME} Unlocked Automatically With Root Unlock",
     "install_confirm_detail_partition_method_manual_crypttab_entry_subtitle_manual": "{LUKS_NAME} Unlocked Manually Via Password On System Startup",
+    "install_confirm_detail_partition_method_manual_fstab_entry_title": "Manual FSTAB Entry",
+    "install_confirm_detail_partition_method_manual_fstab_entry_subtitle": "{PART_NAME} ({PART_SIZE} {PART_FS}) Mounted On ({MOUNTPOINT})",
     "mounted_on_detail": " mounted on ",
     "install_target_detail": "Install Target:",
     "install_confirm_button_label": "Confirm & Install PikaOS"
