@@ -1,4 +1,8 @@
-use crate::{build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale}, config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE}, installer_stack_page};
+use crate::{
+    build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale},
+    config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE},
+    installer_stack_page,
+};
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gtk::{gio, glib};
@@ -8,7 +12,7 @@ pub fn installation_summary_page(
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction,
     page_done_action: &gio::SimpleAction,
-    language_summary_text_refcell: &Rc<RefCell<PikaLocale>>,
+    language_selection_text_refcell: &Rc<RefCell<PikaLocale>>,
     keymap_selection_text_refcell: &Rc<RefCell<PikaKeymap>>,
     timezone_selection_text_refcell: &Rc<RefCell<String>>,
     partition_method_type_refcell: &Rc<RefCell<String>>,
@@ -20,7 +24,7 @@ pub fn installation_summary_page(
     partition_method_automatic_seperation_refcell: &Rc<RefCell<String>>,
     partition_method_manual_fstab_entry_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     partition_method_manual_luks_enabled_refcell: &Rc<RefCell<bool>>,
-    partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<Vec<CrypttabEntry>>>
+    partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<Vec<CrypttabEntry>>>,
 ) {
     let installation_summary_page = installer_stack_page::InstallerStackPage::new();
     installation_summary_page.set_page_icon("dialog-warning-symbolic");
@@ -51,8 +55,8 @@ pub fn installation_summary_page(
     installation_summary_row_viewport.add_css_class("round-all-scroll");
 
     let install_confirm_button = gtk::Button::builder()
-    .margin_top(15)
-    .margin_bottom(15)
+        .margin_top(15)
+        .margin_bottom(15)
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .build();
@@ -72,7 +76,7 @@ pub fn installation_summary_page(
         #[strong]
         installation_summary_row_viewport_listbox,
         #[strong]
-        language_summary_text_refcell,
+        language_selection_text_refcell,
         #[strong]
         keymap_selection_text_refcell,
         #[strong]
@@ -108,7 +112,7 @@ pub fn installation_summary_page(
                     //
                     let install_confirm_detail_language = adw::ActionRow::builder()
                         .title(t!("install_confirm_detail_language_title"))
-                        .subtitle(&language_summary_text_refcell.borrow().pretty_name)
+                        .subtitle(&language_selection_text_refcell.borrow().pretty_name)
                         .build();
                     install_confirm_detail_language.add_css_class("property");
                     installation_summary_row_viewport_listbox.append(&install_confirm_detail_language);

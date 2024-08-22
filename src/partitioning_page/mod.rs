@@ -1,4 +1,8 @@
-use crate::{build_ui::{FstabEntry, CrypttabEntry, BlockDevice, SubvolDeclaration, Partition}, installer_stack_page, automatic_partitioning_page, manual_partitioning_page};
+use crate::{
+    automatic_partitioning_page,
+    build_ui::{BlockDevice, CrypttabEntry, FstabEntry, Partition, SubvolDeclaration},
+    installer_stack_page, manual_partitioning_page,
+};
 use glib::{clone, closure_local, Properties};
 use gtk::{gio, glib, prelude::*};
 use std::io::BufRead;

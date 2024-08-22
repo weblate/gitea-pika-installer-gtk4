@@ -4,23 +4,23 @@ use std::env;
 mod build_ui;
 mod config;
 //
-mod installer_stack_page;
 mod drive_mount_row;
+mod installer_stack_page;
 //
-mod welcome_page;
 mod efi_error_page;
+mod welcome_page;
 //
 mod eula_page;
 mod keyboard_page;
 mod language_page;
 mod timezone_page;
 //
-mod partitioning_page;
 mod automatic_partitioning_page;
 mod manual_partitioning_page;
+mod partitioning_page;
 //
-mod installation_summary_page;
 mod installation_progress_page;
+mod installation_summary_page;
 
 #[macro_use]
 extern crate rust_i18n;

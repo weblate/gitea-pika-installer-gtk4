@@ -1,7 +1,7 @@
+use crate::build_ui::BlockDevice;
+use crate::config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, MINIMUM_ROOT_BYTE_SIZE};
 use crate::installer_stack_page;
 use crate::partitioning_page::get_block_devices;
-use crate::config::{MINIMUM_EFI_BYTE_SIZE, MINIMUM_BOOT_BYTE_SIZE, MINIMUM_ROOT_BYTE_SIZE};
-use crate::build_ui::BlockDevice;
 use adw::gio;
 use adw::prelude::*;
 use glib::{clone, closure_local, ffi::gboolean};
@@ -411,7 +411,8 @@ pub fn automatic_partitioning_page(
                     device.block_size,
                 );
                 partition_method_automatic_disk_nodisk_error_label.set_visible(false);
-                let usable_disk_space = device.block_size - (MINIMUM_EFI_BYTE_SIZE + MINIMUM_BOOT_BYTE_SIZE);
+                let usable_disk_space =
+                    device.block_size - (MINIMUM_EFI_BYTE_SIZE + MINIMUM_BOOT_BYTE_SIZE);
                 let default_root_size = if (usable_disk_space * 40.0) / 100.0 > 100000000000.0 {
                     100000000000.0
                 } else if (usable_disk_space * 40.0) / 100.0 < MINIMUM_ROOT_BYTE_SIZE {
@@ -426,8 +427,7 @@ pub fn automatic_partitioning_page(
                     "change_value",
                     &[gtk::ScrollType::None.into(), default_root_size.into()],
                 );
-                *partition_method_automatic_target_refcell.borrow_mut() =
-                    device.clone();
+                *partition_method_automatic_target_refcell.borrow_mut() = device.clone();
                 if check_for_errors(&error_labels) {
                     automatic_partitioning_page.set_next_sensitive(true)
                 } else {

@@ -71,7 +71,7 @@ pub fn keyboard_page(
 
     let mut sorted_keymap_vec = Vec::new();
     for keymap in keymap_list.iter() {
-        sorted_keymap_vec.push(PikaKeymap{
+        sorted_keymap_vec.push(PikaKeymap {
             name: keymap.to_string(),
             pretty_name: xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string(),
             variant: {
@@ -91,7 +91,7 @@ pub fn keyboard_page(
                 } else {
                     Some(keymap_variant)
                 }
-            }
+            },
         })
     }
     sorted_keymap_vec.sort_by_key(|k| k.pretty_name.clone());

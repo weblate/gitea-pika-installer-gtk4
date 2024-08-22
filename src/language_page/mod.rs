@@ -84,11 +84,11 @@ pub fn language_page(
 
     let mut sorted_locale_vec = Vec::new();
     for locale in locale_list.iter() {
-        sorted_locale_vec.push(PikaLocale{
+        sorted_locale_vec.push(PikaLocale {
             name: locale.to_string(),
             pretty_name: gnome_desktop::language_from_locale(&locale, None)
-            .unwrap_or(locale.clone().into())
-            .to_string()
+                .unwrap_or(locale.clone().into())
+                .to_string(),
         })
     }
     sorted_locale_vec.sort_by_key(|k| k.pretty_name.clone());
