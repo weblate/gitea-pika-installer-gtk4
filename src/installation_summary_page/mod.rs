@@ -2,12 +2,13 @@ use crate::{build_ui::{PikaLocale, PikaKeymap, FstabEntry, CrypttabEntry}, insta
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gtk::{gio, glib};
-use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
+use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
 
 pub fn installation_summary_page(
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction,
-    installation_summary_text_refcell: &Rc<RefCell<PikaLocale>>,
+    page_done_action: &gio::SimpleAction,
+    language_summary_text_refcell: &Rc<RefCell<PikaLocale>>,
     keymap_selection_text_refcell: &Rc<RefCell<PikaKeymap>>,
     timezone_selection_text_refcell: &Rc<RefCell<String>>,
     partition_method_type_refcell: &Rc<RefCell<String>>,
@@ -56,14 +57,91 @@ pub fn installation_summary_page(
         .valign(gtk::Align::Center)
         .build();
     install_confirm_button.add_css_class("destructive-action");
-    install_confirm_button.add_css_class("circular");
+    install_confirm_button.add_css_class("rounded-all-25-with-padding");
 
     // / content_box appends
     //// add text and and entry to installation_summary page selections
-    content_box.append(&installation_summary_row_viewport_listbox);
+    content_box.append(&installation_summary_row_viewport);
     content_box.append(&install_confirm_button);
 
     installation_summary_page.set_child_widget(&content_box);
+
+    //
+
+    page_done_action.connect_activate(clone!(
+        #[strong]
+        installation_summary_row_viewport_listbox,
+        #[strong]
+        language_summary_text_refcell,
+        #[strong]
+        keymap_selection_text_refcell,
+        #[strong]
+        timezone_selection_text_refcell,
+        #[strong]
+        partition_method_type_refcell,
+        #[strong]
+        partition_method_automatic_luks_enabled_refcell,
+        #[strong]
+        partition_method_manual_luks_enabled_refcell,
+        move|_, action_arg|
+            {
+                let action_arg = String::from_utf8_lossy(action_arg.unwrap().data());
+                if action_arg == "partitioning_done" {
+                    while let Some(row) = installation_summary_row_viewport_listbox.last_child() {
+                        installation_summary_row_viewport_listbox.remove(&row);
+                    }
+                    //
+                    let partition_method_automatic_luks_enabled = partition_method_automatic_luks_enabled_refcell.borrow();
+                    let partition_method_manual_luks_enabled = partition_method_manual_luks_enabled_refcell.borrow();
+                    //
+                    let install_confirm_detail_language = adw::ActionRow::builder()
+                        .title(t!("install_confirm_detail_language_title"))
+                        .subtitle(&language_summary_text_refcell.borrow().pretty_name)
+                        .build();
+                    install_confirm_detail_language.add_css_class("property");
+                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_language);
+                    //
+                    let install_confirm_detail_keymap = adw::ActionRow::builder()
+                        .title(t!("install_confirm_detail_keymap_title"))
+                        .subtitle(&keymap_selection_text_refcell.borrow().pretty_name)
+                        .build();
+                    install_confirm_detail_keymap.add_css_class("property");
+                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_keymap);
+                    //
+                    let install_confirm_detail_timezone = adw::ActionRow::builder()
+                        .title(t!("install_confirm_detail_timezone_title"))
+                        .subtitle(&timezone_selection_text_refcell.borrow().to_string())
+                        .build();
+                    install_confirm_detail_timezone.add_css_class("property");
+                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_timezone);
+                    //
+                    let install_confirm_detail_partition_method_type_subtitle = match &*partition_method_type_refcell.borrow().as_str() {
+                        "automatic" => {
+                            if *partition_method_automatic_luks_enabled {
+                                t!("install_confirm_detail_partition_method_type_subtitle_automatic_luks").to_string()
+                            } else {
+                                t!("install_confirm_detail_partition_method_type_subtitle_automatic").to_string()
+                            }
+                        }
+                        "manual" => {
+                            if *partition_method_manual_luks_enabled {
+                                t!("install_confirm_detail_partition_method_type_subtitle_manual_luks").to_string()
+                            } else {
+                                t!("install_confirm_detail_partition_method_type_subtitle_manual").to_string()
+                            }
+                        }
+                        _ => panic!()
+                    };
+                    let install_confirm_detail_partition_method_type = adw::ActionRow::builder()
+                        .title(t!("install_confirm_detail_partition_method_type_title"))
+                        .subtitle(&install_confirm_detail_partition_method_type_subtitle)
+                        .build();
+                    install_confirm_detail_partition_method_type.add_css_class("property");
+                    installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_type);
+                }
+            }
+        )
+    );
 
     //
     language_changed_action.connect_activate(clone!(

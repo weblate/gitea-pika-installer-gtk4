@@ -20,6 +20,7 @@ pub fn automatic_partitioning_page(
     partition_method_automatic_ratio_refcell: &Rc<RefCell<f64>>,
     partition_method_automatic_seperation_refcell: &Rc<RefCell<String>>,
     language_changed_action: &gio::SimpleAction,
+    page_done_action: &gio::SimpleAction,
 ) {
     let automatic_partitioning_page = installer_stack_page::InstallerStackPage::new();
     automatic_partitioning_page.set_page_icon("builder");
@@ -601,6 +602,8 @@ pub fn automatic_partitioning_page(
             #[strong]
             partition_method_type_refcell,
             #[strong]
+            page_done_action,
+            #[strong]
             partition_method_automatic_target_refcell,
             #[strong]
             partition_method_automatic_target_fs_refcell,
@@ -614,6 +617,10 @@ pub fn automatic_partitioning_page(
             partition_method_automatic_seperation_refcell,
             move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage| {
                 *partition_method_type_refcell.borrow_mut() = String::from("automatic");
+                page_done_action.activate(Some(&glib::variant::Variant::from_data_with_type(
+                    "partitioning_done",
+                    glib::VariantTy::STRING,
+                )));
                 main_carousel.scroll_to(&main_carousel.nth_page(6), true)
             }
         ),

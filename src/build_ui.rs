@@ -132,6 +132,7 @@ pub fn build_ui(app: &adw::Application) {
         Rc::new(RefCell::new(Vec::new()));
 
     let language_changed_action = gio::SimpleAction::new("lang-changed", None);
+    let page_done_action = gio::SimpleAction::new("lang-changed", Some(glib::VariantTy::STRING));
 
     language_page::language_page(
         &carousel,
@@ -167,9 +168,10 @@ pub fn build_ui(app: &adw::Application) {
         &partition_method_manual_luks_enabled_refcell,
         &partition_method_manual_crypttab_entry_array_refcell,
         &language_changed_action,
+        &page_done_action,
     );
 
-    installation_summary_page::installation_summary_page(&carousel, &language_changed_action, &language_selection_text_refcell, &keymap_selection_text_refcell, &timezone_selection_text_refcell, &partition_method_type_refcell, &partition_method_automatic_target_refcell, &partition_method_automatic_target_fs_refcell, &partition_method_automatic_luks_enabled_refcell, &partition_method_automatic_luks_refcell, &partition_method_automatic_ratio_refcell, &partition_method_automatic_seperation_refcell, &partition_method_manual_fstab_entry_array_refcell, &partition_method_manual_luks_enabled_refcell, &partition_method_manual_crypttab_entry_array_refcell);
+    installation_summary_page::installation_summary_page(&carousel, &language_changed_action,  &page_done_action,&language_selection_text_refcell, &keymap_selection_text_refcell, &timezone_selection_text_refcell, &partition_method_type_refcell, &partition_method_automatic_target_refcell, &partition_method_automatic_target_fs_refcell, &partition_method_automatic_luks_enabled_refcell, &partition_method_automatic_luks_refcell, &partition_method_automatic_ratio_refcell, &partition_method_automatic_seperation_refcell, &partition_method_manual_fstab_entry_array_refcell, &partition_method_manual_luks_enabled_refcell, &partition_method_manual_crypttab_entry_array_refcell);
 
     window.present()
 }

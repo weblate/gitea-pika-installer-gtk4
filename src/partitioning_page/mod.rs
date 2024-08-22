@@ -18,6 +18,7 @@ pub fn partitioning_page(
     partition_method_manual_luks_enabled_refcell: &Rc<RefCell<bool>>,
     partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<Vec<CrypttabEntry>>>,
     language_changed_action: &gio::SimpleAction,
+    page_done_action: &gio::SimpleAction,
 ) {
     let partitioning_page = installer_stack_page::InstallerStackPage::new();
     partitioning_page.set_page_icon("media-floppy-symbolic");
@@ -143,6 +144,7 @@ pub fn partitioning_page(
         &partition_method_automatic_ratio_refcell,
         &partition_method_automatic_seperation_refcell,
         &language_changed_action,
+        &page_done_action,
     );
     manual_partitioning_page::manual_partitioning_page(
         &main_carousel,
@@ -153,6 +155,7 @@ pub fn partitioning_page(
         &partition_method_manual_luks_enabled_refcell,
         &partition_method_manual_crypttab_entry_array_refcell,
         &language_changed_action,
+        page_done_action,
     );
 
     partitioning_page.connect_closure(
