@@ -82,6 +82,10 @@ pub fn installation_summary_page(
         #[strong]
         partition_method_automatic_luks_enabled_refcell,
         #[strong]
+        partition_method_automatic_target_fs_refcell,
+        #[strong]
+        partition_method_automatic_target_refcell,
+        #[strong]
         partition_method_manual_luks_enabled_refcell,
         move|_, action_arg|
             {
@@ -138,6 +142,23 @@ pub fn installation_summary_page(
                         .build();
                     install_confirm_detail_partition_method_type.add_css_class("property");
                     installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_type);
+                    //
+                    if &*partition_method_type_refcell.borrow().as_str() == "automatic" {
+                        let install_confirm_detail_partition_method_automatic_target = adw::ActionRow::builder()
+                            .title(t!("install_confirm_detail_partition_method_automatic_target_title"))
+                            .subtitle(strfmt::strfmt(&t!("install_confirm_detail_partition_method_automatic_target_subtitle"), &std::collections::HashMap::from([("DISK".to_string(), partition_method_automatic_target_refcell.borrow().as_str())])).unwrap())
+                            .build();
+                        install_confirm_detail_partition_method_automatic_target.add_css_class("property");
+                        installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_target);
+                        //
+                        let install_confirm_detail_partition_method_automatic_target_fs = adw::ActionRow::builder()
+                            .title(t!("install_confirm_detail_partition_method_automatic_target_fs_title"))
+                            .subtitle(partition_method_automatic_target_fs_refcell.borrow().to_uppercase())
+                            .build();
+                        install_confirm_detail_partition_method_automatic_target_fs.add_css_class("property");
+                        installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_target_fs);
+                        //
+                    }
                 }
             }
         )
