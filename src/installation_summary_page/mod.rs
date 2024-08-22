@@ -1,4 +1,4 @@
-use crate::{build_ui::{PikaLocale, PikaKeymap, FstabEntry, CrypttabEntry, BlockDevice}, installer_stack_page};
+use crate::{build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale}, config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE}, installer_stack_page};
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gtk::{gio, glib};
@@ -166,7 +166,7 @@ pub fn installation_summary_page(
                             "subvol" => {
                                 let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
                                     .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
-                                    .subtitle(t!("advanced_home_seperation_selection_checkbutton_partition_label"))
+                                    .subtitle(t!("advanced_home_seperation_selection_checkbutton_subvol_label"))
                                     .build();
                                 install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
                                 installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
@@ -178,6 +178,26 @@ pub fn installation_summary_page(
                                     .build();
                                 install_confirm_detail_partition_method_automatic_seperation.add_css_class("property");
                                 installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_seperation);
+                                //
+                                let usable_disk_space = partition_method_automatic_target_refcell.borrow().block_size - (MINIMUM_EFI_BYTE_SIZE + MINIMUM_BOOT_BYTE_SIZE);
+                                let root_part_size = *partition_method_automatic_ratio_refcell.borrow();
+                                let home_part_size = usable_disk_space - root_part_size;
+                                let root_part_percent = (root_part_size/usable_disk_space) * 100.0;
+                                let home_part_percent = (home_part_size/usable_disk_space) * 100.0;
+                                let install_confirm_detail_partition_method_automatic_ratio = adw::ActionRow::builder()
+                                    .title(t!("install_confirm_detail_partition_method_automatic_ratio_title"))
+                                    .subtitle(strfmt::strfmt(
+                                            &t!("install_confirm_detail_partition_method_automatic_ratio_subtitle"),
+                                            &std::collections::HashMap::from([
+                                                ("ROOT_PER".to_string(), (root_part_percent.round() as i64).to_string().as_str()),
+                                                ("ROOT_SIZE".to_string(), &pretty_bytes::converter::convert(root_part_size)),
+                                                ("HOME_PER".to_string(), (home_part_percent.round() as i64).to_string().as_str()),
+                                                ("HOME_SIZE".to_string(), &pretty_bytes::converter::convert(home_part_size))
+                                            ])
+                                    ).unwrap())
+                                    .build();
+                                install_confirm_detail_partition_method_automatic_ratio.add_css_class("property");
+                                installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_ratio);
                             }
                             "none" => {
                                 let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
@@ -189,7 +209,6 @@ pub fn installation_summary_page(
                             }
                             _ => panic!()
                         }
-                        println!("{}", partition_method_automatic_ratio_refcell.borrow());
                     }
                 }
             }

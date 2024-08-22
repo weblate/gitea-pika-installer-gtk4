@@ -110,6 +110,8 @@
     "install_confirm_detail_partition_method_automatic_target_subtitle": "{DISK_SIZE} {DISK_NAME} (WILL BE WIPED CLEAN!)",
     "install_confirm_detail_partition_method_automatic_target_fs_title": "Automatic Partitioning Target Disk Filesystem",
     "install_confirm_detail_partition_method_automatic_seperation_title": "Seperate /home ?",
+    "install_confirm_detail_partition_method_automatic_ratio_title": "/ to /home Ratio",
+    "install_confirm_detail_partition_method_automatic_ratio_subtitle": "(/) Will Have {ROOT_PER}% of Usable Disk Space ({ROOT_SIZE})\n(/home) Will Have {HOME_PER}% of Usable Disk Space ({HOME_SIZE})",
     "mounted_on_detail": " mounted on ",
     "install_target_detail": "Install Target:",
     "install_confirm_button_label": "Confirm & Install PikaOS"
