@@ -193,21 +193,5 @@ pub fn build_ui(app: &adw::Application) {
         &partition_method_manual_crypttab_entry_array_refcell,
     );
 
-    installation_progress_page::create_installation_script(
-        &language_selection_text_refcell,
-        &keymap_selection_text_refcell,
-        &timezone_selection_text_refcell,
-        &partition_method_type_refcell,
-        &partition_method_automatic_target_refcell,
-        &partition_method_automatic_target_fs_refcell,
-        &partition_method_automatic_luks_enabled_refcell,
-        &partition_method_automatic_luks_refcell,
-        &partition_method_automatic_ratio_refcell,
-        &partition_method_automatic_seperation_refcell,
-        &partition_method_manual_fstab_entry_array_refcell,
-        &partition_method_manual_luks_enabled_refcell,
-        &partition_method_manual_crypttab_entry_array_refcell,
-    );
-
     window.present()
 }

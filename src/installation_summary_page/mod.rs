@@ -2,6 +2,7 @@ use crate::{
     build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale},
     config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE},
     installer_stack_page,
+    installation_progress_page,
 };
 use adw::prelude::*;
 use glib::{clone, closure_local};
@@ -69,6 +70,56 @@ pub fn installation_summary_page(
     content_box.append(&install_confirm_button);
 
     installation_summary_page.set_child_widget(&content_box);
+
+    //
+
+    install_confirm_button.connect_clicked(clone!(
+        #[strong]
+        language_selection_text_refcell,
+        #[strong]
+        keymap_selection_text_refcell,
+        #[strong]
+        timezone_selection_text_refcell,
+        #[strong]
+        partition_method_type_refcell,
+        #[strong]
+        partition_method_automatic_luks_enabled_refcell,
+        #[strong]
+        partition_method_automatic_luks_refcell,
+        #[strong]
+        partition_method_automatic_target_fs_refcell,
+        #[strong]
+        partition_method_automatic_target_refcell,
+        #[strong]
+        partition_method_automatic_seperation_refcell,
+        #[strong]
+        partition_method_automatic_ratio_refcell,
+        #[strong]
+        partition_method_manual_fstab_entry_array_refcell,
+        #[strong]
+        partition_method_manual_luks_enabled_refcell,
+        #[strong]
+        partition_method_manual_crypttab_entry_array_refcell,
+        move |_|
+            {
+            installation_progress_page::create_installation_script(
+                &language_selection_text_refcell,
+                &keymap_selection_text_refcell,
+                &timezone_selection_text_refcell,
+                &partition_method_type_refcell,
+                &partition_method_automatic_target_refcell,
+                &partition_method_automatic_target_fs_refcell,
+                &partition_method_automatic_luks_enabled_refcell,
+                &partition_method_automatic_luks_refcell,
+                &partition_method_automatic_ratio_refcell,
+                &partition_method_automatic_seperation_refcell,
+                &partition_method_manual_fstab_entry_array_refcell,
+                &partition_method_manual_luks_enabled_refcell,
+                &partition_method_manual_crypttab_entry_array_refcell,
+            );
+            }
+        )
+    );
 
     //
 
