@@ -23,6 +23,7 @@ yes | mkfs.ext4 -F /dev/"$AUTO_INSTALL_TARGET_DISK"p3
 yes | mkfs.ext4 -F /dev/"$AUTO_INSTALL_TARGET_DISK"p4
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/"$AUTO_INSTALL_TARGET_DISK"p3 $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/home
@@ -40,6 +41,7 @@ yes | mkfs.ext4 -F /dev/"$AUTO_INSTALL_TARGET_DISK"3
 yes | mkfs.ext4 -F /dev/"$AUTO_INSTALL_TARGET_DISK"4
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/"$AUTO_INSTALL_TARGET_DISK"3 $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/home
@@ -81,6 +83,7 @@ yes | mkfs.ext4 -F /dev/mapper/crypt_root
 yes | mkfs.ext4 -F /dev/mapper/crypt_home
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/mapper/crypt_root $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/home
@@ -102,6 +105,7 @@ yes | mkfs.ext4 -F /dev/mapper/crypt_root
 yes | mkfs.ext4 -F /dev/mapper/crypt_home
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/mapper/crypt_root $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/home
@@ -136,6 +140,7 @@ yes | mkfs -t ext4 /dev/"$AUTO_INSTALL_TARGET_DISK"p2
 yes | mkfs.ext4 -F /dev/"$AUTO_INSTALL_TARGET_DISK"p3
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/"$AUTO_INSTALL_TARGET_DISK"p3 $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/boot
@@ -150,6 +155,7 @@ yes | mkfs -t ext4 /dev/"$AUTO_INSTALL_TARGET_DISK"2
 yes | mkfs.ext4 -F /dev/"$AUTO_INSTALL_TARGET_DISK"3
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/"$AUTO_INSTALL_TARGET_DISK"3 $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/boot
@@ -184,6 +190,7 @@ printf "$PIKA_INSTALL_AUTO_LUKS_PASSWORD" | cryptsetup -q -v luksOpen /dev/"$AUT
 yes | mkfs.ext4 -F /dev/mapper/crypt_root
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/mapper/crypt_root $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/boot
@@ -200,6 +207,7 @@ printf "$PIKA_INSTALL_AUTO_LUKS_PASSWORD" | cryptsetup -q -v luksOpen /dev/"$AUT
 yes | mkfs.ext4 -F /dev/mapper/crypt_root
 sleep 2
 # Begin Mounting
+echo 'MOUNTING' | nc -U $SOCKET_PATH || true
 mkdir -p $PIKA_INSTALL_CHROOT_PATH
 mount /dev/mapper/crypt_root $PIKA_INSTALL_CHROOT_PATH/
 mkdir -p $PIKA_INSTALL_CHROOT_PATH/boot
