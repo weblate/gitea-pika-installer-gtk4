@@ -113,8 +113,60 @@ pub fn create_installation_script(
                                 .unwrap());
                             }
                         }
-                        "partition" => {}
-                        "none" => {}
+                        "partition" => {
+                            if is_encrypted {
+                                final_script.push_str(&strfmt::strfmt(
+                                    auto_btrfs::automatic_home_part_btrfs_locked_installation_prog,
+                                    &std::collections::HashMap::from([
+                                        ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
+                                        (
+                                            "AUTO_LUKS_PASSWORD".to_string(),
+                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                        ),
+                                        (
+                                            "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                        )
+                                    ]),
+                                )
+                                .unwrap());
+                            } else {
+                                final_script.push_str(&strfmt::strfmt(
+                                    auto_btrfs::automatic_home_part_btrfs_open_installation_prog,
+                                    &std::collections::HashMap::from([
+                                        ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
+                                        (
+                                            "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                        )
+                                    ]),
+                                )
+                                .unwrap());
+                            }
+                        }
+                        "none" => {
+                            if is_encrypted {
+                                final_script.push_str(&strfmt::strfmt(
+                                    auto_btrfs::automatic_home_none_btrfs_locked_installation_prog,
+                                    &std::collections::HashMap::from([
+                                        ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
+                                        (
+                                            "AUTO_LUKS_PASSWORD".to_string(),
+                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                        )
+                                    ]),
+                                )
+                                .unwrap());
+                            } else {
+                                final_script.push_str(&strfmt::strfmt(
+                                    auto_btrfs::automatic_home_none_btrfs_open_installation_prog,
+                                    &std::collections::HashMap::from([
+                                        ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
+                                    ]),
+                                )
+                                .unwrap());
+                            }
+                        }
                         _ => panic!()
                     }
                 }
