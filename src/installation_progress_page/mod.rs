@@ -12,11 +12,15 @@ mod auto_basic;
 mod auto_btrfs;
 mod auto_ext4;
 mod auto_xfs;
+mod manual_basic;
 
 pub const standard_installation_prog: &str = r###"#! /bin/bash
 set -e
 
 SOCKET_PATH="/tmp/pikainstall-status.sock"
+
+rm -rf /tmp/pika-installer-gtk4-swaplist
+rm -rf /tmp/PIKA_CRYPT
 
 PIKA_INSTALL_CHROOT_PATH='{CHROOT_PATH}'
 PIKA_INSTALL_LOCALE='{LOCALE}.UTF-8'
@@ -299,7 +303,128 @@ pub fn create_installation_script(
                 final_script.push_str(auto_basic::automatic_open_part_pikainstall_prog);
             }
         }
-        "manual" => {}
+        "manual" => {
+            let is_encrypted = *partition_method_manual_luks_enabled_refcell.borrow();
+            
+            if is_encrypted {
+                final_script.push_str(
+r###"
+                    
+mkdir -p /tmp/PIKA_CRYPT/
+touch /tmp/PIKA_CRYPT/crypttab
+                    
+"###
+                );
+                        
+                for crypt_entry in partition_method_manual_crypttab_entry_array_refcell.borrow().iter() {
+                    match &crypt_entry.password {
+                        Some(p) => {
+                            final_script.push_str(&strfmt::strfmt(
+                                manual_basic::manual_crypt_entry_with_keyfile,
+                                &std::collections::HashMap::from([
+                                    (
+                                        "MAP".to_string(),
+                                        crypt_entry.map.as_str()
+                                    ),
+                                    (
+                                        "UUID".to_string(),
+                                        crypt_entry.uuid.as_str()
+                                    ),
+                                    (
+                                        "LUKS_PASSWD".to_string(),
+                                        p.as_str()
+                                    )
+                                ]),
+                            )
+                            .unwrap());
+                        }
+                        None => {
+                            final_script.push_str(&strfmt::strfmt(
+                                manual_basic::manual_crypt_entry,
+                                &std::collections::HashMap::from([
+                                    (
+                                        "MAP".to_string(),
+                                        crypt_entry.map.as_str()
+                                    ),
+                                    (
+                                        "UUID".to_string(),
+                                        crypt_entry.uuid.as_str()
+                                    )
+                                ]),
+                            )
+                            .unwrap());
+                        }
+                    }
+                };
+            }
+
+            let mut did_make_swap_list = false;
+
+            for fstab_entry in partition_method_manual_fstab_entry_array_refcell.borrow().iter() {
+                if fstab_entry.mountpoint == "[SWAP]" {
+                    if !did_make_swap_list {
+                        final_script.push_str(
+r###"
+
+touch /tmp/pika-installer-gtk4-swaplist
+
+"###
+                        );
+                        did_make_swap_list = true
+                    }
+                    final_script.push_str(&strfmt::strfmt(
+                        manual_basic::manual_swap_mount_prog,
+                        &std::collections::HashMap::from([
+                            (
+                                "PART".to_string(),
+                                fstab_entry.partition.part_name.as_str()
+                            ),
+                        ]),
+                    )
+                    .unwrap());
+                } else if !fstab_entry.mountopts.is_empty() {
+                    final_script.push_str(&strfmt::strfmt(
+                        manual_basic::manual_partition_mount_with_opts_prog,
+                        &std::collections::HashMap::from([
+                            (
+                                "PART".to_string(),
+                                fstab_entry.partition.part_name.as_str()
+                            ),
+                            (
+                                "MOUNTPOINT".to_string(),
+                                fstab_entry.mountpoint.as_str()
+                            ),
+                            (
+                                "OPTS".to_string(),
+                                fstab_entry.mountopts.as_str()
+                            ),
+                        ]),
+                    )
+                    .unwrap());
+                } else {
+                    final_script.push_str(&strfmt::strfmt(
+                        manual_basic::manual_partition_mount_prog,
+                        &std::collections::HashMap::from([
+                            (
+                                "PART".to_string(),
+                                fstab_entry.partition.part_name.as_str()
+                            ),
+                            (
+                                "MOUNTPOINT".to_string(),
+                                fstab_entry.mountpoint.as_str()
+                            ),
+                        ]),
+                    )
+                    .unwrap());
+                }
+            }
+
+            if is_encrypted {
+                final_script.push_str(manual_basic::manual_locked_part_pikainstall_prog);
+            } else {
+                final_script.push_str(manual_basic::manual_open_part_pikainstall_prog);
+            }
+        }
         _ => panic!()
     }
 
