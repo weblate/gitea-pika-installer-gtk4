@@ -57,7 +57,7 @@ fi
 
 pub const automatic_home_part_xfs_locked_installation_prog: &str = r###"
 
-PIKA_INSTALL_AUTO_LUKS_PASSWORD={AUTO_LUKS_PASSWORD}
+PIKA_INSTALL_AUTO_LUKS_PASSWORD='{AUTO_LUKS_PASSWORD}'
 PIKA_INSTALL_AUTO_ROOT_SIZE={ROOT_PART_SIZE_AS_I64_MIB}
 
 parted -s -a optimal /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" mklabel gpt \
@@ -169,7 +169,7 @@ fi
 
 pub const automatic_home_none_xfs_locked_installation_prog: &str = r###"
 
-PIKA_INSTALL_AUTO_LUKS_PASSWORD={AUTO_LUKS_PASSWORD}
+PIKA_INSTALL_AUTO_LUKS_PASSWORD='{AUTO_LUKS_PASSWORD}'
 
 parted -s -a optimal /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" mklabel gpt \
 mkpart "linux-efi"  1MiB 500Mib \
