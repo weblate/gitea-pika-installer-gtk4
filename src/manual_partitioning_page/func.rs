@@ -1019,9 +1019,10 @@ fn post_check_drive_mount(
                     && *partition_row_struct.never.borrow() == false
                     && *partition_row_struct.hardcode_fs_error.borrow() == false
                 {
-                    if *partition_row_struct.swap_fs_error.borrow() == false {
+                    if partition.part_fs != "linux-swap" || partition.part_fs != "swap" {
                         partition_row_struct.widget.set_sensitive(true);
                     } else {
+                        (*partition_row_struct.swap_fs_error.borrow_mut()) = true;
                         null_checkbutton.set_active(true);
                         row.set_partition("");
                         partition_changed_action.activate(None);
