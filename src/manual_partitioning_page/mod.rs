@@ -167,6 +167,8 @@ pub fn manual_partitioning_page(
         #[strong]
         language_changed_action,
         #[strong]
+        partition_array_refcell,
+        #[strong]
         used_partition_array_refcell,
         #[strong]
         subvol_partition_array_refcell,
@@ -198,6 +200,7 @@ pub fn manual_partitioning_page(
             (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()) = Vec::new();
             (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
             (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
+            (*partition_array_refcell.borrow_mut()) = get_partitions();
             (*used_partition_array_refcell.borrow_mut()) = Vec::new();
             (*subvol_partition_array_refcell.borrow_mut()) = Vec::new();
             (*extra_mount_id_refcell.borrow_mut()) = 3;

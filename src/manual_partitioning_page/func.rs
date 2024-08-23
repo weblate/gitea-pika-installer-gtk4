@@ -994,7 +994,7 @@ fn post_check_drive_mount(
         row,
         move |_| {
             if row.mountpoint() == "[SWAP]" {
-                if partition.part_fs == "linux-swap" {
+                if  partition.part_fs == "linux-swap" || partition.part_fs == "swap" {
                     (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
                     if *partition_row_struct.never.borrow() == false
                         && *partition_row_struct.swap_fs_error.borrow() == false
