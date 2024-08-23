@@ -8,35 +8,6 @@ use glib::{clone, closure_local};
 use gtk::{gio, glib};
 use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
 
-const standard_installation_prog:&str = r###"#! /bin/bash
-set -e
-
-SOCKET_PATH="/tmp/pikainstall-status.sock"
-
-PIKA_INSTALL_CHROOT_PATH={CHROOT_PATH}
-PIKA_INSTALL_LOCALE={LOCALE}
-PIKA_INSTALL_KEYMAP_BASE={KEYMAP_BASE}
-PIKA_INSTALL_KEYMAP_VARIANT={KEYMAP_VARIANT}
-
-touch "/tmp/pika-installer-gtk4-status.txt"
-echo 'PARTING' | nc -U $SOCKET_PATH
-
-"###;
-
-const automatic_standard_installation_prog:&str = r###"
-
-PIKA_INSTALL_AUTO_TARGET_DISK={AUTO_INSTALL_TARGET_DISK}
-
-for part in $(/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get_partitions | grep "$PIKA_INSTALL_AUTO_TARGET_DISK"); do
-	PARTITION="/dev/$part"
-	swapoff $PARTITION || true
-done
-
-wipefs -af /dev/"$AUTO_INSTALL_TARGET_DISK"
-blockdev --rereadpt "$AUTO_INSTALL_TARGET_DISK"
-
-"###;
-
 pub fn create_installation_script(
     language_selection_text_refcell: &Rc<RefCell<PikaLocale>>,
     keymap_selection_text_refcell: &Rc<RefCell<PikaKeymap>>,
