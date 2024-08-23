@@ -10,7 +10,7 @@ for part in $(/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get
 done
 
 wipefs -af /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK"
-blockdev --rereadpt "$PIKA_INSTALL_AUTO_TARGET_DISK"
+blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK"
 
 "###;
 

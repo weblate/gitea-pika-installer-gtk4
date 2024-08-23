@@ -1,18 +1,18 @@
 pub const manual_partition_mount_prog: &str = r###"
 
 mkdir -p "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
-mount {PART} "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
+mount /dev/{PART} "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
 "###;
 
 pub const manual_partition_mount_with_opts_prog: &str = r###"
 
 mkdir -p "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
-mount -o '{OPTS}' '{PART}' "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
+mount -o '{OPTS}' /dev/'{PART}' "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
 "###;
 
 pub const manual_swap_mount_prog: &str = r###"
 
-echo '{PART}' >> /tmp/pika-installer-gtk4-swaplist
+echo /dev/'{PART}' >> /tmp/pika-installer-gtk4-swaplist
 "###;
 
 pub const manual_crypt_entry: &str = r###"
