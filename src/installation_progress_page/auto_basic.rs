@@ -9,8 +9,8 @@ for part in $(/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh get
 	swapoff $PARTITION || true
 done
 
-wipefs -af /dev/"$AUTO_INSTALL_TARGET_DISK"
-blockdev --rereadpt "$AUTO_INSTALL_TARGET_DISK"
+wipefs -af /dev/"$PIKA_AUTO_INSTALL_TARGET_DISK"
+blockdev --rereadpt "$PIKA_AUTO_INSTALL_TARGET_DISK"
 
 "###;
 

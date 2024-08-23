@@ -10,6 +10,7 @@ use gtk::{gio, glib};
 use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
 
 /// DEBUG
+use std::io::{self, Write};
 use duct::cmd;
 /// DEBUG END
 
@@ -106,22 +107,24 @@ pub fn installation_summary_page(
         partition_method_manual_crypttab_entry_array_refcell,
         move |_|
             {
-                let big_cmd = cmd!("bash", "-c", 
-                    installation_progress_page::create_installation_script(
-                        &language_selection_text_refcell,
-                        &keymap_selection_text_refcell,
-                        &timezone_selection_text_refcell,
-                        &partition_method_type_refcell,
-                        &partition_method_automatic_target_refcell,
-                        &partition_method_automatic_target_fs_refcell,
-                        &partition_method_automatic_luks_enabled_refcell,
-                        &partition_method_automatic_luks_refcell,
-                        &partition_method_automatic_ratio_refcell,
-                        &partition_method_automatic_seperation_refcell,
-                        &partition_method_manual_fstab_entry_array_refcell,
-                        &partition_method_manual_luks_enabled_refcell,
-                        &partition_method_manual_crypttab_entry_array_refcell,
-                    )
+                std::io::stdout().flush().unwrap();
+                let cmd = installation_progress_page::create_installation_script(
+                    &language_selection_text_refcell,
+                    &keymap_selection_text_refcell,
+                    &timezone_selection_text_refcell,
+                    &partition_method_type_refcell,
+                    &partition_method_automatic_target_refcell,
+                    &partition_method_automatic_target_fs_refcell,
+                    &partition_method_automatic_luks_enabled_refcell,
+                    &partition_method_automatic_luks_refcell,
+                    &partition_method_automatic_ratio_refcell,
+                    &partition_method_automatic_seperation_refcell,
+                    &partition_method_manual_fstab_entry_array_refcell,
+                    &partition_method_manual_luks_enabled_refcell,
+                    &partition_method_manual_crypttab_entry_array_refcell,);
+                println!("{}", cmd);
+                let big_cmd = cmd!("sudo", "bash", "-c", 
+                    cmd
                 );
                 assert!(big_cmd.run().is_ok());
             }
