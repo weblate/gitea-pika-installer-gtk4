@@ -8,6 +8,18 @@ use glib::{clone, closure_local};
 use gtk::{gio, glib};
 use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
 
+pub const standard_installation_prog: &str = r###"#! /bin/bash
+set -e
+
+SOCKET_PATH="/tmp/pikainstall-status.sock"
+
+PIKA_INSTALL_CHROOT_PATH={CHROOT_PATH}
+PIKA_INSTALL_LOCALE="{LOCALE}.UTF-8"
+PIKA_INSTALL_KEYMAP_BASE={KEYMAP_BASE}
+PIKA_INSTALL_KEYMAP_VARIANT={KEYMAP_VARIANT}
+PIKA_INSTALL_TIMEZONE={TIMEZONE}
+"###;
+
 pub fn create_installation_script(
     language_selection_text_refcell: &Rc<RefCell<PikaLocale>>,
     keymap_selection_text_refcell: &Rc<RefCell<PikaKeymap>>,

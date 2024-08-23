@@ -1,20 +1,6 @@
-pub const standard_installation_prog: &str = r###"#! /bin/bash
-set -e
-
-SOCKET_PATH="/tmp/pikainstall-status.sock"
-
-PIKA_INSTALL_CHROOT_PATH={CHROOT_PATH}
-PIKA_INSTALL_LOCALE="{LOCALE}.UTF-8"
-PIKA_INSTALL_KEYMAP_BASE={KEYMAP_BASE}
-PIKA_INSTALL_KEYMAP_VARIANT={KEYMAP_VARIANT}
-PIKA_INSTALL_TIMEZONE={TIMEZONE}
-
-touch "/tmp/pika-installer-gtk4-status.txt"
-echo 'PARTING' | nc -U $SOCKET_PATH
-
-"###;
-
 pub const automatic_standard_installation_prog: &str = r###"
+
+echo 'PARTING' | nc -U $SOCKET_PATH || true
 
 PIKA_INSTALL_AUTO_TARGET_DISK={AUTO_INSTALL_TARGET_DISK}
 
