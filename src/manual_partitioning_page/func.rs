@@ -844,6 +844,10 @@ pub fn create_mount_row(
                 never: Rc::new(RefCell::new(false)),
             }
         };
+        if partition.part_fs == "linux-swap" || partition.part_fs == "linux-swap" {
+            (*partition_row_struct.swap_fs_error.borrow_mut()) = true;
+            partition_row_struct.widget.set_sensitive(false);
+        }
         post_check_drive_mount(
             &row,
             &partition_row_struct,
@@ -1015,8 +1019,14 @@ fn post_check_drive_mount(
                     && *partition_row_struct.never.borrow() == false
                     && *partition_row_struct.hardcode_fs_error.borrow() == false
                 {
-                    (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
-                    partition_row_struct.widget.set_sensitive(true);
+                    if *partition_row_struct.swap_fs_error.borrow() == false {
+                        partition_row_struct.widget.set_sensitive(true);
+                    } else {
+                        null_checkbutton.set_active(true);
+                        row.set_partition("");
+                        partition_changed_action.activate(None);
+                        partition_row_struct.widget.set_sensitive(false);
+                    };
                 }
             }
         }

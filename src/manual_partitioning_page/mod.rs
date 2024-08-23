@@ -274,8 +274,10 @@ pub fn manual_partitioning_page(
                         (errored.store(true, std::sync::atomic::Ordering::Relaxed));
                     }
                 }
-                if fs_entry.mountpoint == "[SWAP]" && fs_entry.partition.part_fs != "linux-swap" {
-                    (errored.store(true, std::sync::atomic::Ordering::Relaxed));
+                if fs_entry.mountpoint == "[SWAP]" {
+                    if fs_entry.partition.part_fs != "linux-swap" || fs_entry.partition.part_fs != "swap" {
+                        (errored.store(true, std::sync::atomic::Ordering::Relaxed));
+                    }
                 }
                 if fs_entry.mountpoint.is_empty() {
                     (errored.store(true, std::sync::atomic::Ordering::Relaxed));
