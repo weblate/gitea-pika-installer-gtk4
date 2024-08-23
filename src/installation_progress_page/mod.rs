@@ -43,7 +43,7 @@ pub fn create_installation_script(
     partition_method_manual_fstab_entry_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     partition_method_manual_luks_enabled_refcell: &Rc<RefCell<bool>>,
     partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<Vec<CrypttabEntry>>>,
-) {
+) -> String {
     let mut final_script = String::new();
     
     let standard_installation_format = strfmt::strfmt(
@@ -428,5 +428,5 @@ touch /tmp/pika-installer-gtk4-swaplist
         _ => panic!()
     }
 
-    println!("{}", final_script)
+    final_script
 }
