@@ -185,44 +185,44 @@ pub fn installation_progress_page(
                         installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_flag")));
                     }
                     "BIND" => {
-                        installation_progress_bar.set_fraction(0.65);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.60);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_bind")));
                     }
                     "ARCH_COPY" => {
-                        installation_progress_bar.set_fraction(0.85);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.65);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_arch_copy")));
                     }
                     "ENCRYPTION" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.70);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_encryption")));
                     }
                     "SWAP" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
-                    }
-                    "UNBIND" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.75);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_swap")));
                     }
                     "GEN_FSTAB" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.80);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_gen_fstab")));
                     }
                     "LOCALE" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.85);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_locale")));
                     }
                     "BOOTLOADER" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.90);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_bootloader")));
                     }
                     "LIVE_REMOVE" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.95);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_live_remove")));
                     }
                     "BASIC_USER" => {
-                        installation_progress_bar.set_fraction(0.20);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar.set_fraction(0.98);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_basic_user")));
+                    }
+                    "UNBIND" => {
+                        installation_progress_bar.set_fraction(0.99);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_unbind")));
                     }
                     _ => {}
                 }
