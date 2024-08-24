@@ -185,6 +185,7 @@ pub fn build_ui(app: &adw::Application) {
         &language_changed_action,
         &page_done_action,
         installation_log_loop_sender,
+        installation_log_status_loop_sender,
         &language_selection_text_refcell,
         &keymap_selection_text_refcell,
         &timezone_selection_text_refcell,

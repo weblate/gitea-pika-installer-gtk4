@@ -3,6 +3,7 @@ use gtk::{gdk, glib, prelude::*, CssProvider, STYLE_PROVIDER_PRIORITY_APPLICATIO
 use std::env;
 mod build_ui;
 mod config;
+mod unix_socket_tools;
 //
 mod drive_mount_row;
 mod installer_stack_page;

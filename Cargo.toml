@@ -21,3 +21,6 @@ rust-i18n = "3.0.1"
 sys-locale = "0.3.1"
 strfmt = "0.2.4"
 os_pipe = "1.2.1"
+chrono = "0.4.38"
+tokio = { version = "1", features = ["full"] }
+tokio-uds = "0.2"

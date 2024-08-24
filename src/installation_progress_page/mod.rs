@@ -3,12 +3,13 @@ use crate::{
     config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, DISTRO_ICON},
     installer_stack_page,
     installation_progress_page,
+    unix_socket_tools
 };
 use adw::prelude::*;
 use glib::{clone, closure_local, GString};
 use gtk::{gio, glib};
-use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
-
+use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc, thread};
+use tokio::runtime::Runtime;
 /// DEBUG
 use std::io::{self, Write};
 use duct::cmd;
@@ -19,6 +20,16 @@ pub fn installation_progress_page(
     language_changed_action: &gio::SimpleAction,
     installation_log_loop_receiver: async_channel::Receiver<String>,
 ) {
+    let (socket_status_sender, socket_status_receiver) = async_channel::unbounded();
+    let socket_status_sender: async_channel::Sender<String> = socket_status_sender.clone();
+
+    thread::spawn(move || {
+        Runtime::new().unwrap().block_on(unix_socket_tools::start_socket_server(
+            socket_status_sender,
+            "/tmp/pikainstall-status.sock",
+        ));
+    });
+    
     let installation_progress_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .build();
@@ -148,6 +159,76 @@ pub fn installation_progress_page(
             }
         )
     );
+
+    //
+
+    let socket_status_context = glib::MainContext::default();
+    // The main loop executes the asynchronous block
+    socket_status_context.spawn_local(clone!(
+        #[weak]
+        installation_progress_bar,
+        #[strong]
+        socket_status_receiver,
+        async move {
+            while let Ok(state) = socket_status_receiver.recv().await {
+                match state.as_str() {
+                    "PARTING" => {
+                        installation_progress_bar.set_fraction(0.15);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "IMAGE" => {
+                        installation_progress_bar.set_fraction(0.50);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_image")));
+                    }
+                    "FLAG" => {
+                        installation_progress_bar.set_fraction(0.55);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_flag")));
+                    }
+                    "BIND" => {
+                        installation_progress_bar.set_fraction(0.65);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "ARCH_COPY" => {
+                        installation_progress_bar.set_fraction(0.85);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "ENCRYPTION" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "SWAP" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "UNBIND" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "GEN_FSTAB" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "LOCALE" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "BOOTLOADER" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "LIVE_REMOVE" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    "BASIC_USER" => {
+                        installation_progress_bar.set_fraction(0.20);
+                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                    }
+                    _ => {}
+                }
+            }
+        }
+    ));
 
     //
 

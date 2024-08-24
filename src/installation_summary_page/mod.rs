@@ -1,6 +1,6 @@
 use crate::{
     build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale},
-    config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE},
+    config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, LOG_FILE_PATH},
     installer_stack_page,
     installation_progress_page,
 };
@@ -21,29 +21,44 @@ use std::{
 };
 /// DEBUG END
 
-const GAMEUTILS_INSTALL_PROG: &str = r###"
-#! /bin/bash
-let i=0
-while true
-do
-    sleep 1
-    echo $i
-    let i++
-done
-"###;
-
-fn gameutils_install(
-    log_loop_sender: async_channel::Sender<String>,
+fn run_install_process(
+    sender: async_channel::Sender<String>,
+    preq: &str,
+    log_file_path: &str,
 ) -> Result<(), std::boxed::Box<dyn Error + Send + Sync>> {
+    if !Path::new(&log_file_path).exists() {
+        match fs::File::create(&log_file_path) {
+            Ok(_) => {}
+            Err(_) => {
+                eprintln!("Warning: {} file couldn't be created", log_file_path);
+            }
+        };
+    }
     let (pipe_reader, pipe_writer) = os_pipe::pipe()?;
-    let child = cmd!("bash", "-c", GAMEUTILS_INSTALL_PROG)
+    let child = cmd!("sudo", "bash", "-c", preq)
         .stderr_to_stdout()
         .stdout_file(pipe_writer)
         .start()?;
     for line in BufReader::new(pipe_reader).lines() {
-        log_loop_sender
-            .send_blocking(line?)
-            .expect("Channel needs to be opened.")
+        let line = line?;
+        let line_clone0 = line.clone();
+        sender
+            .send_blocking(line)
+            .expect("Channel needs to be opened.");
+        let mut log_file = fs::OpenOptions::new()
+            .write(true)
+            .append(true)
+            .open(&log_file_path)
+            .unwrap();
+
+        if let Err(e) = writeln!(
+            log_file,
+            "[{}] {}",
+            chrono::offset::Local::now().format("%Y/%m/%d_%H:%M"),
+            line_clone0
+        ) {
+            eprintln!("Couldn't write to file: {}", e);
+        }
     }
     child.wait()?;
 
@@ -55,6 +70,7 @@ pub fn installation_summary_page(
     language_changed_action: &gio::SimpleAction,
     page_done_action: &gio::SimpleAction,
     installation_log_loop_sender: async_channel::Sender<String>,
+    installation_log_status_loop_sender: async_channel::Sender<bool>,
     language_selection_text_refcell: &Rc<RefCell<PikaLocale>>,
     keymap_selection_text_refcell: &Rc<RefCell<PikaKeymap>>,
     timezone_selection_text_refcell: &Rc<RefCell<String>>,
@@ -113,15 +129,15 @@ pub fn installation_summary_page(
 
     installation_summary_page.set_child_widget(&content_box);
 
-    thread::spawn(|| {
-        gameutils_install(installation_log_loop_sender);
-    });
-
     //
 
     install_confirm_button.connect_clicked(clone!(
         #[weak]
         main_carousel,
+        #[strong]
+        installation_log_loop_sender,
+        #[strong]
+        installation_log_status_loop_sender,
         #[strong]
         language_selection_text_refcell,
         #[strong]
@@ -150,7 +166,6 @@ pub fn installation_summary_page(
         partition_method_manual_crypttab_entry_array_refcell,
         move |_|
             {
-                std::io::stdout().flush().unwrap();
                 let cmd = script_gen::create_installation_script(
                     &language_selection_text_refcell,
                     &keymap_selection_text_refcell,
@@ -165,11 +180,17 @@ pub fn installation_summary_page(
                     &partition_method_manual_fstab_entry_array_refcell,
                     &partition_method_manual_luks_enabled_refcell,
                     &partition_method_manual_crypttab_entry_array_refcell,);
-                println!("{}", cmd);
-                let big_cmd = cmd!("sudo", "bash", "-c", 
-                    cmd
-                );
-                //assert!(big_cmd.run().is_ok());
+                let installation_log_loop_sender_clone0 = installation_log_loop_sender.clone();
+                let installation_log_status_loop_sender_clone0 = installation_log_status_loop_sender.clone();
+                thread::spawn(move || {
+                    if Path::new(LOG_FILE_PATH).exists() {
+                        fs::remove_file(LOG_FILE_PATH).expect("bad perms on log file");
+                    }
+                    match run_install_process(installation_log_loop_sender_clone0, &cmd, LOG_FILE_PATH) {
+                        Ok(_) => installation_log_status_loop_sender_clone0.send_blocking(true).expect("channel needs to be open"),
+                        Err(_) => installation_log_status_loop_sender_clone0.send_blocking(false).expect("channel needs to be open")
+                    }
+                });
                 main_carousel.scroll_to(&main_carousel.nth_page(7), true);
             }
         )
