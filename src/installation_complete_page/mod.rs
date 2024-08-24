@@ -25,7 +25,6 @@ pub fn installation_complete_page(
         .build();
 
     let installation_complete_exit_button = gtk::Button::builder()
-        .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
         .margin_end(5)
@@ -34,7 +33,6 @@ pub fn installation_complete_page(
     installation_complete_exit_button.add_css_class("rounded-all-25-with-padding");
 
     let installation_complete_reboot_button = gtk::Button::builder()
-        .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
         .margin_end(5)
@@ -43,7 +41,6 @@ pub fn installation_complete_page(
     installation_complete_reboot_button.add_css_class("rounded-all-25-with-padding");
 
     let installation_complete_view_logs_button = gtk::Button::builder()
-        .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .margin_start(5)
         .margin_end(5)
