@@ -46,28 +46,32 @@ pub fn create_installation_script(
 ) -> String {
     let mut final_script = String::new();
     
+    let variant = match keymap_selection_text_refcell.borrow().clone().variant {
+        Some(t) => {
+            t.replace("'", r###"'"'"'"###)
+        }
+        None => "".to_string(),
+    };
+
     let standard_installation_format = strfmt::strfmt(
         standard_installation_prog,
         &std::collections::HashMap::from([
             ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
             (
                 "LOCALE".to_string(),
-                language_selection_text_refcell.borrow().name.as_str(),
+                language_selection_text_refcell.borrow().name.replace("'", r###"'"'"'"###).as_str(),
             ),
             (
                 "KEYMAP_BASE".to_string(),
-                keymap_selection_text_refcell.borrow().name.as_str(),
+                keymap_selection_text_refcell.borrow().name.replace("'", r###"'"'"'"###).as_str(),
             ),
             (
                 "KEYMAP_VARIANT".to_string(),
-                match &keymap_selection_text_refcell.borrow().variant {
-                    Some(t) => t.as_str(),
-                    None => "",
-                },
+                variant.as_str()
             ),
             (
                 "TIMEZONE".to_string(),
-                timezone_selection_text_refcell.borrow().as_str(),
+                timezone_selection_text_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
             ),
         ]),
     )
@@ -84,7 +88,7 @@ pub fn create_installation_script(
                 &std::collections::HashMap::from([
                     (
                         "AUTO_INSTALL_TARGET_DISK".to_string(),
-                        partition_method_automatic_target_refcell.borrow().block_name.as_str(),
+                        partition_method_automatic_target_refcell.borrow().block_name.replace("'", r###"'"'"'"###).as_str(),
                     ),
                 ]),
             )
@@ -104,7 +108,7 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "AUTO_LUKS_PASSWORD".to_string(),
-                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                            partition_method_automatic_luks_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -127,11 +131,11 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "AUTO_LUKS_PASSWORD".to_string(),
-                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                            partition_method_automatic_luks_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
                                         ),
                                         (
                                             "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
-                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -143,7 +147,7 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
-                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -158,7 +162,7 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "AUTO_LUKS_PASSWORD".to_string(),
-                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                            partition_method_automatic_luks_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -186,11 +190,11 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "AUTO_LUKS_PASSWORD".to_string(),
-                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                            partition_method_automatic_luks_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
                                         ),
                                         (
                                             "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
-                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -202,7 +206,7 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
-                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -217,7 +221,7 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "AUTO_LUKS_PASSWORD".to_string(),
-                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                            partition_method_automatic_luks_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -245,11 +249,11 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "AUTO_LUKS_PASSWORD".to_string(),
-                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                            partition_method_automatic_luks_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
                                         ),
                                         (
                                             "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
-                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -261,7 +265,7 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "ROOT_PART_SIZE_AS_I64_MIB".to_string(),
-                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().as_str(),
+                                            (partition_method_automatic_ratio_refcell.borrow().round() as i64 / 1048576).to_string().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -276,7 +280,7 @@ pub fn create_installation_script(
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
                                             "AUTO_LUKS_PASSWORD".to_string(),
-                                            partition_method_automatic_luks_refcell.borrow().as_str(),
+                                            partition_method_automatic_luks_refcell.borrow().replace("'", r###"'"'"'"###).as_str(),
                                         )
                                     ]),
                                 )
@@ -324,11 +328,11 @@ touch /tmp/PIKA_CRYPT/crypttab
                                 &std::collections::HashMap::from([
                                     (
                                         "MAP".to_string(),
-                                        crypt_entry.map.as_str()
+                                        crypt_entry.map.replace("'", r###"'"'"'"###).as_str()
                                     ),
                                     (
                                         "UUID".to_string(),
-                                        crypt_entry.uuid.as_str()
+                                        crypt_entry.uuid.replace("'", r###"'"'"'"###).as_str()
                                     ),
                                     (
                                         "LUKS_PASSWD".to_string(),
@@ -344,11 +348,11 @@ touch /tmp/PIKA_CRYPT/crypttab
                                 &std::collections::HashMap::from([
                                     (
                                         "MAP".to_string(),
-                                        crypt_entry.map.as_str()
+                                        crypt_entry.map.replace("'", r###"'"'"'"###).as_str()
                                     ),
                                     (
                                         "UUID".to_string(),
-                                        crypt_entry.uuid.as_str()
+                                        crypt_entry.uuid.replace("'", r###"'"'"'"###).as_str()
                                     )
                                 ]),
                             )
@@ -377,7 +381,7 @@ touch /tmp/pika-installer-gtk4-swaplist
                         &std::collections::HashMap::from([
                             (
                                 "PART".to_string(),
-                                fstab_entry.partition.part_name.as_str()
+                                fstab_entry.partition.part_name.replace("'", r###"'"'"'"###).as_str()
                             ),
                         ]),
                     )
@@ -388,15 +392,15 @@ touch /tmp/pika-installer-gtk4-swaplist
                         &std::collections::HashMap::from([
                             (
                                 "PART".to_string(),
-                                fstab_entry.partition.part_name.as_str()
+                                fstab_entry.partition.part_name.replace("'", r###"'"'"'"###).as_str()
                             ),
                             (
                                 "MOUNTPOINT".to_string(),
-                                fstab_entry.mountpoint.as_str()
+                                fstab_entry.mountpoint.replace("'", r###"'"'"'"###).as_str()
                             ),
                             (
                                 "OPTS".to_string(),
-                                fstab_entry.mountopts.as_str()
+                                fstab_entry.mountopts.replace("'", r###"'"'"'"###).as_str()
                             ),
                         ]),
                     )
@@ -407,11 +411,11 @@ touch /tmp/pika-installer-gtk4-swaplist
                         &std::collections::HashMap::from([
                             (
                                 "PART".to_string(),
-                                fstab_entry.partition.part_name.as_str()
+                                fstab_entry.partition.part_name.replace("'", r###"'"'"'"###).as_str()
                             ),
                             (
                                 "MOUNTPOINT".to_string(),
-                                fstab_entry.mountpoint.as_str()
+                                fstab_entry.mountpoint.replace("'", r###"'"'"'"###).as_str()
                             ),
                         ]),
                     )
