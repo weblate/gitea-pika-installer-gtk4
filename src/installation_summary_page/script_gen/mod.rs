@@ -7,7 +7,7 @@ mod auto_ext4;
 mod auto_xfs;
 mod manual_basic;
 
-pub const standard_installation_prog: &str = r###"#! /bin/bash
+pub const STANDARD_INSTALLATION_PROG: &str = r###"#! /bin/bash
 set -e
 
 SOCKET_PATH="/tmp/pikainstall-status.sock"
@@ -47,7 +47,7 @@ pub fn create_installation_script(
     };
 
     let standard_installation_format = strfmt::strfmt(
-        standard_installation_prog,
+        STANDARD_INSTALLATION_PROG,
         &std::collections::HashMap::from([
             ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
             (
@@ -77,7 +77,7 @@ pub fn create_installation_script(
             let is_encrypted = *partition_method_automatic_luks_enabled_refcell.borrow();
             //
             let automatic_standard_installation_format = strfmt::strfmt(
-                auto_basic::automatic_standard_installation_prog,
+                auto_basic::AUTOMATIC_STANDARD_INSTALLATION_PROG,
                 &std::collections::HashMap::from([
                     (
                         "AUTO_INSTALL_TARGET_DISK".to_string(),
@@ -96,7 +96,7 @@ pub fn create_installation_script(
                         "subvol" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_btrfs::automatic_home_subvol_btrfs_locked_installation_prog,
+                                    auto_btrfs::AUTOMATIC_HOME_SUBVOL_BTRFS_LOCKED_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -108,7 +108,7 @@ pub fn create_installation_script(
                                 .unwrap());
                             } else {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_btrfs::automatic_home_subvol_btrfs_open_installation_prog,
+                                    auto_btrfs::AUTOMATIC_HOME_SUBVOL_BTRFS_OPEN_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                     ]),
@@ -119,7 +119,7 @@ pub fn create_installation_script(
                         "partition" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_btrfs::automatic_home_part_btrfs_locked_installation_prog,
+                                    auto_btrfs::AUTOMATIC_HOME_PART_BTRFS_LOCKED_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -135,7 +135,7 @@ pub fn create_installation_script(
                                 .unwrap());
                             } else {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_btrfs::automatic_home_part_btrfs_open_installation_prog,
+                                    auto_btrfs::AUTOMATIC_HOME_PART_BTRFS_OPEN_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -150,7 +150,7 @@ pub fn create_installation_script(
                         "none" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_btrfs::automatic_home_none_btrfs_locked_installation_prog,
+                                    auto_btrfs::AUTOMATIC_HOME_NONE_BTRFS_LOCKED_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -162,7 +162,7 @@ pub fn create_installation_script(
                                 .unwrap());
                             } else {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_btrfs::automatic_home_none_btrfs_open_installation_prog,
+                                    auto_btrfs::AUTOMATIC_HOME_NONE_BTRFS_OPEN_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                     ]),
@@ -178,7 +178,7 @@ pub fn create_installation_script(
                         "partition" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_ext4::automatic_home_part_ext4_locked_installation_prog,
+                                    auto_ext4::AUTOMATIC_HOME_PART_EXT4_LOCKED_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -194,7 +194,7 @@ pub fn create_installation_script(
                                 .unwrap());
                             } else {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_ext4::automatic_home_part_ext4_open_installation_prog,
+                                    auto_ext4::AUTOMATIC_HOME_PART_EXT4_OPEN_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -209,7 +209,7 @@ pub fn create_installation_script(
                         "none" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_ext4::automatic_home_none_ext4_locked_installation_prog,
+                                    auto_ext4::AUTOMATIC_HOME_NONE_EXT4_LOCKED_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -221,7 +221,7 @@ pub fn create_installation_script(
                                 .unwrap());
                             } else {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_ext4::automatic_home_none_ext4_open_installation_prog,
+                                    auto_ext4::AUTOMATIC_HOME_NONE_EXT4_OPEN_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                     ]),
@@ -237,7 +237,7 @@ pub fn create_installation_script(
                         "partition" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_xfs::automatic_home_part_xfs_locked_installation_prog,
+                                    auto_xfs::AUTOMATIC_HOME_PART_XFS_LOCKED_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -253,7 +253,7 @@ pub fn create_installation_script(
                                 .unwrap());
                             } else {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_xfs::automatic_home_part_xfs_open_installation_prog,
+                                    auto_xfs::AUTOMATIC_HOME_PART_XFS_OPEN_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -268,7 +268,7 @@ pub fn create_installation_script(
                         "none" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_xfs::automatic_home_none_xfs_locked_installation_prog,
+                                    auto_xfs::AUTOMATIC_HOME_NONE_XFS_LOCKED_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                         (
@@ -280,7 +280,7 @@ pub fn create_installation_script(
                                 .unwrap());
                             } else {
                                 final_script.push_str(&strfmt::strfmt(
-                                    auto_xfs::automatic_home_none_xfs_open_installation_prog,
+                                    auto_xfs::AUTOMATIC_HOME_NONE_XFS_OPEN_INSTALLATION_PROG,
                                     &std::collections::HashMap::from([
                                         ("CHROOT_PATH".to_string(), "/media/pikaos/installation"),
                                     ]),
@@ -295,9 +295,9 @@ pub fn create_installation_script(
             }
             //
             if is_encrypted {
-                final_script.push_str(auto_basic::automatic_locked_part_pikainstall_prog);
+                final_script.push_str(auto_basic::AUTOMATIC_LOCKED_PART_PIKAINSTALL_PROG);
             } else {
-                final_script.push_str(auto_basic::automatic_open_part_pikainstall_prog);
+                final_script.push_str(auto_basic::AUTOMATIC_OPEN_PART_PIKAINSTALL_PROG);
             }
         }
         "manual" => {
@@ -317,7 +317,7 @@ touch /tmp/PIKA_CRYPT/crypttab
                     match &crypt_entry.password {
                         Some(p) => {
                             final_script.push_str(&strfmt::strfmt(
-                                manual_basic::manual_crypt_entry_with_keyfile,
+                                manual_basic::MANUAL_CRYPT_ENTRY_WITH_KEYFILE,
                                 &std::collections::HashMap::from([
                                     (
                                         "MAP".to_string(),
@@ -337,7 +337,7 @@ touch /tmp/PIKA_CRYPT/crypttab
                         }
                         None => {
                             final_script.push_str(&strfmt::strfmt(
-                                manual_basic::manual_crypt_entry,
+                                manual_basic::MANUAL_CRYPT_ENTRY,
                                 &std::collections::HashMap::from([
                                     (
                                         "MAP".to_string(),
@@ -370,7 +370,7 @@ touch /tmp/pika-installer-gtk4-swaplist
                         did_make_swap_list = true
                     }
                     final_script.push_str(&strfmt::strfmt(
-                        manual_basic::manual_swap_mount_prog,
+                        manual_basic::MANUAL_SWAP_MOUNT_PROG,
                         &std::collections::HashMap::from([
                             (
                                 "PART".to_string(),
@@ -381,7 +381,7 @@ touch /tmp/pika-installer-gtk4-swaplist
                     .unwrap());
                 } else if !fstab_entry.mountopts.is_empty() {
                     final_script.push_str(&strfmt::strfmt(
-                        manual_basic::manual_partition_mount_with_opts_prog,
+                        manual_basic::MANUAL_PARTITION_MOUNT_WITH_OPTS_PROG,
                         &std::collections::HashMap::from([
                             (
                                 "PART".to_string(),
@@ -400,7 +400,7 @@ touch /tmp/pika-installer-gtk4-swaplist
                     .unwrap());
                 } else {
                     final_script.push_str(&strfmt::strfmt(
-                        manual_basic::manual_partition_mount_prog,
+                        manual_basic::MANUAL_PARTITION_MOUNT_PROG,
                         &std::collections::HashMap::from([
                             (
                                 "PART".to_string(),
@@ -417,9 +417,9 @@ touch /tmp/pika-installer-gtk4-swaplist
             }
 
             if is_encrypted {
-                final_script.push_str(manual_basic::manual_locked_part_pikainstall_prog);
+                final_script.push_str(manual_basic::MANUAL_LOCKED_PART_PIKAINSTALL_PROG);
             } else {
-                final_script.push_str(manual_basic::manual_open_part_pikainstall_prog);
+                final_script.push_str(manual_basic::MANUAL_OPEN_PART_PIKAINSTALL_PROG);
             }
         }
         _ => panic!()

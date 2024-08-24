@@ -101,7 +101,7 @@ pub fn timezone_page(
                 }
             }
         ));
-        if &current_timezone == &timezone_clone {
+        if current_timezone == timezone_clone {
             timezone_checkbutton.set_active(true);
         }
     }

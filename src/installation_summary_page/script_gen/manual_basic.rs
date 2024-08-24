@@ -1,26 +1,26 @@
-pub const manual_partition_mount_prog: &str = r###"
+pub const MANUAL_PARTITION_MOUNT_PROG: &str = r###"
 
 mkdir -p "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
 mount /dev/{PART} "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
 "###;
 
-pub const manual_partition_mount_with_opts_prog: &str = r###"
+pub const MANUAL_PARTITION_MOUNT_WITH_OPTS_PROG: &str = r###"
 
 mkdir -p "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
 mount -o '{OPTS}' /dev/'{PART}' "$PIKA_INSTALL_CHROOT_PATH"'{MOUNTPOINT}'
 "###;
 
-pub const manual_swap_mount_prog: &str = r###"
+pub const MANUAL_SWAP_MOUNT_PROG: &str = r###"
 
 echo /dev/'{PART}' >> /tmp/pika-installer-gtk4-swaplist
 "###;
 
-pub const manual_crypt_entry: &str = r###"
+pub const MANUAL_CRYPT_ENTRY: &str = r###"
 
 echo '{MAP} UUID={UUID} none luks,discard' >> /tmp/PIKA_CRYPT/crypttab
 "###;
 
-pub const manual_crypt_entry_with_keyfile: &str = r###"
+pub const MANUAL_CRYPT_ENTRY_WITH_KEYFILE: &str = r###"
 
 echo '{MAP} UUID={UUID} /key-{MAP}.txt luks' >> /tmp/PIKA_CRYPT/crypttab
 touch /tmp/PIKA_CRYPT/key-{MAP}.txt
@@ -28,7 +28,7 @@ openssl genrsa > /tmp/PIKA_CRYPT/key-{MAP}.txt
 echo '{LUKS_PASSWD}' | cryptsetup luksAddKey UUID='{UUID}' /tmp/PIKA_CRYPT/key-{MAP}.txt -
 "###;
 
-pub const manual_open_part_pikainstall_prog: &str = r###"
+pub const MANUAL_OPEN_PART_PIKAINSTALL_PROG: &str = r###"
 
 if [ -z $PIKA_INSTALL_KEYMAP_VARIANT ]
 then
@@ -38,7 +38,7 @@ pikainstall --manual 1 -r $PIKA_INSTALL_CHROOT_PATH -l $PIKA_INSTALL_LOCALE -k $
 fi
 "###;
 
-pub const manual_locked_part_pikainstall_prog: &str = r###"
+pub const MANUAL_LOCKED_PART_PIKAINSTALL_PROG: &str = r###"
 
 if [ -z $PIKA_INSTALL_KEYMAP_VARIANT ]
 then

@@ -1,6 +1,6 @@
 // XFS WITH HOME PART
 
-pub const automatic_home_part_xfs_open_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_PART_XFS_OPEN_INSTALLATION_PROG: &str = r###"
 
 PIKA_INSTALL_AUTO_ROOT_SIZE={ROOT_PART_SIZE_AS_I64_MIB}
 
@@ -55,7 +55,7 @@ fi
 
 "###;
 
-pub const automatic_home_part_xfs_locked_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_PART_XFS_LOCKED_INSTALLATION_PROG: &str = r###"
 
 PIKA_INSTALL_AUTO_LUKS_PASSWORD='{AUTO_LUKS_PASSWORD}'
 PIKA_INSTALL_AUTO_ROOT_SIZE={ROOT_PART_SIZE_AS_I64_MIB}
@@ -121,7 +121,7 @@ fi
 
 // XFS NO HOME
 
-pub const automatic_home_none_xfs_open_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_NONE_XFS_OPEN_INSTALLATION_PROG: &str = r###"
 
 parted -s -a optimal /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" mklabel gpt \
 mkpart "linux-efi"  1MiB 500Mib \
@@ -167,7 +167,7 @@ fi
 
 "###;
 
-pub const automatic_home_none_xfs_locked_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_NONE_XFS_LOCKED_INSTALLATION_PROG: &str = r###"
 
 PIKA_INSTALL_AUTO_LUKS_PASSWORD='{AUTO_LUKS_PASSWORD}'
 

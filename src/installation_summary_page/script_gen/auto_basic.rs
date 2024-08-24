@@ -1,4 +1,4 @@
-pub const automatic_standard_installation_prog: &str = r###"
+pub const AUTOMATIC_STANDARD_INSTALLATION_PROG: &str = r###"
 
 echo 'PARTING' | nc -U $SOCKET_PATH || true
 
@@ -14,7 +14,7 @@ blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK"
 
 "###;
 
-pub const automatic_open_part_pikainstall_prog: &str = r###"
+pub const AUTOMATIC_OPEN_PART_PIKAINSTALL_PROG: &str = r###"
 
 if [ -z $PIKA_INSTALL_KEYMAP_VARIANT ]
 then
@@ -24,7 +24,7 @@ pikainstall -r $PIKA_INSTALL_CHROOT_PATH -l $PIKA_INSTALL_LOCALE -k $PIKA_INSTAL
 fi
 "###;
 
-pub const automatic_locked_part_pikainstall_prog: &str = r###"
+pub const AUTOMATIC_LOCKED_PART_PIKAINSTALL_PROG: &str = r###"
 
 if [ -z $PIKA_INSTALL_KEYMAP_VARIANT ]
 then

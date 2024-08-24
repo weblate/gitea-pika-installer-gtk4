@@ -126,7 +126,7 @@ pub fn language_page(
                 }
             }
         ));
-        if &current_locale == &locale_clone0
+        if current_locale == locale_clone0
             && current_locale != "C.UTF-8"
             && current_locale != "C"
             && current_locale != "C.utf8"

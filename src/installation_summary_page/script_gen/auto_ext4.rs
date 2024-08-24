@@ -1,6 +1,6 @@
 // EXT4 WITH HOME PART
 
-pub const automatic_home_part_ext4_open_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_PART_EXT4_OPEN_INSTALLATION_PROG: &str = r###"
 PIKA_INSTALL_AUTO_ROOT_SIZE={ROOT_PART_SIZE_AS_I64_MIB}
 
 parted -s -a optimal /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" mklabel gpt \
@@ -54,7 +54,7 @@ fi
 
 "###;
 
-pub const automatic_home_part_ext4_locked_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_PART_EXT4_LOCKED_INSTALLATION_PROG: &str = r###"
 
 PIKA_INSTALL_AUTO_LUKS_PASSWORD='{AUTO_LUKS_PASSWORD}'
 PIKA_INSTALL_AUTO_ROOT_SIZE={ROOT_PART_SIZE_AS_I64_MIB}
@@ -120,7 +120,7 @@ fi
 
 // EXT4 NO HOME
 
-pub const automatic_home_none_ext4_open_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_NONE_EXT4_OPEN_INSTALLATION_PROG: &str = r###"
 
 parted -s -a optimal /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" mklabel gpt \
 mkpart "linux-efi"  1MiB 500Mib \
@@ -166,7 +166,7 @@ fi
 
 "###;
 
-pub const automatic_home_none_ext4_locked_installation_prog: &str = r###"
+pub const AUTOMATIC_HOME_NONE_EXT4_LOCKED_INSTALLATION_PROG: &str = r###"
 
 PIKA_INSTALL_AUTO_LUKS_PASSWORD='{AUTO_LUKS_PASSWORD}'
 
