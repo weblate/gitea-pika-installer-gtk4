@@ -1,6 +1,6 @@
 use crate::{
     config::APP_ID, efi_error_page, eula_page, installation_progress_page,
-    installation_summary_page, keyboard_page, language_page, partitioning_page, timezone_page,
+    installation_summary_page, keyboard_page, language_page, partitioning_page, timezone_page, installation_complete_page,
     welcome_page,
 };
 use gtk::{gio, glib, prelude::*};
