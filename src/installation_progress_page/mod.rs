@@ -36,6 +36,15 @@ pub fn installation_progress_page(
         .editable(false)
         .buffer(&installation_progress_log_terminal_buffer)
         .build();
+    installation_progress_log_terminal.add_css_class("round-all-scroll");
+
+    let installation_progress_log_scroll = gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .has_frame(true)
+        .child(&installation_progress_log_terminal)
+        .build();
+    installation_progress_log_scroll.add_css_class("round-all-scroll");
 
     let placeholder_icon = gtk::Image::builder()
         .icon_name(DISTRO_ICON)
@@ -63,7 +72,6 @@ pub fn installation_progress_page(
         .margin_bottom(5)
         .show_text(true)
         .build();
-    installation_progress_bar.add_css_class("small_fg_text");
 
     let progress_log_button = gtk::Button::builder()
         .icon_name("terminal-symbolic")
@@ -82,7 +90,7 @@ pub fn installation_progress_page(
         "slideshow_page",
     );
     installation_progress_log_stack.add_titled(
-        &installation_progress_log_terminal,
+        &installation_progress_log_scroll,
         Some("terminal_log_page"),
         "terminal_log_page",
     );
