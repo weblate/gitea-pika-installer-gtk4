@@ -345,6 +345,8 @@ pub fn manual_partitioning_page(
                     }
                 ));
             }
+
+            (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()).sort_by_key(|p| p.mountpoint.clone())
         }
     ));
 
