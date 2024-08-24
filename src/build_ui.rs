@@ -203,5 +203,7 @@ pub fn build_ui(app: &adw::Application) {
 
     installation_progress_page::installation_progress_page(&carousel, &language_changed_action, installation_log_loop_receiver);
 
+    installation_complete_page::installation_complete_page(&carousel, &window, &language_changed_action, installation_log_status_loop_receiver);
+
     window.present()
 }

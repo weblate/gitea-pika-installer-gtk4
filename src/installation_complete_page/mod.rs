@@ -1,4 +1,4 @@
-use crate::{build_ui::PikaKeymap, installer_stack_page};
+use crate::{build_ui::PikaKeymap, config::LOG_FILE_PATH, installer_stack_page};
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gnome_desktop::XkbInfoExt;
@@ -7,6 +7,7 @@ use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
 
 pub fn installation_complete_page(
     main_carousel: &adw::Carousel,
+    window: &adw::ApplicationWindow,
     language_changed_action: &gio::SimpleAction,
     installation_log_status_loop_receiver: async_channel::Receiver<bool>,
 ) {
@@ -91,6 +92,33 @@ pub fn installation_complete_page(
             }
         )
     );
+
+    //
+
+    installation_complete_exit_button.connect_clicked(clone!(
+        #[strong]
+        window,
+            move |_|
+            {
+                window.close()
+            }
+        )
+    );
+    
+    installation_complete_reboot_button.connect_clicked(move |_| {
+        Command::new("reboot")
+            .spawn()
+            .expect("reboot failed to start");
+    });
+
+    installation_complete_view_logs_button.connect_clicked(move |_| {
+        Command::new("xdg-open")
+            .arg(LOG_FILE_PATH)
+            .spawn()
+            .expect("xdg-open failed to start");
+    });
+
+    //
 
     installation_complete_page.set_child_widget(&content_box);
 

@@ -55,5 +55,8 @@ fn main() {
         app.connect_activate(build_ui);
     });
 
+    let instance = SingleInstance::new(APP_ID).unwrap();
+    assert!(instance.is_single());
+
     application.run();
 }
