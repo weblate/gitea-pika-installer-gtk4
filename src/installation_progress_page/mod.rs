@@ -332,7 +332,7 @@ touch /tmp/PIKA_CRYPT/crypttab
                                     ),
                                     (
                                         "LUKS_PASSWD".to_string(),
-                                        p.replace("'", r###""'""###).as_str()
+                                        p.replace("'", r###"'"'"'"###).as_str()
                                     )
                                 ]),
                             )
