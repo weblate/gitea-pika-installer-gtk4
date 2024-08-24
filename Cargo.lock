@@ -1323,7 +1323,7 @@ dependencies = [
 
 [[package]]
 name = "pika-installer-gtk4"
-version = "1.0.2"
+version = "2.0.0"
 dependencies = [
  "async-channel",
  "chrono",

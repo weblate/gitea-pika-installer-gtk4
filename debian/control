@@ -17,5 +17,6 @@ Package: pika-installer-gtk4
 Architecture: any
 Depends: ${shlibs:Depends},
          pikainstall,
-         gir1.2-gnomedesktop-4.0
+         gir1.2-gnomedesktop-4.0,
+         blivet-gui,
 Description: A frontend in GTK 4 and Libadwaita for pikainstall.
