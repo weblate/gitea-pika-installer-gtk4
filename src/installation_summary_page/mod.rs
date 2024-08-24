@@ -2,24 +2,14 @@ use crate::{
     build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale},
     config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, LOG_FILE_PATH},
     installer_stack_page,
-    installation_progress_page,
 };
 use adw::prelude::*;
-use glib::{clone, closure_local};
 use gtk::{gio, glib};
-use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc, thread};
+use glib::{clone, closure_local};
+use std::{cell::RefCell, fs, path::Path, rc::Rc, thread, io::{Write, prelude::*, BufReader}, error::Error};
+use duct::cmd;
 
 mod script_gen;
-
-/// DEBUG
-use std::io::{self, Write};
-use duct::cmd;
-use std::io::prelude::*;
-use std::io::BufReader;
-use std::{
-    error::Error,
-};
-/// DEBUG END
 
 fn run_install_process(
     sender: async_channel::Sender<String>,
@@ -27,7 +17,7 @@ fn run_install_process(
     log_file_path: &str,
 ) -> Result<(), std::boxed::Box<dyn Error + Send + Sync>> {
     if !Path::new(&log_file_path).exists() {
-        match fs::File::create(&log_file_path) {
+        match fs::File::create(log_file_path) {
             Ok(_) => {}
             Err(_) => {
                 eprintln!("Warning: {} file couldn't be created", log_file_path);
@@ -46,9 +36,9 @@ fn run_install_process(
             .send_blocking(line)
             .expect("Channel needs to be opened.");
         let mut log_file = fs::OpenOptions::new()
-            .write(true)
+            
             .append(true)
-            .open(&log_file_path)
+            .open(log_file_path)
             .unwrap();
 
         if let Err(e) = writeln!(
@@ -252,12 +242,12 @@ pub fn installation_summary_page(
                     //
                     let install_confirm_detail_timezone = adw::ActionRow::builder()
                         .title(t!("install_confirm_detail_timezone_title"))
-                        .subtitle(&timezone_selection_text_refcell.borrow().to_string())
+                        .subtitle(timezone_selection_text_refcell.borrow().to_string())
                         .build();
                     install_confirm_detail_timezone.add_css_class("property");
                     installation_summary_row_viewport_listbox.append(&install_confirm_detail_timezone);
                     //
-                    let install_confirm_detail_partition_method_type_subtitle = match &*partition_method_type_refcell.borrow().as_str() {
+                    let install_confirm_detail_partition_method_type_subtitle = match partition_method_type_refcell.borrow().as_str() {
                         "automatic" => {
                             if *partition_method_automatic_luks_enabled {
                                 t!("install_confirm_detail_partition_method_type_subtitle_automatic_luks").to_string()
@@ -281,7 +271,7 @@ pub fn installation_summary_page(
                     install_confirm_detail_partition_method_type.add_css_class("property");
                     installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_type);
                     //
-                    match &*partition_method_type_refcell.borrow().as_str() {
+                    match partition_method_type_refcell.borrow().as_str() {
                         "automatic" => {
                             let install_confirm_detail_partition_method_automatic_target = adw::ActionRow::builder()
                                 .title(t!("install_confirm_detail_partition_method_automatic_target_title"))
@@ -297,7 +287,7 @@ pub fn installation_summary_page(
                             install_confirm_detail_partition_method_automatic_target_fs.add_css_class("property");
                             installation_summary_row_viewport_listbox.append(&install_confirm_detail_partition_method_automatic_target_fs);
                             //
-                            match &*partition_method_automatic_seperation_refcell.borrow().as_str() {
+                            match partition_method_automatic_seperation_refcell.borrow().as_str() {
                                 "subvol" => {
                                     let install_confirm_detail_partition_method_automatic_seperation = adw::ActionRow::builder()
                                         .title(t!("install_confirm_detail_partition_method_automatic_seperation_title"))
@@ -348,7 +338,7 @@ pub fn installation_summary_page(
                         "manual" => {
                             if *partition_method_manual_luks_enabled {
                                 for crypttab_entry in partition_method_manual_crypttab_entry_array_refcell.borrow().iter() {
-                                    let crypttab_entry_map = &crypttab_entry.map;
+                                    let crypttab_entry_partition = &crypttab_entry.partition;
                                     let install_confirm_detail_partition_method_manual_crypttab_entry_subtitle = if crypttab_entry.password.is_some() {
                                         t!("install_confirm_detail_partition_method_manual_crypttab_entry_subtitle_auto")
                                     } else {
@@ -359,7 +349,7 @@ pub fn installation_summary_page(
                                         .subtitle(strfmt::strfmt(
                                             &install_confirm_detail_partition_method_manual_crypttab_entry_subtitle,
                                             &std::collections::HashMap::from([
-                                                ("LUKS_NAME".to_string(), (crypttab_entry_map).to_string().as_str()),
+                                                ("LUKS_NAME".to_string(), (crypttab_entry_partition).to_string().as_str()),
                                             ])
                                         ).unwrap())
                                         .build();

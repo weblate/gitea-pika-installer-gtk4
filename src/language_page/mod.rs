@@ -1,8 +1,8 @@
 use crate::{build_ui::PikaLocale, installer_stack_page};
 use adw::prelude::*;
+use gtk::{gio, glib};
 use glib::{clone, closure_local};
-use gtk::{gio, glib, prelude::*};
-use std::{cell::RefCell, env, fs, path::Path, process::Command, rc::Rc};
+use std::{cell::RefCell, env, process::Command, rc::Rc};
 
 pub fn language_page(
     main_carousel: &adw::Carousel,
@@ -86,8 +86,8 @@ pub fn language_page(
     for locale in locale_list.iter() {
         sorted_locale_vec.push(PikaLocale {
             name: locale.to_string(),
-            pretty_name: gnome_desktop::language_from_locale(&locale, None)
-                .unwrap_or(locale.clone().into())
+            pretty_name: gnome_desktop::language_from_locale(locale, None)
+                .unwrap_or(locale.to_string().into())
                 .to_string(),
         })
     }
@@ -120,7 +120,7 @@ pub fn language_page(
             #[weak]
             language_page,
             move |_| {
-                if locale_checkbutton.is_active() == true {
+                if locale_checkbutton.is_active() {
                     language_page.set_next_sensitive(true);
                     *lang_data_refcell.borrow_mut() = pika_locale_clone0.clone();
                 }
@@ -200,12 +200,12 @@ pub fn language_page(
             language_changed_action,
             move |_language_page: installer_stack_page::InstallerStackPage| {
                 let locale = &lang_data_refcell.borrow();
-                //Command::new("sudo")
-                //                    .arg("localectl")
-                //                    .arg("set-locale")
-                //                    .arg("LANG=".to_owned() + &locale + ".UTF-8")
-                //                    .spawn()
-                //                    .expect("locale failed to start");
+                Command::new("sudo")
+                                    .arg("localectl")
+                                    .arg("set-locale")
+                                    .arg("LANG=".to_owned() + &locale.name + ".UTF-8")
+                                    .spawn()
+                                    .expect("locale failed to start");
                 rust_i18n::set_locale(&locale.name);
                 language_changed_action.activate(None);
                 main_carousel.scroll_to(&main_carousel.nth_page(2), true)

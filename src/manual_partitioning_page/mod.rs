@@ -1,16 +1,13 @@
-use crate::drive_mount_row::DriveMountRow;
 use crate::{
     build_ui::{CrypttabEntry, FstabEntry, Partition, SubvolDeclaration},
     installer_stack_page,
+    drive_mount_row::DriveMountRow,
     partitioning_page::{get_luks_uuid, get_partitions, test_luks_passwd},
 };
-use adw::gio;
+use gtk::{glib, gio, Orientation};
 use adw::prelude::*;
 use glib::{clone, closure_local};
-use gtk::{glib, Orientation};
-use std::sync::atomic::AtomicBool;
-use std::sync::Arc;
-use std::{cell::RefCell, collections::HashSet, rc::Rc};
+use std::{cell::RefCell, collections::HashSet, rc::Rc, sync::{Arc, atomic::AtomicBool}};
 
 mod func;
 
@@ -74,7 +71,7 @@ pub fn manual_partitioning_page(
         &drive_rows_size_group,
         &partition_array_refcell,
         &partition_changed_action,
-        &language_changed_action,
+        language_changed_action,
         &used_partition_array_refcell,
         &subvol_partition_array_refcell,
         &extra_mount_id_refcell,
@@ -227,8 +224,6 @@ pub fn manual_partitioning_page(
         #[weak]
         drive_mounts_adw_listbox,
         #[strong]
-        filesystem_table_refresh_button,
-        #[strong]
         window,
         #[strong]
         partition_method_manual_fstab_entry_array_refcell,
@@ -269,10 +264,8 @@ pub fn manual_partitioning_page(
 
             for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
-                if subvol_partition_array_refcell.borrow().is_empty() {
-                    if !seen_partitions.insert(fs_entry.clone().partition.part_name) {
-                        (errored.store(true, std::sync::atomic::Ordering::Relaxed));
-                    }
+                if subvol_partition_array_refcell.borrow().is_empty() && !seen_partitions.insert(fs_entry.clone().partition.part_name) {
+                    (errored.store(true, std::sync::atomic::Ordering::Relaxed));
                 }
                 if fs_entry.mountpoint == "[SWAP]" {
                     if fs_entry.partition.part_fs == "linux-swap" || fs_entry.partition.part_fs == "swap" {
@@ -308,7 +301,7 @@ pub fn manual_partitioning_page(
                 std::thread::spawn(move || {
                     std::thread::sleep(std::time::Duration::from_millis(100));
                     check_delay_sender
-                        .send_blocking((errored_clone0))
+                        .send_blocking(errored_clone0)
                         .expect("The channel needs to be open.");
                 });
 
@@ -330,7 +323,7 @@ pub fn manual_partitioning_page(
                     partition_method_manual_valid_label,
                     async move {
                         while let Ok(state) = check_delay_receiver.recv().await {
-                            if state.load(std::sync::atomic::Ordering::Relaxed) == false {
+                            if !state.load(std::sync::atomic::Ordering::Relaxed) {
                                 partition_method_manual_valid_label.set_visible(true);
                                 set_crypttab_entries(
                                     &fs_entry_clone0,
@@ -381,12 +374,6 @@ pub fn manual_partitioning_page(
             partition_method_type_refcell,
             #[strong]
             page_done_action,
-            #[strong]
-            partition_method_manual_fstab_entry_array_refcell,
-            #[strong]
-            partition_method_manual_luks_enabled_refcell,
-            #[strong]
-            partition_method_manual_crypttab_entry_array_refcell,
             move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage| {
                 *partition_method_type_refcell.borrow_mut() = String::from("manual");
                 page_done_action.activate(Some(&glib::variant::Variant::from_data_with_type(
@@ -488,31 +475,31 @@ fn create_hardcoded_rows(
         .build();
 
     func::create_efi_row(
-        &drive_mounts_adw_listbox,
-        &drive_rows_size_group,
+        drive_mounts_adw_listbox,
+        drive_rows_size_group,
         &partition_array_refcell.borrow(),
-        &partition_changed_action,
-        &language_changed_action,
-        &used_partition_array_refcell,
-        &subvol_partition_array_refcell,
+        partition_changed_action,
+        language_changed_action,
+        used_partition_array_refcell,
+        subvol_partition_array_refcell,
     );
     func::create_boot_row(
-        &drive_mounts_adw_listbox,
-        &drive_rows_size_group,
+        drive_mounts_adw_listbox,
+        drive_rows_size_group,
         &partition_array_refcell.borrow(),
-        &partition_changed_action,
-        &language_changed_action,
-        &used_partition_array_refcell,
-        &subvol_partition_array_refcell,
+        partition_changed_action,
+        language_changed_action,
+        used_partition_array_refcell,
+        subvol_partition_array_refcell,
     );
     func::create_root_row(
-        &drive_mounts_adw_listbox,
-        &drive_rows_size_group,
+        drive_mounts_adw_listbox,
+        drive_rows_size_group,
         &partition_array_refcell.borrow(),
-        &partition_changed_action,
-        &language_changed_action,
-        &used_partition_array_refcell,
-        &subvol_partition_array_refcell,
+        partition_changed_action,
+        language_changed_action,
+        used_partition_array_refcell,
+        subvol_partition_array_refcell,
     );
 
     drive_mounts_adw_listbox.append(&drive_mount_add_button);
@@ -553,11 +540,8 @@ fn generate_filesystem_table_array(drive_mounts_adw_listbox: &gtk::ListBox) -> V
     let mut fstab_array: Vec<FstabEntry> = Vec::new();
     let mut widget_counter = drive_mounts_adw_listbox.first_child();
     while let Some(ref child) = widget_counter {
-        match child.clone().downcast::<DriveMountRow>() {
-            Ok(t) => {
-                fstab_array.push(DriveMountRow::get_fstab_entry(&t));
-            }
-            Err(_) => {}
+        if let Ok(t) = child.clone().downcast::<DriveMountRow>() {
+            fstab_array.push(DriveMountRow::get_fstab_entry(&t));
         }
         widget_counter = child.next_sibling();
     }
@@ -635,8 +619,6 @@ fn set_crypttab_entries(
             fs_entry,
             #[weak]
             crypttab_password_status_label,
-            #[weak]
-            crypttab_dialog,
             move |_| {
                 let luks_manual_password_sender = luks_manual_password_sender.clone();
                 let luks_password = crypttab_password_entry_row.text().to_string();
@@ -666,7 +648,7 @@ fn set_crypttab_entries(
             async move {
                 while let Ok(state) = luks_manual_password_receiver.recv().await {
                     crypttab_dialog.set_response_enabled("crypttab_dialog_auto", state);
-                    if state == false {
+                    if !state {
                         crypttab_password_status_label
                             .set_label(&t!("crypttab_password_status_label_label_wrong_password"))
                     } else {

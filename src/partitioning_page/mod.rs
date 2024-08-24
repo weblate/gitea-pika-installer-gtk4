@@ -1,12 +1,11 @@
 use crate::{
     automatic_partitioning_page,
-    build_ui::{BlockDevice, CrypttabEntry, FstabEntry, Partition, SubvolDeclaration},
+    build_ui::{BlockDevice, CrypttabEntry, FstabEntry, Partition},
     installer_stack_page, manual_partitioning_page,
 };
-use glib::{clone, closure_local, Properties};
 use gtk::{gio, glib, prelude::*};
-use std::io::BufRead;
-use std::{cell::RefCell, rc::Rc};
+use glib::{clone, closure_local};
+use std::{cell::RefCell, rc::Rc, io::BufRead};
 
 pub fn partitioning_page(
     main_carousel: &adw::Carousel,
@@ -138,27 +137,27 @@ pub fn partitioning_page(
 
     partitioning_carousel.append(&partitioning_page);
     automatic_partitioning_page::automatic_partitioning_page(
-        &main_carousel,
+        main_carousel,
         &partitioning_carousel,
-        &partition_method_type_refcell,
-        &partition_method_automatic_target_refcell,
-        &partition_method_automatic_target_fs_refcell,
-        &partition_method_automatic_luks_enabled_refcell,
-        &partition_method_automatic_luks_refcell,
-        &partition_method_automatic_ratio_refcell,
-        &partition_method_automatic_seperation_refcell,
-        &language_changed_action,
-        &page_done_action,
+        partition_method_type_refcell,
+        partition_method_automatic_target_refcell,
+        partition_method_automatic_target_fs_refcell,
+        partition_method_automatic_luks_enabled_refcell,
+        partition_method_automatic_luks_refcell,
+        partition_method_automatic_ratio_refcell,
+        partition_method_automatic_seperation_refcell,
+        language_changed_action,
+        page_done_action,
     );
     manual_partitioning_page::manual_partitioning_page(
-        &main_carousel,
+        main_carousel,
         &partitioning_carousel,
         window,
-        &partition_method_type_refcell,
-        &partition_method_manual_fstab_entry_array_refcell,
-        &partition_method_manual_luks_enabled_refcell,
-        &partition_method_manual_crypttab_entry_array_refcell,
-        &language_changed_action,
+        partition_method_type_refcell,
+        partition_method_manual_fstab_entry_array_refcell,
+        partition_method_manual_luks_enabled_refcell,
+        partition_method_manual_crypttab_entry_array_refcell,
+        language_changed_action,
         page_done_action,
     );
 
@@ -199,7 +198,7 @@ pub fn get_block_devices() -> Vec<BlockDevice> {
                         let block_size = get_block_size(&r);
                         block_devices.push(BlockDevice {
                             block_name: r,
-                            block_size: block_size,
+                            block_size,
                             block_size_pretty: pretty_bytes::converter::convert(block_size),
                         })
                     }
@@ -261,15 +260,15 @@ pub fn get_partitions() -> Vec<Partition> {
 }
 
 pub fn create_parition_struct(part_dev: &str) -> Partition {
-    let part_size = get_part_size(&part_dev);
-    let part_fs = get_part_fs(&part_dev);
+    let part_size = get_part_size(part_dev);
+    let part_fs = get_part_fs(part_dev);
     Partition {
-        has_encryption: is_encrypted(&part_dev),
+        has_encryption: is_encrypted(part_dev),
         need_mapper: is_needs_mapper(&part_fs),
-        part_uuid: get_part_uuid(&part_dev),
+        part_uuid: get_part_uuid(part_dev),
         part_name: part_dev.to_string(),
-        part_fs: part_fs,
-        part_size: part_size,
+        part_fs,
+        part_size,
         part_size_pretty: pretty_bytes::converter::convert(part_size),
     }
 }
@@ -311,11 +310,7 @@ fn get_part_fs(part_dev: &str) -> String {
 }
 
 fn is_needs_mapper(part_fs: &str) -> bool {
-    if part_fs.contains("crypto_LUKS") || part_fs.contains("lvm") || part_fs.contains("BitLocker") {
-        true
-    } else {
-        false
-    }
+    part_fs.contains("crypto_LUKS") || part_fs.contains("lvm") || part_fs.contains("BitLocker")
 }
 
 fn is_encrypted(part_dev: &str) -> bool {
@@ -329,11 +324,7 @@ fn is_encrypted(part_dev: &str) -> bool {
         Err(_) => return false,
     };
 
-    if command.status.success() {
-        true
-    } else {
-        false
-    }
+    command.status.success()
 }
 
 pub fn test_luks_passwd(part_dev: &str, passwd: &str) -> bool {
@@ -348,11 +339,7 @@ pub fn test_luks_passwd(part_dev: &str, passwd: &str) -> bool {
         Err(_) => return false,
     };
 
-    if command.status.success() {
-        true
-    } else {
-        false
-    }
+    command.status.success()
 }
 
 fn get_part_uuid(part_dev: &str) -> String {

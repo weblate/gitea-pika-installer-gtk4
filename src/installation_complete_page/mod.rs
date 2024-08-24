@@ -1,9 +1,8 @@
-use crate::{build_ui::PikaKeymap, config::LOG_FILE_PATH, installer_stack_page};
+use crate::{config::LOG_FILE_PATH, installer_stack_page};
 use adw::prelude::*;
-use glib::{clone, closure_local};
-use gnome_desktop::XkbInfoExt;
-use gtk::{gio, glib, prelude::*};
-use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
+use gtk::{gio, glib};
+use glib::clone;
+use std::process::Command;
 
 pub fn installation_complete_page(
     main_carousel: &adw::Carousel,

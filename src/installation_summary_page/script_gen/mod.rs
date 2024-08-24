@@ -1,12 +1,5 @@
-use crate::{
-    build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale},
-    config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE},
-    installer_stack_page,
-};
-use adw::prelude::*;
-use glib::{clone, closure_local};
-use gtk::{gio, glib};
-use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
+use crate::build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale};
+use std::{cell::RefCell, rc::Rc};
 
 mod auto_basic;
 mod auto_btrfs;
@@ -79,7 +72,7 @@ pub fn create_installation_script(
 
     final_script.push_str(&standard_installation_format);
 
-    match &*partition_method_type_refcell.borrow().as_str() {
+    match partition_method_type_refcell.borrow().as_str() {
         "automatic" => {
             let is_encrypted = *partition_method_automatic_luks_enabled_refcell.borrow();
             //
@@ -99,7 +92,7 @@ pub fn create_installation_script(
             //
             match &*partition_method_automatic_target_fs_refcell.borrow().as_str().to_lowercase() {
                 "btrfs" => {
-                    match &*partition_method_automatic_seperation_refcell.borrow().as_str() {
+                    match partition_method_automatic_seperation_refcell.borrow().as_str() {
                         "subvol" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
@@ -181,7 +174,7 @@ pub fn create_installation_script(
                     }
                 }
                 "ext4" => {
-                    match &*partition_method_automatic_seperation_refcell.borrow().as_str() {
+                    match partition_method_automatic_seperation_refcell.borrow().as_str() {
                         "partition" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(
@@ -240,7 +233,7 @@ pub fn create_installation_script(
                     }
                 }
                 "xfs" => {
-                    match &*partition_method_automatic_seperation_refcell.borrow().as_str() {
+                    match partition_method_automatic_seperation_refcell.borrow().as_str() {
                         "partition" => {
                             if is_encrypted {
                                 final_script.push_str(&strfmt::strfmt(

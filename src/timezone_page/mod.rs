@@ -1,9 +1,8 @@
 use crate::installer_stack_page;
 use adw::prelude::*;
+use gtk::{gio, glib};
 use glib::{clone, closure_local};
-use gtk::{gio, glib, prelude::*};
-use std::io::BufRead;
-use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
+use std::{cell::RefCell, io::BufRead, process::Command, rc::Rc};
 
 pub fn timezone_page(
     main_carousel: &adw::Carousel,
@@ -96,7 +95,7 @@ pub fn timezone_page(
             #[weak]
             timezone_data_refcell,
             move |_| {
-                if timezone_checkbutton.is_active() == true {
+                if timezone_checkbutton.is_active() {
                     timezone_page.set_next_sensitive(true);
                     *timezone_data_refcell.borrow_mut() = String::from(&timezone);
                 }

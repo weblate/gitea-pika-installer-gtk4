@@ -1,19 +1,10 @@
-use crate::{
-    build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale},
-    config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, DISTRO_ICON},
-    installer_stack_page,
-    installation_progress_page,
-    unix_socket_tools
-};
+use crate::unix_socket_tools;
 use adw::prelude::*;
-use glib::{clone, closure_local, GString};
 use gtk::{gio, glib};
-use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc, thread};
+use glib::{clone, GString};
+use std::thread;
 use tokio::runtime::Runtime;
-/// DEBUG
-use std::io::{self, Write};
-use duct::cmd;
-/// DEBUG END
+
 
 pub fn installation_progress_page(
     main_carousel: &adw::Carousel,

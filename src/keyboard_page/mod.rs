@@ -1,9 +1,9 @@
 use crate::{build_ui::PikaKeymap, installer_stack_page};
 use adw::prelude::*;
-use glib::{clone, closure_local};
 use gnome_desktop::XkbInfoExt;
-use gtk::{gio, glib, prelude::*};
-use std::{cell::RefCell, fs, path::Path, process::Command, rc::Rc};
+use gtk::{gio, glib};
+use glib::{clone, closure_local};
+use std::{cell::RefCell, process::Command, rc::Rc};
 
 pub fn keyboard_page(
     main_carousel: &adw::Carousel,
@@ -71,21 +71,21 @@ pub fn keyboard_page(
 
     let mut sorted_keymap_vec = Vec::new();
     for keymap in keymap_list.iter() {
+        let keymap_split: Vec<String> = keymap.split("+").map(|s| s.into()).collect();
+        let keymap_base = keymap_split.first().unwrap().clone();
+        let mut keymap_variant = String::new();
+        let mut split_index = 0;
+        for split in keymap_split {
+            split_index += 1;
+            if split_index == 1 {
+                continue;
+            }
+            keymap_variant.push_str(&split)
+        }
         sorted_keymap_vec.push(PikaKeymap {
-            name: keymap.to_string(),
-            pretty_name: xkbinfo.layout_info(&keymap).unwrap().0.unwrap().to_string(),
+            name: keymap_base,
+            pretty_name: xkbinfo.layout_info(keymap).unwrap().0.unwrap().to_string(),
             variant: {
-                let keymap_split: Vec<String> = keymap.split("+").map(|s| s.into()).collect();
-                let keymap_base = keymap_split.get(0).unwrap().clone();
-                let mut keymap_variant = String::new();
-                let mut split_index = 0;
-                for split in keymap_split {
-                    split_index += 1;
-                    if split_index == 1 {
-                        continue;
-                    }
-                    keymap_variant.push_str(&split)
-                }
                 if keymap_variant.is_empty() {
                     None
                 } else {
@@ -124,7 +124,7 @@ pub fn keyboard_page(
             #[weak]
             keyboard_page,
             move |_| {
-                if keymap_checkbutton.is_active() == true {
+                if keymap_checkbutton.is_active() {
                     *keymap_data_refcell.borrow_mut() = keymap_clone0.clone();
                     keyboard_page.set_next_sensitive(true);
                     match keymap_variant.clone() {

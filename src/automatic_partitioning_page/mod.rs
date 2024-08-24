@@ -2,10 +2,9 @@ use crate::build_ui::BlockDevice;
 use crate::config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, MINIMUM_ROOT_BYTE_SIZE};
 use crate::installer_stack_page;
 use crate::partitioning_page::get_block_devices;
-use adw::gio;
 use adw::prelude::*;
-use glib::{clone, closure_local, ffi::gboolean};
-use gtk::{glib, prelude::*};
+use gtk::{glib, gio};
+use glib::{clone, closure_local};
 use std::{cell::RefCell, rc::Rc};
 
 pub fn automatic_partitioning_page(
@@ -83,12 +82,12 @@ pub fn automatic_partitioning_page(
         advanced_home_part_ratio_label_root_clone0.set_label(&format!(
             "{}: {}",
             t!("advanced_home_part_ratio_label_root_label"),
-            pretty_bytes::converter::convert(value.into())
+            pretty_bytes::converter::convert(value)
         ));
         advanced_home_part_ratio_label_home_clone0.set_label(&format!(
             "{}: {}",
             t!("advanced_home_part_ratio_label_home_label"),
-            pretty_bytes::converter::convert(home_size.into())
+            pretty_bytes::converter::convert(home_size)
         ));
         *partition_method_automatic_ratio_refcell_clone0.borrow_mut() = value;
         glib::Propagation::Proceed
@@ -604,18 +603,6 @@ pub fn automatic_partitioning_page(
             partition_method_type_refcell,
             #[strong]
             page_done_action,
-            #[strong]
-            partition_method_automatic_target_refcell,
-            #[strong]
-            partition_method_automatic_target_fs_refcell,
-            #[strong]
-            partition_method_automatic_luks_refcell,
-            #[strong]
-            partition_method_automatic_luks_enabled_refcell,
-            #[strong]
-            partition_method_automatic_ratio_refcell,
-            #[strong]
-            partition_method_automatic_seperation_refcell,
             move |_automatic_partitioning_page: installer_stack_page::InstallerStackPage| {
                 *partition_method_type_refcell.borrow_mut() = String::from("automatic");
                 page_done_action.activate(Some(&glib::variant::Variant::from_data_with_type(
@@ -722,7 +709,7 @@ fn disk_check(
     device_block_name: &str,
     device_block_size: f64,
 ) {
-    if device_button.is_active() == true {
+    if device_button.is_active() {
         devices_selection_expander_row.set_title(device_block_name);
         if device_block_size >= MINIMUM_ROOT_BYTE_SIZE {
             partition_method_automatic_disk_size_error_label.set_visible(false);
@@ -739,7 +726,7 @@ fn luks_check(
     partition_method_automatic_luks_missmatch_error_label: &gtk::Label,
     partition_method_automatic_luks_empty_error_label: &gtk::Label,
 ) {
-    if partition_method_automatic_luks_checkbutton.is_active() == true {
+    if partition_method_automatic_luks_checkbutton.is_active() {
         if partition_method_automatic_luks_password_entry.text()
             != partition_method_automatic_luks_password_confirm_entry.text()
         {

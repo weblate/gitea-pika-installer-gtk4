@@ -47,7 +47,7 @@ pub fn eula_page(main_carousel: &adw::Carousel, language_changed_action: &gio::S
         #[weak]
         eula_page,
         move |_| {
-            if eula_accept_checkbutton.is_active() == true {
+            if eula_accept_checkbutton.is_active() {
                 eula_page.set_next_sensitive(true);
             } else {
                 eula_page.set_next_sensitive(false);

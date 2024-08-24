@@ -1,13 +1,11 @@
-use crate::drive_mount_row::DriveMountRow;
 use crate::{
-    build_ui::{CrypttabEntry, FstabEntry, Partition, SubvolDeclaration},
+    build_ui::{FstabEntry, Partition, SubvolDeclaration},
     config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, MINIMUM_ROOT_BYTE_SIZE},
-    partitioning_page::get_partitions,
+    drive_mount_row::DriveMountRow,
 };
-use adw::gio;
 use adw::prelude::*;
+use gtk::{glib, gio};
 use glib::{clone, closure_local};
-use gtk::glib;
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Clone, Debug)]
@@ -94,7 +92,8 @@ pub fn create_efi_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -103,8 +102,7 @@ pub fn create_efi_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -119,7 +117,8 @@ pub fn create_efi_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -128,8 +127,7 @@ pub fn create_efi_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(false)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -171,7 +169,8 @@ pub fn create_efi_row(
         } else {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -180,8 +179,7 @@ pub fn create_efi_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -194,10 +192,10 @@ pub fn create_efi_row(
             &partition_row_struct,
             &null_checkbutton,
             &partition_button,
-            &partition_changed_action,
-            &partition,
-            &used_partition_array_refcell,
-            &subvol_partition_array_refcell,
+            partition_changed_action,
+            partition,
+            used_partition_array_refcell,
+            subvol_partition_array_refcell,
         );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
@@ -231,8 +229,6 @@ pub fn create_efi_row(
         closure_local!(
             #[weak]
             listbox,
-            #[strong]
-            row,
             #[strong]
             used_partition_array_refcell,
             #[strong]
@@ -321,7 +317,8 @@ pub fn create_boot_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -330,8 +327,7 @@ pub fn create_boot_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -346,7 +342,8 @@ pub fn create_boot_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -355,8 +352,7 @@ pub fn create_boot_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(false)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -398,7 +394,8 @@ pub fn create_boot_row(
         } else {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -407,8 +404,7 @@ pub fn create_boot_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -421,10 +417,10 @@ pub fn create_boot_row(
             &partition_row_struct,
             &null_checkbutton,
             &partition_button,
-            &partition_changed_action,
-            &partition,
-            &used_partition_array_refcell,
-            &subvol_partition_array_refcell,
+            partition_changed_action,
+            partition,
+            used_partition_array_refcell,
+            subvol_partition_array_refcell,
         );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
@@ -458,8 +454,6 @@ pub fn create_boot_row(
         closure_local!(
             #[weak]
             listbox,
-            #[strong]
-            row,
             #[strong]
             used_partition_array_refcell,
             #[strong]
@@ -548,7 +542,8 @@ pub fn create_root_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -557,8 +552,7 @@ pub fn create_root_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -573,7 +567,8 @@ pub fn create_root_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -582,8 +577,7 @@ pub fn create_root_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(false)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -630,7 +624,8 @@ pub fn create_root_row(
         } else {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -639,8 +634,7 @@ pub fn create_root_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 swap_fs_error: Rc::new(RefCell::new(false)),
@@ -653,10 +647,10 @@ pub fn create_root_row(
             &partition_row_struct,
             &null_checkbutton,
             &partition_button,
-            &partition_changed_action,
-            &partition,
-            &used_partition_array_refcell,
-            &subvol_partition_array_refcell,
+            partition_changed_action,
+            partition,
+            used_partition_array_refcell,
+            subvol_partition_array_refcell,
         );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
@@ -690,8 +684,6 @@ pub fn create_root_row(
         closure_local!(
             #[weak]
             listbox,
-            #[strong]
-            row,
             #[strong]
             used_partition_array_refcell,
             #[strong]
@@ -781,7 +773,8 @@ pub fn create_mount_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -790,8 +783,7 @@ pub fn create_mount_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -806,7 +798,8 @@ pub fn create_mount_row(
         {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -815,8 +808,7 @@ pub fn create_mount_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(false)
-                        .build();
-                    prow
+                        .build()
                 },
                 swap_fs_error: Rc::new(RefCell::new(false)),
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
@@ -826,7 +818,8 @@ pub fn create_mount_row(
         } else {
             PartitionRow {
                 widget: {
-                    let prow = adw::ActionRow::builder()
+                    
+                    adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
                         .subtitle(
@@ -835,8 +828,7 @@ pub fn create_mount_row(
                                 + &pretty_bytes::converter::convert(partition.part_size),
                         )
                         .sensitive(true)
-                        .build();
-                    prow
+                        .build()
                 },
                 hardcode_fs_error: Rc::new(RefCell::new(false)),
                 swap_fs_error: Rc::new(RefCell::new(false)),
@@ -853,10 +845,10 @@ pub fn create_mount_row(
             &partition_row_struct,
             &null_checkbutton,
             &partition_button,
-            &partition_changed_action,
-            &partition,
-            &used_partition_array_refcell,
-            &subvol_partition_array_refcell,
+            partition_changed_action,
+            partition,
+            used_partition_array_refcell,
+            subvol_partition_array_refcell,
         );
         partition_scroll_child.append(&partition_row_struct.widget);
     }
@@ -891,8 +883,6 @@ pub fn create_mount_row(
             #[weak]
             listbox,
             #[strong]
-            row,
-            #[strong]
             used_partition_array_refcell,
             #[strong]
             partition_changed_action,
@@ -921,8 +911,6 @@ fn post_check_drive_mount(
         row,
         #[strong]
         null_checkbutton,
-        #[strong]
-        partition_row_struct,
         #[weak]
         partition_button,
         #[strong]
@@ -946,8 +934,6 @@ fn post_check_drive_mount(
                 row,
                 #[strong]
                 null_checkbutton,
-                #[strong]
-                partition_row_struct,
                 #[weak]
                 partition_button,
                 #[strong]
@@ -959,7 +945,7 @@ fn post_check_drive_mount(
                 async move {
                     while let Ok(_state) = check_delay_receiver.recv().await {
                         if !null_checkbutton.is_active() {
-                            if partition_button.is_active() == true {
+                            if partition_button.is_active() {
                                 let part_name = &partition.part_name;
                                 row.set_partition(part_name.to_string());
                                 if !used_partition_array_refcell
@@ -1000,9 +986,9 @@ fn post_check_drive_mount(
             if row.mountpoint() == "[SWAP]" {
                 if  partition.part_fs == "linux-swap" || partition.part_fs == "swap" {
                     (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
-                    if *partition_row_struct.never.borrow() == false
-                        && *partition_row_struct.swap_fs_error.borrow() == false
-                        && *partition_row_struct.hardcode_fs_error.borrow() == false
+                    if !(*partition_row_struct.never.borrow())
+                        && !(*partition_row_struct.swap_fs_error.borrow())
+                        && !(*partition_row_struct.hardcode_fs_error.borrow())
                     {
                         partition_row_struct.widget.set_sensitive(true);
                     }
@@ -1014,21 +1000,19 @@ fn post_check_drive_mount(
                     partition_changed_action.activate(None);
                     partition_row_struct.widget.set_sensitive(false);
                 }
-            } else {
-                if *partition_row_struct.used.borrow() != 1
-                    && *partition_row_struct.never.borrow() == false
-                    && *partition_row_struct.hardcode_fs_error.borrow() == false
-                {
-                    if partition.part_fs != "linux-swap" && partition.part_fs != "swap" {
-                        partition_row_struct.widget.set_sensitive(true);
-                    } else {
-                        (*partition_row_struct.swap_fs_error.borrow_mut()) = true;
-                        null_checkbutton.set_active(true);
-                        row.set_partition("");
-                        partition_changed_action.activate(None);
-                        partition_row_struct.widget.set_sensitive(false);
-                    };
-                }
+            } else if *partition_row_struct.used.borrow() != 1
+                && !(*partition_row_struct.never.borrow())
+                && !(*partition_row_struct.hardcode_fs_error.borrow())
+            {
+                if partition.part_fs != "linux-swap" && partition.part_fs != "swap" {
+                    partition_row_struct.widget.set_sensitive(true);
+                } else {
+                    (*partition_row_struct.swap_fs_error.borrow_mut()) = true;
+                    null_checkbutton.set_active(true);
+                    row.set_partition("");
+                    partition_changed_action.activate(None);
+                    partition_row_struct.widget.set_sensitive(false);
+                };
             }
         }
     ));
@@ -1057,9 +1041,9 @@ fn post_check_drive_mount(
                         .iter()
                         .any(|e| *e.part_name.borrow() == *part_name))
             }) {
-                if *partition_row_struct.never.borrow() == false
-                    && *partition_row_struct.swap_fs_error.borrow() == false
-                    && *partition_row_struct.hardcode_fs_error.borrow() == false
+                if !(*partition_row_struct.never.borrow())
+                    && !(*partition_row_struct.swap_fs_error.borrow())
+                    && !(*partition_row_struct.hardcode_fs_error.borrow())
                 {
                     partition_row_struct.widget.set_sensitive(true);
                 }
@@ -1078,9 +1062,9 @@ fn post_check_drive_mount(
                 partition_row_struct.widget.set_sensitive(false);
                 (*partition_row_struct.used.borrow_mut()) = 1;
             } else {
-                if *partition_row_struct.never.borrow() == false
-                    && *partition_row_struct.swap_fs_error.borrow() == false
-                    && *partition_row_struct.hardcode_fs_error.borrow() == false
+                if !(*partition_row_struct.never.borrow())
+                    && !(*partition_row_struct.swap_fs_error.borrow())
+                    && !(*partition_row_struct.hardcode_fs_error.borrow())
                 {
                     partition_row_struct.widget.set_sensitive(true);
                 }

@@ -4,8 +4,6 @@ use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
 use gtk::{glib, Orientation::Horizontal};
 
-use crate::build_ui::FstabEntry;
-
 // ANCHOR: custom_button
 // Object holding the state
 #[derive(Properties, Default)]
@@ -176,13 +174,10 @@ impl ObjectImpl for DriveMountRow {
             #[weak]
             mountopts_entry_row_adw_listbox,
             move |_| {
-                match obj.sizegroup() {
-                    Some(t) => {
-                        t.add_widget(&partition_row_expander_adw_listbox);
-                        t.add_widget(&mountpoint_entry_row_adw_listbox);
-                        t.add_widget(&mountopts_entry_row_adw_listbox);
-                    }
-                    None => {}
+                if let Some(t) = obj.sizegroup() {
+                    t.add_widget(&partition_row_expander_adw_listbox);
+                    t.add_widget(&mountpoint_entry_row_adw_listbox);
+                    t.add_widget(&mountopts_entry_row_adw_listbox);
                 }
             }
         ));
@@ -226,24 +221,21 @@ impl ObjectImpl for DriveMountRow {
             #[weak]
             mountopts_entry_row,
             move |_| {
-                match obj.langaction() {
-                    Some(t) => {
-                        t.connect_activate(clone!(
-                            #[weak]
-                            partition_row_expander,
-                            #[weak]
-                            mountpoint_entry_row,
-                            #[weak]
-                            mountopts_entry_row,
-                            move |_, _| {
-                                partition_row_expander
-                                    .set_subtitle(&t!("partition_row_expander_subtitle"));
-                                mountpoint_entry_row.set_title(&t!("mountpoint_entry_row_title"));
-                                mountopts_entry_row.set_title(&t!("mountopts_entry_row_title"));
-                            }
-                        ));
-                    }
-                    None => {}
+                if let Some(t) = obj.langaction() {
+                    t.connect_activate(clone!(
+                        #[weak]
+                        partition_row_expander,
+                        #[weak]
+                        mountpoint_entry_row,
+                        #[weak]
+                        mountopts_entry_row,
+                        move |_, _| {
+                            partition_row_expander
+                                .set_subtitle(&t!("partition_row_expander_subtitle"));
+                            mountpoint_entry_row.set_title(&t!("mountpoint_entry_row_title"));
+                            mountopts_entry_row.set_title(&t!("mountopts_entry_row_title"));
+                        }
+                    ));
                 }
             }
         ));

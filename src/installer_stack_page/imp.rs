@@ -1,6 +1,6 @@
 use adw::{prelude::*, subclass::prelude::*};
 use glib::{clone, subclass::Signal};
-use gtk::{glib, prelude::*, subclass::prelude::*, Justification};
+use gtk::{glib, Justification};
 use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 
 // ANCHOR: custom_button
@@ -215,7 +215,7 @@ impl ObjectImpl for InstallerStackPage {
             obj,
             #[weak]
             child_bin,
-            move |_| { child_bin.set_child(Some(&obj.property::<gtk::Box>("child_widget"))) }
+            move |_| child_bin.set_child(Some(&obj.property::<gtk::Box>("child_widget")))
         ));
 
         //
