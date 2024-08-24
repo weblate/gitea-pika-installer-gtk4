@@ -19,9 +19,15 @@ pub struct PikaLocale {
 /// Keyboard Data types
 
 #[derive(Default, Clone, Debug)]
-pub struct PikaKeymap {
-    pub name: String,
-    pub variant: Option<String>,
+pub struct KBDMap {
+    pub console: String,
+    pub layout: String,
+    pub variant: String
+}
+
+#[derive(Default, Clone, Debug)]
+pub struct PikaKeymap  {
+    pub kbdmap: KBDMap,
     pub pretty_name: String,
 }
 
@@ -107,8 +113,8 @@ pub fn build_ui(app: &adw::Application) {
         .icon_name("calamares")
         .width_request(700)
         .height_request(500)
-        .default_width(700)
-        .default_height(500)
+        .default_width(1000)
+        .default_height(700)
         .deletable(false)
         .content(&toolbarview)
         .startup_id(APP_ID)

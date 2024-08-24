@@ -17,8 +17,9 @@ rm -rf /tmp/PIKA_CRYPT
 
 PIKA_INSTALL_CHROOT_PATH='{CHROOT_PATH}'
 PIKA_INSTALL_LOCALE='{LOCALE}.UTF-8'
-PIKA_INSTALL_KEYMAP_BASE='{KEYMAP_BASE}'
-PIKA_INSTALL_KEYMAP_VARIANT='{KEYMAP_VARIANT}'
+PIKA_INSTALL_KEYMAP='{KEYMAP}'
+PIKA_INSTALL_XKB_LAYOUT='{XKB_LAYOUT}'
+PIKA_INSTALL_XKB_VARIANT='{XKB_VARIANT}'
 PIKA_INSTALL_TIMEZONE='{TIMEZONE}'
 "###;
 
@@ -38,13 +39,6 @@ pub fn create_installation_script(
     partition_method_manual_crypttab_entry_array_refcell: &Rc<RefCell<Vec<CrypttabEntry>>>,
 ) -> String {
     let mut final_script = String::new();
-    
-    let variant = match keymap_selection_text_refcell.borrow().clone().variant {
-        Some(t) => {
-            t.replace("'", r###"'"'"'"###)
-        }
-        None => "".to_string(),
-    };
 
     let standard_installation_format = strfmt::strfmt(
         STANDARD_INSTALLATION_PROG,
@@ -55,12 +49,16 @@ pub fn create_installation_script(
                 language_selection_text_refcell.borrow().name.replace("'", r###"'"'"'"###).as_str(),
             ),
             (
-                "KEYMAP_BASE".to_string(),
-                keymap_selection_text_refcell.borrow().name.replace("'", r###"'"'"'"###).as_str(),
+                "KEYMAP".to_string(),
+                keymap_selection_text_refcell.borrow().kbdmap.console.replace("'", r###"'"'"'"###).as_str(),
             ),
             (
-                "KEYMAP_VARIANT".to_string(),
-                variant.as_str()
+                "XKB_LAYOUT".to_string(),
+                keymap_selection_text_refcell.borrow().kbdmap.layout.replace("'", r###"'"'"'"###).as_str(),
+            ),
+            (
+                "XKB_VARIANT".to_string(),
+                keymap_selection_text_refcell.borrow().kbdmap.variant.replace("'", r###"'"'"'"###).as_str(),
             ),
             (
                 "TIMEZONE".to_string(),
