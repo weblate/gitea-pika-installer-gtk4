@@ -17,6 +17,7 @@ use duct::cmd;
 pub fn installation_progress_page(
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction,
+    installation_log_loop_receiver: async_channel::Receiver<String>,
 ) {
     let installation_progress_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
@@ -111,6 +112,39 @@ pub fn installation_progress_page(
                 } else {
                     installation_progress_log_stack.set_visible_child_name("slideshow_page");
                 }
+            }
+        )
+    );
+
+    //
+
+    installation_progress_log_terminal_buffer.connect_changed(clone!(
+        #[weak]
+        installation_progress_log_scroll,
+        move |_|
+            {
+                if installation_progress_log_scroll.vadjustment().upper() - installation_progress_log_scroll.vadjustment().value() < (installation_progress_log_scroll.size(gtk::Orientation::Vertical) as f64 * 1.2 ) {
+                    installation_progress_log_scroll.vadjustment().set_value(installation_progress_log_scroll.vadjustment().upper())
+                }
+            }
+        )
+    );
+
+    //
+
+    let installation_log_loop_context = glib::MainContext::default();
+    // The main loop executes the asynchronous block
+    installation_log_loop_context.spawn_local(
+        clone!(
+            #[weak]
+            installation_progress_log_terminal_buffer,
+            #[strong]
+            installation_progress_log_terminal_buffer,
+            async move 
+            {
+                    while let Ok(state) = installation_log_loop_receiver.recv().await {
+                        installation_progress_log_terminal_buffer.insert(&mut installation_progress_log_terminal_buffer.end_iter(), &("\n".to_string() + &state))
+                    }
             }
         )
     );

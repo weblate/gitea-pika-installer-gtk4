@@ -7,19 +7,54 @@ use crate::{
 use adw::prelude::*;
 use glib::{clone, closure_local};
 use gtk::{gio, glib};
-use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
+use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc, thread};
 
 mod script_gen;
 
 /// DEBUG
 use std::io::{self, Write};
 use duct::cmd;
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::{
+    error::Error,
+};
 /// DEBUG END
+
+const GAMEUTILS_INSTALL_PROG: &str = r###"
+#! /bin/bash
+let i=0
+while true
+do
+    sleep 1
+    echo $i
+    let i++
+done
+"###;
+
+fn gameutils_install(
+    log_loop_sender: async_channel::Sender<String>,
+) -> Result<(), std::boxed::Box<dyn Error + Send + Sync>> {
+    let (pipe_reader, pipe_writer) = os_pipe::pipe()?;
+    let child = cmd!("bash", "-c", GAMEUTILS_INSTALL_PROG)
+        .stderr_to_stdout()
+        .stdout_file(pipe_writer)
+        .start()?;
+    for line in BufReader::new(pipe_reader).lines() {
+        log_loop_sender
+            .send_blocking(line?)
+            .expect("Channel needs to be opened.")
+    }
+    child.wait()?;
+
+    Ok(())
+}
 
 pub fn installation_summary_page(
     main_carousel: &adw::Carousel,
     language_changed_action: &gio::SimpleAction,
     page_done_action: &gio::SimpleAction,
+    installation_log_loop_sender: async_channel::Sender<String>,
     language_selection_text_refcell: &Rc<RefCell<PikaLocale>>,
     keymap_selection_text_refcell: &Rc<RefCell<PikaKeymap>>,
     timezone_selection_text_refcell: &Rc<RefCell<String>>,
@@ -77,6 +112,10 @@ pub fn installation_summary_page(
     content_box.append(&install_confirm_button);
 
     installation_summary_page.set_child_widget(&content_box);
+
+    thread::spawn(|| {
+        gameutils_install(installation_log_loop_sender);
+    });
 
     //
 

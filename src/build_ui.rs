@@ -70,6 +70,12 @@ pub fn build_ui(app: &adw::Application) {
     glib::set_prgname(Some(t!("application_name").to_string()));
     glib::set_application_name(&t!("application_name"));
 
+    let (installation_log_loop_sender, installation_log_loop_receiver) = async_channel::unbounded();
+    let installation_log_loop_sender: async_channel::Sender<String> = installation_log_loop_sender.clone();
+
+    let (installation_log_status_loop_sender, installation_log_status_loop_receiver) = async_channel::unbounded();
+    let installation_log_status_loop_sender: async_channel::Sender<bool> = installation_log_status_loop_sender.clone();
+
     let carousel = adw::Carousel::builder()
         .allow_long_swipes(false)
         .allow_mouse_drag(false)
@@ -178,6 +184,7 @@ pub fn build_ui(app: &adw::Application) {
         &carousel,
         &language_changed_action,
         &page_done_action,
+        installation_log_loop_sender,
         &language_selection_text_refcell,
         &keymap_selection_text_refcell,
         &timezone_selection_text_refcell,
@@ -193,7 +200,7 @@ pub fn build_ui(app: &adw::Application) {
         &partition_method_manual_crypttab_entry_array_refcell,
     );
 
-    installation_progress_page::installation_progress_page(&carousel, &language_changed_action);
+    installation_progress_page::installation_progress_page(&carousel, &language_changed_action, installation_log_loop_receiver);
 
     window.present()
 }
