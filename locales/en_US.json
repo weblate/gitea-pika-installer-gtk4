@@ -119,8 +119,11 @@
     "installation_progress_bar_text_live_remove": "Removing Un-Needed Packages",
     "installation_progress_bar_text_basic_user": "Making a Basic User",
     "installation_progress_bar_text_unbind": "Unbinding Live Media Environment from Chroot",
-    "pika_install_good": "The Installation of PikaOS Has Been Completed Sucessfully.",
-    "reboot": "Reboot",
-    "pika_install_bad": "PikaOS Installation Has Failed!\nCheck logs for further info.",
-    "logs": "Log"
+    "installation_complete_reboot_button_label": "Reboot System",
+    "installation_complete_exit_button_label": "Exit Installer",
+    "installation_complete_view_logs_button_label": "View Installation Log",
+    "installation_complete_page_title_failed": "Critical Error!",
+    "installation_complete_page_title_success": "Success!",
+    "installation_complete_page_subtitle_failed": "PikaOS Installation Has Failed!\nCheck logs for further info",
+    "installation_complete_page_subtitle_success": "The Installation of PikaOS Has Been Completed Sucessfully"
 }
