@@ -59,7 +59,7 @@ pub fn installation_progress_page(
     installation_progress_log_scroll.add_css_class("round-all-scroll");
 
     let placeholder_icon = gtk::Image::builder()
-        .icon_name(DISTRO_ICON)
+        .icon_name("pika-logo-text")
         .halign(gtk::Align::Center)
         .valign(gtk::Align::Center)
         .hexpand(true)
@@ -171,7 +171,7 @@ pub fn installation_progress_page(
         socket_status_receiver,
         async move {
             while let Ok(state) = socket_status_receiver.recv().await {
-                match state.as_str() {
+                match state.trim() {
                     "PARTING" => {
                         installation_progress_bar.set_fraction(0.15);
                         installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
