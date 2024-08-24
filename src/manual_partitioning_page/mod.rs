@@ -275,7 +275,8 @@ pub fn manual_partitioning_page(
                     }
                 }
                 if fs_entry.mountpoint == "[SWAP]" {
-                    if fs_entry.partition.part_fs != "linux-swap" || fs_entry.partition.part_fs != "swap" {
+                    if fs_entry.partition.part_fs == "linux-swap" || fs_entry.partition.part_fs == "swap" {
+                    } else {
                         (errored.store(true, std::sync::atomic::Ordering::Relaxed));
                     }
                 }
