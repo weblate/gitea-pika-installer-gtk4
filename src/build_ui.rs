@@ -193,5 +193,7 @@ pub fn build_ui(app: &adw::Application) {
         &partition_method_manual_crypttab_entry_array_refcell,
     );
 
+    installation_progress_page::installation_progress_page(&carousel, &language_changed_action);
+
     window.present()
 }

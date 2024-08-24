@@ -9,6 +9,8 @@ use glib::{clone, closure_local};
 use gtk::{gio, glib};
 use std::{cell::RefCell, fs, ops::Deref, path::Path, process::Command, rc::Rc};
 
+mod script_gen;
+
 /// DEBUG
 use std::io::{self, Write};
 use duct::cmd;
@@ -79,6 +81,8 @@ pub fn installation_summary_page(
     //
 
     install_confirm_button.connect_clicked(clone!(
+        #[weak]
+        main_carousel,
         #[strong]
         language_selection_text_refcell,
         #[strong]
@@ -108,7 +112,7 @@ pub fn installation_summary_page(
         move |_|
             {
                 std::io::stdout().flush().unwrap();
-                let cmd = installation_progress_page::create_installation_script(
+                let cmd = script_gen::create_installation_script(
                     &language_selection_text_refcell,
                     &keymap_selection_text_refcell,
                     &timezone_selection_text_refcell,
@@ -126,7 +130,8 @@ pub fn installation_summary_page(
                 let big_cmd = cmd!("sudo", "bash", "-c", 
                     cmd
                 );
-                assert!(big_cmd.run().is_ok());
+                //assert!(big_cmd.run().is_ok());
+                main_carousel.scroll_to(&main_carousel.nth_page(7), true);
             }
         )
     );

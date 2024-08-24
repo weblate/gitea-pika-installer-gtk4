@@ -27,7 +27,7 @@
     "keyboard_page_title": "Keyboard",
     "crypttab_dialog_response_crypttab_dialog_boot": "Unlock on Boot Manually",
     "crypttab_dialog_response_crypttab_dialog_auto": "Unlock Automatically with Root Unlock",
-    "view_logs": "View Logs",
+    "progress_log_button_content_tooltip": "View Logs",
     "parting_status_text": "Partitioning The Target Drives.",
     "image_status_text": "Writing Image to target.",
     "flag1_status_text": "Enabling BLS_BOOT flag on /boot.",
