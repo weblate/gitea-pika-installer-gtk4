@@ -10,7 +10,7 @@ mkpart "linux-root" 1500Mib  "$PIKA_INSTALL_AUTO_ROOT_SIZE"Mib \
 mkpart "linux-home" "$PIKA_INSTALL_AUTO_ROOT_SIZE"Mib  100% \
 print
 
-blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK"
+blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" || systemctl restart systemd-udevd.service
 
 if echo "$PIKA_INSTALL_AUTO_TARGET_DISK" | grep -i "nvme"
 then
@@ -66,7 +66,7 @@ mkpart "linux-root" 1500Mib  "$PIKA_INSTALL_AUTO_ROOT_SIZE"Mib \
 mkpart "linux-home" "$PIKA_INSTALL_AUTO_ROOT_SIZE"Mib  100% \
 print
 
-blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK"
+blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" || systemctl restart systemd-udevd.service
 
 # add p to partition if it's nvme
 if echo "$PIKA_INSTALL_AUTO_TARGET_DISK" | grep -i "nvme"
@@ -128,7 +128,7 @@ mkpart "linux-boot" 500Mib 1500Mib \
 mkpart "linux-root" 1500Mib  100%Mib \
 print
 
-blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK"
+blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" || systemctl restart systemd-udevd.service
 
 if echo "$PIKA_INSTALL_AUTO_TARGET_DISK" | grep -i "nvme"
 then
@@ -176,7 +176,7 @@ mkpart "linux-boot" 500Mib 1500Mib \
 mkpart "linux-root" 1500Mib  100%Mib \
 print
 
-blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK"
+blockdev --rereadpt /dev/"$PIKA_INSTALL_AUTO_TARGET_DISK" || systemctl restart systemd-udevd.service
 
 # add p to partition if it's nvme
 if echo "$PIKA_INSTALL_AUTO_TARGET_DISK" | grep -i "nvme"
