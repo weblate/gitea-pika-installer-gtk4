@@ -125,7 +125,7 @@ pub fn installation_progress_page(
         installation_progress_log_scroll,
         move |_|
             {
-                if installation_progress_log_scroll.vadjustment().upper() - installation_progress_log_scroll.vadjustment().value() < (installation_progress_log_scroll.size(gtk::Orientation::Vertical) as f64 * 1.35 ) {
+                if installation_progress_log_scroll.vadjustment().upper() - installation_progress_log_scroll.vadjustment().value() < (installation_progress_log_scroll.size(gtk::Orientation::Vertical) as f64 * 1.48 ) {
                     installation_progress_log_scroll.vadjustment().set_value(installation_progress_log_scroll.vadjustment().upper())
                 }
             }
