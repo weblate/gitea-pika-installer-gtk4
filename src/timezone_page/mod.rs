@@ -1,7 +1,7 @@
 use crate::installer_stack_page;
 use adw::prelude::*;
-use gtk::{gio, glib};
 use glib::{clone, closure_local};
+use gtk::{gio, glib};
 use std::{cell::RefCell, io::BufRead, process::Command, rc::Rc};
 
 pub fn timezone_page(

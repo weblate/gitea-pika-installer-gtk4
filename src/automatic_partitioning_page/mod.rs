@@ -3,8 +3,8 @@ use crate::config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, MINIMUM_ROOT_
 use crate::installer_stack_page;
 use crate::partitioning_page::get_block_devices;
 use adw::prelude::*;
-use gtk::{glib, gio};
 use glib::{clone, closure_local};
+use gtk::{gio, glib};
 use std::{cell::RefCell, rc::Rc};
 
 pub fn automatic_partitioning_page(
@@ -262,6 +262,7 @@ pub fn automatic_partitioning_page(
     devices_selection_button_row_listbox.add_css_class("boxed-list");
 
     let devices_selection_button_row = adw::ButtonRow::builder()
+        .start_icon_name("drive-harddisk-symbolic")
         .build();
 
     devices_selection_button_row.add_css_class("accent-blink");
@@ -292,11 +293,18 @@ pub fn automatic_partitioning_page(
         .height_request(400)
         .build();
 
-    devices_selection_button_row_dialog.add_response("devices_selection_button_row_dialog_ok", "devices_selection_button_row_dialog_ok");
+    devices_selection_button_row_dialog.add_response(
+        "devices_selection_button_row_dialog_ok",
+        "devices_selection_button_row_dialog_ok",
+    );
 
-    devices_selection_button_row.connect_activated(clone!(#[weak] devices_selection_button_row_dialog, move |_| {
-        devices_selection_button_row_dialog.present(Some(&window));
-    }));
+    devices_selection_button_row.connect_activated(clone!(
+        #[weak]
+        devices_selection_button_row_dialog,
+        move |_| {
+            devices_selection_button_row_dialog.present(Some(&window));
+        }
+    ));
 
     //devices_selection_button_row.add_row(&devices_selection_button_row_viewport);
 
@@ -670,13 +678,17 @@ pub fn automatic_partitioning_page(
             automatic_partitioning_page.set_back_tooltip_label(t!("back"));
             automatic_partitioning_page.set_next_tooltip_label(t!("next"));
             //
-            devices_selection_button_row.set_title(&t!(
-                "devices_selection_button_row_title_no_drive_selected"
-            ));
+            devices_selection_button_row
+                .set_title(&t!("devices_selection_button_row_title_no_drive_selected"));
             //
-            devices_selection_button_row_dialog.set_title(&t!("devices_selection_button_row_dialog_auto_title"));
-            devices_selection_button_row_dialog.set_body(&t!("devices_selection_button_row_dialog_auto_body"));
-            devices_selection_button_row_dialog.set_response_label("devices_selection_button_row_dialog_ok", &t!("devices_selection_button_row_dialog_ok_label"));
+            devices_selection_button_row_dialog
+                .set_title(&t!("devices_selection_button_row_dialog_auto_title"));
+            devices_selection_button_row_dialog
+                .set_body(&t!("devices_selection_button_row_dialog_auto_body"));
+            devices_selection_button_row_dialog.set_response_label(
+                "devices_selection_button_row_dialog_ok",
+                &t!("devices_selection_button_row_dialog_ok_label"),
+            );
             //
             partition_method_automatic_disk_nodisk_error_label.set_label(&t!(
                 "partition_method_automatic_disk_nodisk_error_label_label"
@@ -740,7 +752,13 @@ fn disk_check(
     device_block_size: f64,
 ) {
     if device_button.is_active() {
-        devices_selection_button_row.set_title(&(device_block_model.to_owned() + ": " + device_block_name + " " + device_block_size_pretty));
+        devices_selection_button_row.set_title(
+            &(device_block_model.to_owned()
+                + ": "
+                + device_block_name
+                + " "
+                + device_block_size_pretty),
+        );
         devices_selection_button_row.remove_css_class("accent-blink");
         if device_block_size >= MINIMUM_ROOT_BYTE_SIZE {
             partition_method_automatic_disk_size_error_label.set_visible(false);

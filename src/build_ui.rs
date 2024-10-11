@@ -1,7 +1,7 @@
 use crate::{
-    config::APP_ID, efi_error_page, eula_page, installation_progress_page,
-    installation_summary_page, keyboard_page, language_page, partitioning_page, timezone_page, installation_complete_page,
-    welcome_page,
+    config::APP_ID, efi_error_page, eula_page, installation_complete_page,
+    installation_progress_page, installation_summary_page, keyboard_page, language_page,
+    partitioning_page, timezone_page, welcome_page,
 };
 use gtk::{gio, glib, prelude::*};
 use std::{cell::RefCell, path::Path, rc::Rc};
@@ -22,11 +22,11 @@ pub struct PikaLocale {
 pub struct KBDMap {
     pub console: String,
     pub layout: String,
-    pub variant: String
+    pub variant: String,
 }
 
 #[derive(Default, Clone, Debug)]
-pub struct PikaKeymap  {
+pub struct PikaKeymap {
     pub kbdmap: KBDMap,
     pub pretty_name: String,
 }
@@ -78,10 +78,13 @@ pub fn build_ui(app: &adw::Application) {
     glib::set_application_name(&t!("application_name"));
 
     let (installation_log_loop_sender, installation_log_loop_receiver) = async_channel::unbounded();
-    let installation_log_loop_sender: async_channel::Sender<String> = installation_log_loop_sender.clone();
+    let installation_log_loop_sender: async_channel::Sender<String> =
+        installation_log_loop_sender.clone();
 
-    let (installation_log_status_loop_sender, installation_log_status_loop_receiver) = async_channel::unbounded();
-    let installation_log_status_loop_sender: async_channel::Sender<bool> = installation_log_status_loop_sender.clone();
+    let (installation_log_status_loop_sender, installation_log_status_loop_receiver) =
+        async_channel::unbounded();
+    let installation_log_status_loop_sender: async_channel::Sender<bool> =
+        installation_log_status_loop_sender.clone();
 
     let carousel = adw::Carousel::builder()
         .allow_long_swipes(false)
@@ -208,9 +211,18 @@ pub fn build_ui(app: &adw::Application) {
         &partition_method_manual_crypttab_entry_array_refcell,
     );
 
-    installation_progress_page::installation_progress_page(&carousel, &language_changed_action, installation_log_loop_receiver);
+    installation_progress_page::installation_progress_page(
+        &carousel,
+        &language_changed_action,
+        installation_log_loop_receiver,
+    );
 
-    installation_complete_page::installation_complete_page(&carousel, &window, &language_changed_action, installation_log_status_loop_receiver);
+    installation_complete_page::installation_complete_page(
+        &carousel,
+        &window,
+        &language_changed_action,
+        installation_log_status_loop_receiver,
+    );
 
     window.present()
 }

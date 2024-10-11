@@ -1,13 +1,21 @@
 use crate::{
     build_ui::{BlockDevice, CrypttabEntry, FstabEntry, PikaKeymap, PikaLocale},
-    config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, LOG_FILE_PATH},
+    config::{LOG_FILE_PATH, MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE},
     installer_stack_page,
 };
 use adw::prelude::*;
-use gtk::{gio, glib};
-use glib::{clone, closure_local};
-use std::{cell::RefCell, fs, path::Path, rc::Rc, thread, io::{Write, prelude::*, BufReader}, error::Error};
 use duct::cmd;
+use glib::{clone, closure_local};
+use gtk::{gio, glib};
+use std::{
+    cell::RefCell,
+    error::Error,
+    fs,
+    io::{prelude::*, BufReader, Write},
+    path::Path,
+    rc::Rc,
+    thread,
+};
 
 mod script_gen;
 
@@ -36,7 +44,6 @@ fn run_install_process(
             .send_blocking(line)
             .expect("Channel needs to be opened.");
         let mut log_file = fs::OpenOptions::new()
-            
             .append(true)
             .open(log_file_path)
             .unwrap();
@@ -154,37 +161,42 @@ pub fn installation_summary_page(
         partition_method_manual_luks_enabled_refcell,
         #[strong]
         partition_method_manual_crypttab_entry_array_refcell,
-        move |_|
-            {
-                let cmd = script_gen::create_installation_script(
-                    &language_selection_text_refcell,
-                    &keymap_selection_text_refcell,
-                    &timezone_selection_text_refcell,
-                    &partition_method_type_refcell,
-                    &partition_method_automatic_target_refcell,
-                    &partition_method_automatic_target_fs_refcell,
-                    &partition_method_automatic_luks_enabled_refcell,
-                    &partition_method_automatic_luks_refcell,
-                    &partition_method_automatic_ratio_refcell,
-                    &partition_method_automatic_seperation_refcell,
-                    &partition_method_manual_fstab_entry_array_refcell,
-                    &partition_method_manual_luks_enabled_refcell,
-                    &partition_method_manual_crypttab_entry_array_refcell,);
-                let installation_log_loop_sender_clone0 = installation_log_loop_sender.clone();
-                let installation_log_status_loop_sender_clone0 = installation_log_status_loop_sender.clone();
-                thread::spawn(move || {
-                    if Path::new(LOG_FILE_PATH).exists() {
-                        fs::remove_file(LOG_FILE_PATH).expect("bad perms on log file");
-                    }
-                    match run_install_process(installation_log_loop_sender_clone0, &cmd, LOG_FILE_PATH) {
-                        Ok(_) => installation_log_status_loop_sender_clone0.send_blocking(true).expect("channel needs to be open"),
-                        Err(_) => installation_log_status_loop_sender_clone0.send_blocking(false).expect("channel needs to be open")
-                    }
-                });
-                main_carousel.scroll_to(&main_carousel.nth_page(7), true);
-            }
-        )
-    );
+        move |_| {
+            let cmd = script_gen::create_installation_script(
+                &language_selection_text_refcell,
+                &keymap_selection_text_refcell,
+                &timezone_selection_text_refcell,
+                &partition_method_type_refcell,
+                &partition_method_automatic_target_refcell,
+                &partition_method_automatic_target_fs_refcell,
+                &partition_method_automatic_luks_enabled_refcell,
+                &partition_method_automatic_luks_refcell,
+                &partition_method_automatic_ratio_refcell,
+                &partition_method_automatic_seperation_refcell,
+                &partition_method_manual_fstab_entry_array_refcell,
+                &partition_method_manual_luks_enabled_refcell,
+                &partition_method_manual_crypttab_entry_array_refcell,
+            );
+            let installation_log_loop_sender_clone0 = installation_log_loop_sender.clone();
+            let installation_log_status_loop_sender_clone0 =
+                installation_log_status_loop_sender.clone();
+            thread::spawn(move || {
+                if Path::new(LOG_FILE_PATH).exists() {
+                    fs::remove_file(LOG_FILE_PATH).expect("bad perms on log file");
+                }
+                match run_install_process(installation_log_loop_sender_clone0, &cmd, LOG_FILE_PATH)
+                {
+                    Ok(_) => installation_log_status_loop_sender_clone0
+                        .send_blocking(true)
+                        .expect("channel needs to be open"),
+                    Err(_) => installation_log_status_loop_sender_clone0
+                        .send_blocking(false)
+                        .expect("channel needs to be open"),
+                }
+            });
+            main_carousel.scroll_to(&main_carousel.nth_page(7), true);
+        }
+    ));
 
     //
 

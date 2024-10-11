@@ -35,8 +35,9 @@
     "eula_page_title": "EULA",
     "efi_error_header_text_label": "Un-Supported Boot Platform",
     "efi_error_text_label": "PikaOS Only works on GPT UEFI Systems, This Machine is Booted in CSM/LEGACY mode.",
-    "exit_button_label": "exit_button_label",
-    "partition_row_expander_subtitle": "Partition",
+    "exit_button_label": "Exit",
+    "partition_button_row_title": "Partition",
+    "partition_button_row_subtitle_none_selected": "No Partition Selected",
     "mountpoint_entry_row_title": "Mountpoint\nE.g: /var",
     "mountopts_entry_row_title": "Additional Mount Options\nE.g: subvol=@home",
     "automatic_partitioning_page_title": "Automatic Partitioning Installer",
@@ -128,5 +129,7 @@
     "installation_complete_page_subtitle_success": "The Installation of PikaOS Has Been Completed Sucessfully",
     "devices_selection_button_row_dialog_auto_title": "Automatic Partition Disk Selection",
     "devices_selection_button_row_dialog_auto_body": "Please Select A Disk for PikaOS to *Erase* And Install on.",
+    "devices_selection_button_row_dialog_manual_title": "Manual Partition Disk Selection",
+    "devices_selection_button_row_dialog_manual_body": "Please Select a Partition for This Filesystem Mount",
     "devices_selection_button_row_dialog_ok_label": "Done"
 }

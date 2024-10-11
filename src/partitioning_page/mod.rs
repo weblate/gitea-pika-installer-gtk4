@@ -3,9 +3,9 @@ use crate::{
     build_ui::{BlockDevice, CrypttabEntry, FstabEntry, Partition},
     installer_stack_page, manual_partitioning_page,
 };
-use gtk::{gio, glib, prelude::*};
 use glib::{clone, closure_local};
-use std::{cell::RefCell, rc::Rc, io::BufRead};
+use gtk::{gio, glib, prelude::*};
+use std::{cell::RefCell, io::BufRead, rc::Rc};
 
 pub fn partitioning_page(
     main_carousel: &adw::Carousel,

@@ -4,8 +4,8 @@ use crate::{
     drive_mount_row::DriveMountRow,
 };
 use adw::prelude::*;
-use gtk::{glib, gio};
 use glib::{clone, closure_local};
+use gtk::{gio, glib};
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Clone, Debug)]
@@ -19,6 +19,7 @@ struct PartitionRow {
 
 pub fn create_efi_row(
     listbox: &gtk::ListBox,
+    window: adw::ApplicationWindow,
     drive_rows_size_group: &gtk::SizeGroup,
     partition_array: &Vec<Partition>,
     partition_changed_action: &gio::SimpleAction,
@@ -29,15 +30,20 @@ pub fn create_efi_row(
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
+    partition_scroll_child.add_css_class("boxed-list");
+    partition_scroll_child.add_css_class("no-round-borders");
 
     let partitions_scroll = gtk::ScrolledWindow::builder()
         .hexpand(true)
         .vexpand(true)
+        .overflow(gtk::Overflow::Hidden)
+        .has_frame(true)
         .child(&partition_scroll_child)
         .build();
+    partitions_scroll.add_css_class("round-all-scroll-no-padding");
 
     // Create row
-    let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+    let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
 
     row.set_deletable(false);
 
@@ -92,7 +98,6 @@ pub fn create_efi_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -117,7 +122,6 @@ pub fn create_efi_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -169,7 +173,6 @@ pub fn create_efi_row(
         } else {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -244,6 +247,7 @@ pub fn create_efi_row(
 
 pub fn create_boot_row(
     listbox: &gtk::ListBox,
+    window: adw::ApplicationWindow,
     drive_rows_size_group: &gtk::SizeGroup,
     partition_array: &Vec<Partition>,
     partition_changed_action: &gio::SimpleAction,
@@ -254,15 +258,20 @@ pub fn create_boot_row(
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
+    partition_scroll_child.add_css_class("boxed-list");
+    partition_scroll_child.add_css_class("no-round-borders");
 
     let partitions_scroll = gtk::ScrolledWindow::builder()
         .hexpand(true)
         .vexpand(true)
+        .overflow(gtk::Overflow::Hidden)
+        .has_frame(true)
         .child(&partition_scroll_child)
         .build();
+    partitions_scroll.add_css_class("round-all-scroll-no-padding");
 
     // Create row
-    let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+    let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
 
     row.set_deletable(false);
 
@@ -317,7 +326,6 @@ pub fn create_boot_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -342,7 +350,6 @@ pub fn create_boot_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -394,7 +401,6 @@ pub fn create_boot_row(
         } else {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -469,6 +475,7 @@ pub fn create_boot_row(
 
 pub fn create_root_row(
     listbox: &gtk::ListBox,
+    window: adw::ApplicationWindow,
     drive_rows_size_group: &gtk::SizeGroup,
     partition_array: &Vec<Partition>,
     partition_changed_action: &gio::SimpleAction,
@@ -479,15 +486,20 @@ pub fn create_root_row(
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
+    partition_scroll_child.add_css_class("boxed-list");
+    partition_scroll_child.add_css_class("no-round-borders");
 
     let partitions_scroll = gtk::ScrolledWindow::builder()
         .hexpand(true)
         .vexpand(true)
+        .overflow(gtk::Overflow::Hidden)
+        .has_frame(true)
         .child(&partition_scroll_child)
         .build();
+    partitions_scroll.add_css_class("round-all-scroll-no-padding");
 
     // Create row
-    let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+    let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
 
     row.set_deletable(false);
 
@@ -542,7 +554,6 @@ pub fn create_root_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -567,7 +578,6 @@ pub fn create_root_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -624,7 +634,6 @@ pub fn create_root_row(
         } else {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -699,6 +708,7 @@ pub fn create_root_row(
 
 pub fn create_mount_row(
     listbox: &gtk::ListBox,
+    window: adw::ApplicationWindow,
     drive_rows_size_group: &gtk::SizeGroup,
     partition_array: &Vec<Partition>,
     partition_changed_action: &gio::SimpleAction,
@@ -710,15 +720,20 @@ pub fn create_mount_row(
     let partition_scroll_child = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
+    partition_scroll_child.add_css_class("boxed-list");
+    partition_scroll_child.add_css_class("no-round-borders");
 
     let partitions_scroll = gtk::ScrolledWindow::builder()
         .hexpand(true)
         .vexpand(true)
+        .overflow(gtk::Overflow::Hidden)
+        .has_frame(true)
         .child(&partition_scroll_child)
         .build();
+    partitions_scroll.add_css_class("round-all-scroll-no-padding");
 
     // Create row
-    let row = DriveMountRow::new_with_scroll(&partitions_scroll);
+    let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
 
     row.set_deletable(true);
 
@@ -773,7 +788,6 @@ pub fn create_mount_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -798,7 +812,6 @@ pub fn create_mount_row(
         {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -818,7 +831,6 @@ pub fn create_mount_row(
         } else {
             PartitionRow {
                 widget: {
-                    
                     adw::ActionRow::builder()
                         .activatable_widget(&partition_button)
                         .title(part_name)
@@ -984,7 +996,7 @@ fn post_check_drive_mount(
         row,
         move |_| {
             if row.mountpoint() == "[SWAP]" {
-                if  partition.part_fs == "linux-swap" || partition.part_fs == "swap" {
+                if partition.part_fs == "linux-swap" || partition.part_fs == "swap" {
                     (*partition_row_struct.swap_fs_error.borrow_mut()) = false;
                     if !(*partition_row_struct.never.borrow())
                         && !(*partition_row_struct.swap_fs_error.borrow())

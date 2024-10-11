@@ -20,9 +20,9 @@ mod automatic_partitioning_page;
 mod manual_partitioning_page;
 mod partitioning_page;
 //
-mod installation_summary_page;
-mod installation_progress_page;
 mod installation_complete_page;
+mod installation_progress_page;
+mod installation_summary_page;
 
 #[macro_use]
 extern crate rust_i18n;

@@ -15,9 +15,13 @@ impl DriveMountRow {
     pub fn new() -> Self {
         Object::builder().build()
     }
-    pub fn new_with_scroll(partitions_scroll: &gtk::ScrolledWindow) -> Self {
+    pub fn new_with_widgets(
+        partitions_scroll: &gtk::ScrolledWindow,
+        parent_window: &adw::ApplicationWindow,
+    ) -> Self {
         Object::builder()
             .property("partitionscroll", partitions_scroll)
+            .property("transient-for", parent_window)
             .build()
     }
     pub fn get_fstab_entry(&self) -> FstabEntry {

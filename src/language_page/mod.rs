@@ -1,7 +1,7 @@
 use crate::{build_ui::PikaLocale, installer_stack_page};
 use adw::prelude::*;
-use gtk::{gio, glib};
 use glib::{clone, closure_local};
+use gtk::{gio, glib};
 use std::{cell::RefCell, env, process::Command, rc::Rc};
 
 pub fn language_page(
@@ -202,11 +202,11 @@ pub fn language_page(
             move |_language_page: installer_stack_page::InstallerStackPage| {
                 let locale = &lang_data_refcell.borrow();
                 Command::new("sudo")
-                                    .arg("localectl")
-                                    .arg("set-locale")
-                                    .arg("LANG=".to_owned() + &locale.name + ".UTF-8")
-                                    .spawn()
-                                    .expect("locale failed to start");
+                    .arg("localectl")
+                    .arg("set-locale")
+                    .arg("LANG=".to_owned() + &locale.name + ".UTF-8")
+                    .spawn()
+                    .expect("locale failed to start");
                 rust_i18n::set_locale(&locale.name);
                 language_changed_action.activate(None);
                 main_carousel.scroll_to(&main_carousel.nth_page(2), true)

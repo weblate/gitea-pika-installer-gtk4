@@ -1,10 +1,9 @@
 use crate::unix_socket_tools;
 use adw::prelude::*;
-use gtk::{gio, glib};
 use glib::{clone, GString};
+use gtk::{gio, glib};
 use std::thread;
 use tokio::runtime::Runtime;
-
 
 pub fn installation_progress_page(
     main_carousel: &adw::Carousel,
@@ -15,12 +14,14 @@ pub fn installation_progress_page(
     let socket_status_sender: async_channel::Sender<String> = socket_status_sender.clone();
 
     thread::spawn(move || {
-        Runtime::new().unwrap().block_on(unix_socket_tools::start_socket_server(
-            socket_status_sender,
-            "/tmp/pikainstall-status.sock",
-        ));
+        Runtime::new()
+            .unwrap()
+            .block_on(unix_socket_tools::start_socket_server(
+                socket_status_sender,
+                "/tmp/pikainstall-status.sock",
+            ));
     });
-    
+
     let installation_progress_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .build();
@@ -103,53 +104,55 @@ pub fn installation_progress_page(
 
     //
 
-    progress_log_button.connect_clicked(
-        clone!(
-            #[weak]
-            installation_progress_log_stack,
-            move |_| 
+    progress_log_button.connect_clicked(clone!(
+        #[weak]
+        installation_progress_log_stack,
+        move |_| {
+            if installation_progress_log_stack.visible_child_name()
+                == Some(GString::from_string_unchecked("slideshow_page".into()))
             {
-                if installation_progress_log_stack.visible_child_name() == Some(GString::from_string_unchecked("slideshow_page".into())) {
-                    installation_progress_log_stack.set_visible_child_name("terminal_log_page");
-                } else {
-                    installation_progress_log_stack.set_visible_child_name("slideshow_page");
-                }
+                installation_progress_log_stack.set_visible_child_name("terminal_log_page");
+            } else {
+                installation_progress_log_stack.set_visible_child_name("slideshow_page");
             }
-        )
-    );
+        }
+    ));
 
     //
 
     installation_progress_log_terminal_buffer.connect_changed(clone!(
         #[weak]
         installation_progress_log_scroll,
-        move |_|
+        move |_| {
+            if installation_progress_log_scroll.vadjustment().upper()
+                - installation_progress_log_scroll.vadjustment().value()
+                < (installation_progress_log_scroll.size(gtk::Orientation::Vertical) as f64 * 1.48)
             {
-                if installation_progress_log_scroll.vadjustment().upper() - installation_progress_log_scroll.vadjustment().value() < (installation_progress_log_scroll.size(gtk::Orientation::Vertical) as f64 * 1.48 ) {
-                    installation_progress_log_scroll.vadjustment().set_value(installation_progress_log_scroll.vadjustment().upper())
-                }
+                installation_progress_log_scroll
+                    .vadjustment()
+                    .set_value(installation_progress_log_scroll.vadjustment().upper())
             }
-        )
-    );
+        }
+    ));
 
     //
 
     let installation_log_loop_context = glib::MainContext::default();
     // The main loop executes the asynchronous block
-    installation_log_loop_context.spawn_local(
-        clone!(
-            #[weak]
-            installation_progress_log_terminal_buffer,
-            #[strong]
-            installation_progress_log_terminal_buffer,
-            async move 
-            {
-                    while let Ok(state) = installation_log_loop_receiver.recv().await {
-                        installation_progress_log_terminal_buffer.insert(&mut installation_progress_log_terminal_buffer.end_iter(), &("\n".to_string() + &state))
-                    }
+    installation_log_loop_context.spawn_local(clone!(
+        #[weak]
+        installation_progress_log_terminal_buffer,
+        #[strong]
+        installation_progress_log_terminal_buffer,
+        async move {
+            while let Ok(state) = installation_log_loop_receiver.recv().await {
+                installation_progress_log_terminal_buffer.insert(
+                    &mut installation_progress_log_terminal_buffer.end_iter(),
+                    &("\n".to_string() + &state),
+                )
             }
-        )
-    );
+        }
+    ));
 
     //
 
@@ -165,55 +168,68 @@ pub fn installation_progress_page(
                 match state.trim() {
                     "PARTING" => {
                         installation_progress_bar.set_fraction(0.15);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_parting")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_parting")));
                     }
                     "IMAGE" => {
                         installation_progress_bar.set_fraction(0.50);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_image")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_image")));
                     }
                     "FLAG" => {
                         installation_progress_bar.set_fraction(0.55);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_flag")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_flag")));
                     }
                     "BIND" => {
                         installation_progress_bar.set_fraction(0.60);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_bind")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_bind")));
                     }
                     "ARCH_COPY" => {
                         installation_progress_bar.set_fraction(0.65);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_arch_copy")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_arch_copy")));
                     }
                     "ENCRYPTION" => {
                         installation_progress_bar.set_fraction(0.70);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_encryption")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_encryption")));
                     }
                     "SWAP" => {
                         installation_progress_bar.set_fraction(0.75);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_swap")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_swap")));
                     }
                     "GEN_FSTAB" => {
                         installation_progress_bar.set_fraction(0.80);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_gen_fstab")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_gen_fstab")));
                     }
                     "LOCALE" => {
                         installation_progress_bar.set_fraction(0.85);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_locale")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_locale")));
                     }
                     "BOOTLOADER" => {
                         installation_progress_bar.set_fraction(0.90);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_bootloader")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_bootloader")));
                     }
                     "LIVE_REMOVE" => {
                         installation_progress_bar.set_fraction(0.95);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_live_remove")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_live_remove")));
                     }
                     "BASIC_USER" => {
                         installation_progress_bar.set_fraction(0.98);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_basic_user")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_basic_user")));
                     }
                     "UNBIND" => {
                         installation_progress_bar.set_fraction(0.99);
-                        installation_progress_bar.set_text(Some(&t!("installation_progress_bar_text_unbind")));
+                        installation_progress_bar
+                            .set_text(Some(&t!("installation_progress_bar_text_unbind")));
                     }
                     _ => {}
                 }

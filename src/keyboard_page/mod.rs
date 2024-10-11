@@ -1,8 +1,11 @@
-use crate::{build_ui::{PikaKeymap, KBDMap}, installer_stack_page};
+use crate::{
+    build_ui::{KBDMap, PikaKeymap},
+    installer_stack_page,
+};
 use adw::prelude::*;
+use glib::{clone, closure_local};
 use gnome_desktop::XkbInfoExt;
 use gtk::{gio, glib};
-use glib::{clone, closure_local};
 use std::{cell::RefCell, process::Command, rc::Rc};
 
 pub fn keyboard_page(
@@ -67,377 +70,317 @@ pub fn keyboard_page(
     let current_keymap_variant: Option<String> = None;
 
     let kbd_map_list = [
-    KBDMap {
-        console: "sg".to_string(),
-        layout: "ch".to_string(),
-        variant: "de_nodeadkeys".to_string()
-    },
-    
-    KBDMap {
-        console: "nl".to_string(),
-        layout: "nl".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "mk-utf".to_string(),
-        layout: "mk".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "trq".to_string(),
-        layout: "tr".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "trf".to_string(),
-        layout: "tr".to_string(),
-        variant: "f".to_string()
-    },
-    
-    KBDMap {
-        console: "uk".to_string(),
-        layout: "gb".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "is-latin1".to_string(),
-        layout: "is".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "de".to_string(),
-        layout: "de".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "la-latin1".to_string(),
-        layout: "latam".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "us".to_string(),
-        layout: "us".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "ko".to_string(),
-        layout: "kr".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "ro_std".to_string(),
-        layout: "ro".to_string(),
-        variant: "std".to_string()
-    },
-    
-    KBDMap {
-        console: "slovene".to_string(),
-        layout: "si".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "hu".to_string(),
-        layout: "hu".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "jp106".to_string(),
-        layout: "jp".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "croat".to_string(),
-        layout: "hr".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "hu101".to_string(),
-        layout: "hu".to_string(),
-        variant: "qwerty".to_string()
-    },
-    
-    KBDMap {
-        console: "sr-latin".to_string(),
-        layout: "rs".to_string(),
-        variant: "latin".to_string()
-    },
-    
-    KBDMap {
-        console: "fi".to_string(),
-        layout: "fi".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "fr_CH".to_string(),
-        layout: "ch".to_string(),
-        variant: "fr".to_string()
-    },
-    
-    KBDMap {
-        console: "dk-latin1".to_string(),
-        layout: "dk".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "fr".to_string(),
-        layout: "fr".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "ua-utf".to_string(),
-        layout: "ua".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "fr-latin9".to_string(),
-        layout: "fr".to_string(),
-        variant: "latin9".to_string()
-    },
-    
-    KBDMap {
-        console: "sg-latin1".to_string(),
-        layout: "ch".to_string(),
-        variant: "de_nodeadkeys".to_string()
-    },
-    
-    KBDMap {
-        console: "be-latin1".to_string(),
-        layout: "be".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "dk".to_string(),
-        layout: "dk".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "bg_pho-utf8".to_string(),
-        layout: "bg".to_string(),
-        variant: "phonetic".to_string()
-    },
-    
-    KBDMap {
-        console: "it-ibm".to_string(),
-        layout: "it".to_string(),
-        variant: "ibm".to_string()
-    },
-    
-    KBDMap {
-        console: "cz-us-qwertz".to_string(),
-        layout: "cz".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "cz-qwerty".to_string(),
-        layout: "cz".to_string(),
-        variant: "qwerty".to_string()
-    },
-    
-    KBDMap {
-        console: "br".to_string(),
-        layout: "br".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "ro".to_string(),
-        layout: "ro".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "us-acentos".to_string(),
-        layout: "us".to_string(),
-        variant: "intl".to_string()
-    },
-    
-    KBDMap {
-        console: "pt-latin1".to_string(),
-        layout: "pt".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "tj_alt-UTF8".to_string(),
-        layout: "tj".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "de-latin1-nodeadkeys".to_string(),
-        layout: "de".to_string(),
-        variant: "nodeadkeys".to_string()
-    },
-    
-    KBDMap {
-        console: "no".to_string(),
-        layout: "no".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "bg_bds-utf8".to_string(),
-        layout: "bg".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "dvorak".to_string(),
-        layout: "us".to_string(),
-        variant: "dvorak".to_string()
-    },
-    
-    KBDMap {
-        console: "ru".to_string(),
-        layout: "ru".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "cz-lat2".to_string(),
-        layout: "cz".to_string(),
-        variant: "qwerty".to_string()
-    },
-    
-    KBDMap {
-        console: "pl".to_string(),
-        layout: "pl".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "es".to_string(),
-        layout: "es".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "ie".to_string(),
-        layout: "ie".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "et".to_string(),
-        layout: "ee".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "sk-qwerty".to_string(),
-        layout: "sk".to_string(),
-        variant: "qwerty".to_string()
-    },
-    
-    KBDMap {
-        console: "sk-qwertz".to_string(),
-        layout: "sk".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "fr-latin9".to_string(),
-        layout: "fr".to_string(),
-        variant: "latin9".to_string()
-    },
-    
-    KBDMap {
-        console: "fr_CH-latin1".to_string(),
-        layout: "ch".to_string(),
-        variant: "fr".to_string()
-    },
-    
-    KBDMap {
-        console: "cf".to_string(),
-        layout: "ca".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "sv-latin1".to_string(),
-        layout: "se".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "sr-cy".to_string(),
-        layout: "rs".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "gr".to_string(),
-        layout: "gr".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "by".to_string(),
-        layout: "by".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "il".to_string(),
-        layout: "il".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "kazakh".to_string(),
-        layout: "kz".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "lt".to_string(),
-        layout: "lt".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "khmer".to_string(),
-        layout: "kh".to_string(),
-        variant: "".to_string()
-    },
-    
-    KBDMap {
-        console: "dvorak-es".to_string(),
-        layout: "es".to_string(),
-        variant: "dvorak".to_string()
-    },
-    
-    KBDMap {
-        console: "lv".to_string(),
-        layout: "lv".to_string(),
-        variant: "apostrophe".to_string()
-    },
-    
-    KBDMap {
-        console: "lv-tilde".to_string(),
-        layout: "lv".to_string(),
-        variant: "tilde".to_string()
-    }];
+        KBDMap {
+            console: "sg".to_string(),
+            layout: "ch".to_string(),
+            variant: "de_nodeadkeys".to_string(),
+        },
+        KBDMap {
+            console: "nl".to_string(),
+            layout: "nl".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "mk-utf".to_string(),
+            layout: "mk".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "trq".to_string(),
+            layout: "tr".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "trf".to_string(),
+            layout: "tr".to_string(),
+            variant: "f".to_string(),
+        },
+        KBDMap {
+            console: "uk".to_string(),
+            layout: "gb".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "is-latin1".to_string(),
+            layout: "is".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "de".to_string(),
+            layout: "de".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "la-latin1".to_string(),
+            layout: "latam".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "us".to_string(),
+            layout: "us".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "ko".to_string(),
+            layout: "kr".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "ro_std".to_string(),
+            layout: "ro".to_string(),
+            variant: "std".to_string(),
+        },
+        KBDMap {
+            console: "slovene".to_string(),
+            layout: "si".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "hu".to_string(),
+            layout: "hu".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "jp106".to_string(),
+            layout: "jp".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "croat".to_string(),
+            layout: "hr".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "hu101".to_string(),
+            layout: "hu".to_string(),
+            variant: "qwerty".to_string(),
+        },
+        KBDMap {
+            console: "sr-latin".to_string(),
+            layout: "rs".to_string(),
+            variant: "latin".to_string(),
+        },
+        KBDMap {
+            console: "fi".to_string(),
+            layout: "fi".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "fr_CH".to_string(),
+            layout: "ch".to_string(),
+            variant: "fr".to_string(),
+        },
+        KBDMap {
+            console: "dk-latin1".to_string(),
+            layout: "dk".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "fr".to_string(),
+            layout: "fr".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "ua-utf".to_string(),
+            layout: "ua".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "fr-latin9".to_string(),
+            layout: "fr".to_string(),
+            variant: "latin9".to_string(),
+        },
+        KBDMap {
+            console: "sg-latin1".to_string(),
+            layout: "ch".to_string(),
+            variant: "de_nodeadkeys".to_string(),
+        },
+        KBDMap {
+            console: "be-latin1".to_string(),
+            layout: "be".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "dk".to_string(),
+            layout: "dk".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "bg_pho-utf8".to_string(),
+            layout: "bg".to_string(),
+            variant: "phonetic".to_string(),
+        },
+        KBDMap {
+            console: "it-ibm".to_string(),
+            layout: "it".to_string(),
+            variant: "ibm".to_string(),
+        },
+        KBDMap {
+            console: "cz-us-qwertz".to_string(),
+            layout: "cz".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "cz-qwerty".to_string(),
+            layout: "cz".to_string(),
+            variant: "qwerty".to_string(),
+        },
+        KBDMap {
+            console: "br".to_string(),
+            layout: "br".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "ro".to_string(),
+            layout: "ro".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "us-acentos".to_string(),
+            layout: "us".to_string(),
+            variant: "intl".to_string(),
+        },
+        KBDMap {
+            console: "pt-latin1".to_string(),
+            layout: "pt".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "tj_alt-UTF8".to_string(),
+            layout: "tj".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "de-latin1-nodeadkeys".to_string(),
+            layout: "de".to_string(),
+            variant: "nodeadkeys".to_string(),
+        },
+        KBDMap {
+            console: "no".to_string(),
+            layout: "no".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "bg_bds-utf8".to_string(),
+            layout: "bg".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "dvorak".to_string(),
+            layout: "us".to_string(),
+            variant: "dvorak".to_string(),
+        },
+        KBDMap {
+            console: "ru".to_string(),
+            layout: "ru".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "cz-lat2".to_string(),
+            layout: "cz".to_string(),
+            variant: "qwerty".to_string(),
+        },
+        KBDMap {
+            console: "pl".to_string(),
+            layout: "pl".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "es".to_string(),
+            layout: "es".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "ie".to_string(),
+            layout: "ie".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "et".to_string(),
+            layout: "ee".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "sk-qwerty".to_string(),
+            layout: "sk".to_string(),
+            variant: "qwerty".to_string(),
+        },
+        KBDMap {
+            console: "sk-qwertz".to_string(),
+            layout: "sk".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "fr-latin9".to_string(),
+            layout: "fr".to_string(),
+            variant: "latin9".to_string(),
+        },
+        KBDMap {
+            console: "fr_CH-latin1".to_string(),
+            layout: "ch".to_string(),
+            variant: "fr".to_string(),
+        },
+        KBDMap {
+            console: "cf".to_string(),
+            layout: "ca".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "sv-latin1".to_string(),
+            layout: "se".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "sr-cy".to_string(),
+            layout: "rs".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "gr".to_string(),
+            layout: "gr".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "by".to_string(),
+            layout: "by".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "il".to_string(),
+            layout: "il".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "kazakh".to_string(),
+            layout: "kz".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "lt".to_string(),
+            layout: "lt".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "khmer".to_string(),
+            layout: "kh".to_string(),
+            variant: "".to_string(),
+        },
+        KBDMap {
+            console: "dvorak-es".to_string(),
+            layout: "es".to_string(),
+            variant: "dvorak".to_string(),
+        },
+        KBDMap {
+            console: "lv".to_string(),
+            layout: "lv".to_string(),
+            variant: "apostrophe".to_string(),
+        },
+        KBDMap {
+            console: "lv-tilde".to_string(),
+            layout: "lv".to_string(),
+            variant: "tilde".to_string(),
+        },
+    ];
 
     let xkbinfo = gnome_desktop::XkbInfo::new();
 
@@ -447,12 +390,22 @@ pub fn keyboard_page(
         if map.variant.is_empty() {
             sorted_keymap_vec.push(PikaKeymap {
                 kbdmap: kbd_map,
-                pretty_name: xkbinfo.layout_info(&map.layout).unwrap().0.unwrap().to_string(),
+                pretty_name: xkbinfo
+                    .layout_info(&map.layout)
+                    .unwrap()
+                    .0
+                    .unwrap()
+                    .to_string(),
             })
         } else {
             sorted_keymap_vec.push(PikaKeymap {
                 kbdmap: kbd_map,
-                pretty_name: xkbinfo.layout_info(format!("{}+{}", map.layout, map.variant).as_str()).unwrap().0.unwrap().to_string(),
+                pretty_name: xkbinfo
+                    .layout_info(format!("{}+{}", map.layout, map.variant).as_str())
+                    .unwrap()
+                    .0
+                    .unwrap()
+                    .to_string(),
             })
         }
     }
@@ -521,7 +474,9 @@ pub fn keyboard_page(
                 }
             }
         ));
-        if current_keymap == keymap_clone0.kbdmap.layout && current_keymap_variant == keymap_variant_clone0 {
+        if current_keymap == keymap_clone0.kbdmap.layout
+            && current_keymap_variant == keymap_variant_clone0
+        {
             keymap_checkbutton.set_active(true);
         }
     }

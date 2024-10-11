@@ -1,13 +1,10 @@
 use std::fs;
 use std::path::Path;
-use tokio::io::{AsyncReadExt};
+use tokio::io::AsyncReadExt;
 use tokio::net::{UnixListener, UnixStream};
 use tokio::task;
 
-pub async fn handle_client(
-    mut stream: UnixStream,
-    buffer_sender: async_channel::Sender<String>,
-) {
+pub async fn handle_client(mut stream: UnixStream, buffer_sender: async_channel::Sender<String>) {
     // Buffer to store incoming data
     let mut buffer = [0; 1024];
 
@@ -29,10 +26,7 @@ pub async fn handle_client(
     }
 }
 
-pub async fn start_socket_server(
-    buffer_sender: async_channel::Sender<String>,
-    socket_path: &str,
-) {
+pub async fn start_socket_server(buffer_sender: async_channel::Sender<String>, socket_path: &str) {
     // Remove the socket file if it already exists
     if Path::new(socket_path).exists() {
         fs::remove_file(socket_path).expect("Could not remove existing socket file");

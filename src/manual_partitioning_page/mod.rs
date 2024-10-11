@@ -1,13 +1,18 @@
 use crate::{
     build_ui::{CrypttabEntry, FstabEntry, Partition, SubvolDeclaration},
-    installer_stack_page,
     drive_mount_row::DriveMountRow,
+    installer_stack_page,
     partitioning_page::{get_luks_uuid, get_partitions, test_luks_passwd},
 };
-use gtk::{glib, gio, Orientation};
 use adw::prelude::*;
 use glib::{clone, closure_local};
-use std::{cell::RefCell, collections::HashSet, rc::Rc, sync::{Arc, atomic::AtomicBool}};
+use gtk::{gio, glib, Orientation};
+use std::{
+    cell::RefCell,
+    collections::HashSet,
+    rc::Rc,
+    sync::{atomic::AtomicBool, Arc},
+};
 
 mod func;
 
@@ -68,6 +73,7 @@ pub fn manual_partitioning_page(
 
     create_hardcoded_rows(
         &drive_mounts_adw_listbox,
+        window.clone(),
         &drive_rows_size_group,
         &partition_array_refcell,
         &partition_changed_action,
@@ -189,6 +195,8 @@ pub fn manual_partitioning_page(
         partition_method_manual_valid_label,
         #[strong]
         manual_partitioning_page,
+        #[strong]
+        window,
         move |_| {
             while let Some(row) = drive_mounts_adw_listbox.last_child() {
                 drive_mounts_adw_listbox.remove(&row);
@@ -209,6 +217,7 @@ pub fn manual_partitioning_page(
             manual_partitioning_page.set_next_sensitive(false);
             create_hardcoded_rows(
                 &drive_mounts_adw_listbox,
+                window.clone(),
                 &drive_rows_size_group,
                 &partition_array_refcell,
                 &partition_changed_action,
@@ -264,11 +273,15 @@ pub fn manual_partitioning_page(
 
             for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
-                if subvol_partition_array_refcell.borrow().is_empty() && !seen_partitions.insert(fs_entry.clone().partition.part_name) {
+                if subvol_partition_array_refcell.borrow().is_empty()
+                    && !seen_partitions.insert(fs_entry.clone().partition.part_name)
+                {
                     (errored.store(true, std::sync::atomic::Ordering::Relaxed));
                 }
                 if fs_entry.mountpoint == "[SWAP]" {
-                    if fs_entry.partition.part_fs == "linux-swap" || fs_entry.partition.part_fs == "swap" {
+                    if fs_entry.partition.part_fs == "linux-swap"
+                        || fs_entry.partition.part_fs == "swap"
+                    {
                     } else {
                         (errored.store(true, std::sync::atomic::Ordering::Relaxed));
                     }
@@ -339,7 +352,8 @@ pub fn manual_partitioning_page(
                 ));
             }
 
-            (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()).sort_by_key(|p| p.mountpoint.clone())
+            (*partition_method_manual_fstab_entry_array_refcell.borrow_mut())
+                .sort_by_key(|p| p.mountpoint.clone())
         }
     ));
 
@@ -444,6 +458,7 @@ pub fn manual_partitioning_page(
 
 fn create_hardcoded_rows(
     drive_mounts_adw_listbox: &gtk::ListBox,
+    window: adw::ApplicationWindow,
     drive_rows_size_group: &gtk::SizeGroup,
     partition_array_refcell: &Rc<RefCell<Vec<Partition>>>,
     partition_changed_action: &gio::SimpleAction,
@@ -476,6 +491,7 @@ fn create_hardcoded_rows(
 
     func::create_efi_row(
         drive_mounts_adw_listbox,
+        window.clone(),
         drive_rows_size_group,
         &partition_array_refcell.borrow(),
         partition_changed_action,
@@ -485,6 +501,7 @@ fn create_hardcoded_rows(
     );
     func::create_boot_row(
         drive_mounts_adw_listbox,
+        window.clone(),
         drive_rows_size_group,
         &partition_array_refcell.borrow(),
         partition_changed_action,
@@ -494,6 +511,7 @@ fn create_hardcoded_rows(
     );
     func::create_root_row(
         drive_mounts_adw_listbox,
+        window.clone(),
         drive_rows_size_group,
         &partition_array_refcell.borrow(),
         partition_changed_action,
@@ -524,6 +542,7 @@ fn create_hardcoded_rows(
         move |_| {
             func::create_mount_row(
                 &drive_mounts_adw_listbox,
+                window.clone(),
                 &drive_rows_size_group,
                 &partition_array_refcell.borrow(),
                 &partition_changed_action,
