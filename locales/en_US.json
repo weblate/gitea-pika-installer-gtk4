@@ -41,7 +41,7 @@
     "mountopts_entry_row_title": "Additional Mount Options\nE.g: subvol=@home",
     "automatic_partitioning_page_title": "Automatic Partitioning Installer",
     "automatic_partitioning_page_subtitle": "Choose the Drive you want to install PikaOS on\nNote: This Will Erase The Entire Drive BACKUP YOUR DATA!",
-    "devices_selection_expander_row_title_no_drive_selected": "No Disk Selected for Installation",
+    "devices_selection_button_row_title_no_drive_selected": "No Disk Selected for Installation",
     "partition_method_automatic_disk_nodisk_error_label_label": "No Disk Specified.",
     "partition_method_automatic_luks_empty_error_label_label": "LUKS Encryption Enabled but no password provided.",
     "partition_method_automatic_luks_checkbutton_label": "Enable LUKS2 Disk Encryption",
@@ -125,5 +125,8 @@
     "installation_complete_page_title_failed": "Critical Error!",
     "installation_complete_page_title_success": "Success!",
     "installation_complete_page_subtitle_failed": "PikaOS Installation Has Failed!\nCheck logs for further info",
-    "installation_complete_page_subtitle_success": "The Installation of PikaOS Has Been Completed Sucessfully"
+    "installation_complete_page_subtitle_success": "The Installation of PikaOS Has Been Completed Sucessfully",
+    "devices_selection_button_row_dialog_auto_title": "Automatic Partition Disk Selection",
+    "devices_selection_button_row_dialog_auto_body": "Please Select A Disk for PikaOS to *Erase* And Install on.",
+    "devices_selection_button_row_dialog_ok_label": "Done"
 }

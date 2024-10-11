@@ -139,6 +139,7 @@ pub fn partitioning_page(
     automatic_partitioning_page::automatic_partitioning_page(
         main_carousel,
         &partitioning_carousel,
+        window.clone(),
         partition_method_type_refcell,
         partition_method_automatic_target_refcell,
         partition_method_automatic_target_fs_refcell,

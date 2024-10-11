@@ -586,9 +586,9 @@ fn set_crypttab_entries(
         let crypttab_password_child_box = gtk::Box::new(Orientation::Vertical, 0);
         crypttab_password_child_box.append(&crypttab_password_listbox);
         crypttab_password_child_box.append(&crypttab_password_status_label);
-        let crypttab_dialog = adw::MessageDialog::builder()
-            .transient_for(&window)
-            .hide_on_close(true)
+        let crypttab_dialog = adw::AlertDialog::builder()
+            //.transient_for(&window)
+            //.hide_on_close(true)
             .extra_child(&crypttab_password_child_box)
             .width_request(400)
             .height_request(200)
@@ -663,7 +663,7 @@ fn set_crypttab_entries(
         let partition_method_manual_luks_enabled_refcell_clone0 =
             partition_method_manual_luks_enabled_refcell.clone();
 
-        crypttab_dialog.choose(None::<&gio::Cancellable>, move |choice| {
+        crypttab_dialog.choose(&window, None::<&gio::Cancellable>, move |choice| {
             let part_name = fs_entry.partition.part_name;
             if choice == "crypttab_dialog_auto" {
                 (*partition_method_manual_crypttab_entry_array_refcell_clone0.borrow_mut()).push(

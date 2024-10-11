@@ -112,6 +112,18 @@
     padding-bottom: 0px;
 }
 
+.accent-blink {
+    background-color: @accent_bg_color;
+    animation:blink 1s linear infinite;
+}
+
+@keyframes blink{
+    0%{opacity: 1;}
+    25%{opacity: 0.75;}
+    50%{opacity: 0.5;}
+    75%{opacity: 0.75;}
+    100%{opacity: 1;}
+    }
 
 .green-trough trough {
     background-color:green;

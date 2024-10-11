@@ -10,6 +10,7 @@ use std::{cell::RefCell, rc::Rc};
 pub fn automatic_partitioning_page(
     main_carousel: &adw::Carousel,
     partition_carousel: &adw::Carousel,
+    window: adw::ApplicationWindow,
     partition_method_type_refcell: &Rc<RefCell<String>>,
     partition_method_automatic_target_refcell: &Rc<RefCell<BlockDevice>>,
     partition_method_automatic_target_fs_refcell: &Rc<RefCell<String>>,
@@ -250,35 +251,54 @@ pub fn automatic_partitioning_page(
 
     //
 
-    let devices_selection_expander_row = adw::ExpanderRow::builder().build();
-
-    let devices_selection_expander_row_viewport_listbox = gtk::ListBox::builder()
+    let devices_selection_button_row_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .margin_top(15)
         .margin_bottom(15)
         .margin_start(15)
         .margin_end(15)
         .build();
-    devices_selection_expander_row_viewport_listbox.add_css_class("boxed-list");
+
+    devices_selection_button_row_listbox.add_css_class("boxed-list");
+
+    let devices_selection_button_row = adw::ButtonRow::builder()
+        .build();
+
+    devices_selection_button_row.add_css_class("accent-blink");
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 
-    let devices_selection_expander_row_viewport_box = gtk::ListBox::builder()
+    let devices_selection_button_row_viewport_box = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
-    devices_selection_expander_row_viewport_box.add_css_class("boxed-list");
-    devices_selection_expander_row_viewport_box.add_css_class("round-all-scroll");
+    devices_selection_button_row_viewport_box.add_css_class("boxed-list");
+    devices_selection_button_row_viewport_box.add_css_class("no-round-borders");
 
-    let devices_selection_expander_row_viewport = gtk::ScrolledWindow::builder()
+    let devices_selection_button_row_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
-        .child(&devices_selection_expander_row_viewport_box)
+        .overflow(gtk::Overflow::Hidden)
+        .vexpand(true)
+        .hexpand(true)
+        .child(&devices_selection_button_row_viewport_box)
         .build();
 
-    devices_selection_expander_row_viewport.add_css_class("round-all-scroll");
+    devices_selection_button_row_viewport.add_css_class("round-all-scroll-no-padding");
 
-    devices_selection_expander_row.add_row(&devices_selection_expander_row_viewport);
+    let devices_selection_button_row_dialog = adw::AlertDialog::builder()
+        .extra_child(&devices_selection_button_row_viewport)
+        .width_request(400)
+        .height_request(400)
+        .build();
+
+    devices_selection_button_row_dialog.add_response("devices_selection_button_row_dialog_ok", "devices_selection_button_row_dialog_ok");
+
+    devices_selection_button_row.connect_activated(clone!(#[weak] devices_selection_button_row_dialog, move |_| {
+        devices_selection_button_row_dialog.present(Some(&window));
+    }));
+
+    //devices_selection_button_row.add_row(&devices_selection_button_row_viewport);
 
     let partition_method_automatic_disk_nodisk_error_label = gtk::Label::builder()
         .halign(gtk::Align::Start)
@@ -381,12 +401,12 @@ pub fn automatic_partitioning_page(
             .subtitle(device.clone().block_name + " " + &device.block_size_pretty)
             .build();
         device_row.add_prefix(&device_button);
-        devices_selection_expander_row_viewport_box.append(&device_row);
+        devices_selection_button_row_viewport_box.append(&device_row);
         device_button.connect_toggled(clone!(
             #[weak]
             device_button,
             #[weak]
-            devices_selection_expander_row,
+            devices_selection_button_row,
             #[weak]
             partition_method_automatic_disk_nodisk_error_label,
             #[weak]
@@ -404,9 +424,11 @@ pub fn automatic_partitioning_page(
             move |_| {
                 disk_check(
                     &device_button,
-                    &devices_selection_expander_row,
+                    &devices_selection_button_row,
                     &partition_method_automatic_disk_small_error_label,
+                    &device.block_model,
                     &device.block_name,
+                    &device.block_size_pretty,
                     device.block_size,
                 );
                 partition_method_automatic_disk_nodisk_error_label.set_visible(false);
@@ -545,7 +567,7 @@ pub fn automatic_partitioning_page(
 
     //
 
-    devices_selection_expander_row_viewport_listbox.append(&devices_selection_expander_row);
+    devices_selection_button_row_listbox.append(&devices_selection_button_row);
 
     partition_method_automatic_luks_listbox.append(&partition_method_automatic_luks_password_entry);
     partition_method_automatic_luks_listbox
@@ -573,7 +595,7 @@ pub fn automatic_partitioning_page(
     advanced_box.append(&advanced_filesystem_selection_frame);
     advanced_box.append(&advanced_home_part_ratio_selection_frame);
 
-    content_box.append(&devices_selection_expander_row_viewport_listbox);
+    content_box.append(&devices_selection_button_row_listbox);
     content_box.append(&partition_method_automatic_luks_box);
     content_box.append(&partition_method_automatic_luks_empty_error_label);
     content_box.append(&partition_method_automatic_luks_missmatch_error_label);
@@ -639,6 +661,8 @@ pub fn automatic_partitioning_page(
         advanced_home_seperation_selection_checkbutton_partition,
         #[weak]
         advanced_home_seperation_selection_checkbutton_none,
+        #[strong]
+        devices_selection_button_row_dialog,
         move |_, _| {
             automatic_partitioning_page.set_page_title(t!("automatic_partitioning_page_title"));
             automatic_partitioning_page
@@ -646,9 +670,13 @@ pub fn automatic_partitioning_page(
             automatic_partitioning_page.set_back_tooltip_label(t!("back"));
             automatic_partitioning_page.set_next_tooltip_label(t!("next"));
             //
-            devices_selection_expander_row.set_title(&t!(
-                "devices_selection_expander_row_title_no_drive_selected"
+            devices_selection_button_row.set_title(&t!(
+                "devices_selection_button_row_title_no_drive_selected"
             ));
+            //
+            devices_selection_button_row_dialog.set_title(&t!("devices_selection_button_row_dialog_auto_title"));
+            devices_selection_button_row_dialog.set_body(&t!("devices_selection_button_row_dialog_auto_body"));
+            devices_selection_button_row_dialog.set_response_label("devices_selection_button_row_dialog_ok", &t!("devices_selection_button_row_dialog_ok_label"));
             //
             partition_method_automatic_disk_nodisk_error_label.set_label(&t!(
                 "partition_method_automatic_disk_nodisk_error_label_label"
@@ -704,13 +732,16 @@ pub fn automatic_partitioning_page(
 
 fn disk_check(
     device_button: &gtk::CheckButton,
-    devices_selection_expander_row: &adw::ExpanderRow,
+    devices_selection_button_row: &adw::ButtonRow,
     partition_method_automatic_disk_size_error_label: &gtk::Label,
+    device_block_model: &str,
     device_block_name: &str,
+    device_block_size_pretty: &str,
     device_block_size: f64,
 ) {
     if device_button.is_active() {
-        devices_selection_expander_row.set_title(device_block_name);
+        devices_selection_button_row.set_title(&(device_block_model.to_owned() + ": " + device_block_name + " " + device_block_size_pretty));
+        devices_selection_button_row.remove_css_class("accent-blink");
         if device_block_size >= MINIMUM_ROOT_BYTE_SIZE {
             partition_method_automatic_disk_size_error_label.set_visible(false);
         } else {
