@@ -24,15 +24,18 @@ pub fn eula_page(main_carousel: &adw::Carousel, language_changed_action: &gio::S
         .vexpand(true)
         .editable(false)
         .buffer(&eula_buffer)
+        .right_margin(10)
+        .left_margin(10)
         .build();
 
     let eula_selection_text_scroll = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
         .child(&eula_selection_text_view)
         .build();
-    eula_selection_text_scroll.add_css_class("round-all-scroll");
+    eula_selection_text_scroll.add_css_class("round-all-scroll-no-padding");
 
     let eula_accept_checkbutton = gtk::CheckButton::builder()
         .margin_top(15)

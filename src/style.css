@@ -72,6 +72,28 @@
     padding-bottom: 3px;
 }
 
+.round-all-scroll-no-padding {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+}
+
+.round-border-only-top-with-no-padding {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+}
+
 .round-border-only-bottom {
     border-top-right-radius: 0px;
     border-top-left-radius: 0px;
@@ -84,6 +106,10 @@
     border-top-left-radius: 0px;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
+    padding-top: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
 }
 
 

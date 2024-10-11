@@ -34,6 +34,7 @@ pub struct PikaKeymap  {
 #[derive(Default, Clone, Debug)]
 pub struct BlockDevice {
     pub block_name: String,
+    pub block_model: String,
     pub block_size: f64,
     pub block_size_pretty: String,
 }

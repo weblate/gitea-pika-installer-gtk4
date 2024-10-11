@@ -29,16 +29,17 @@ pub fn keyboard_page(
         .selection_mode(gtk::SelectionMode::None)
         .build();
     keyboard_selection_row_viewport_listbox.add_css_class("boxed-list");
-    keyboard_selection_row_viewport_listbox.add_css_class("round-border-only");
+    keyboard_selection_row_viewport_listbox.add_css_class("no-round-borders");
 
     let keyboard_selection_row_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
         .child(&keyboard_selection_row_viewport_listbox)
         .build();
 
-    keyboard_selection_row_viewport.add_css_class("round-border-only-top-with-padding");
+    keyboard_selection_row_viewport.add_css_class("round-border-only-top-with-no-padding");
 
     let keyboard_search_bar = gtk::SearchEntry::builder()
         .hexpand(true)

@@ -28,16 +28,17 @@ pub fn timezone_page(
         .selection_mode(gtk::SelectionMode::None)
         .build();
     timezone_selection_row_viewport_listbox.add_css_class("boxed-list");
-    timezone_selection_row_viewport_listbox.add_css_class("round-all-scroll");
+    timezone_selection_row_viewport_listbox.add_css_class("no-round-borders");
 
     let timezone_selection_row_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
         .child(&timezone_selection_row_viewport_listbox)
         .build();
 
-    timezone_selection_row_viewport.add_css_class("round-all-scroll");
+    timezone_selection_row_viewport.add_css_class("round-all-scroll-no-padding");
 
     let timezone_search_bar = gtk::SearchEntry::builder()
         .hexpand(true)

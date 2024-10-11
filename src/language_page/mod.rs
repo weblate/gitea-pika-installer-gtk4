@@ -32,16 +32,17 @@ pub fn language_page(
         .selection_mode(gtk::SelectionMode::None)
         .build();
     language_selection_row_viewport_listbox.add_css_class("boxed-list");
-    language_selection_row_viewport_listbox.add_css_class("round-all-scroll");
+    language_selection_row_viewport_listbox.add_css_class("no-round-borders");
 
     let language_selection_row_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
         .child(&language_selection_row_viewport_listbox)
         .build();
 
-    language_selection_row_viewport.add_css_class("round-all-scroll");
+    language_selection_row_viewport.add_css_class("round-all-scroll-no-padding");
 
     let language_search_bar = gtk::SearchEntry::builder()
         .hexpand(true)

@@ -14,6 +14,11 @@ then
 	lsblk -b --output SIZE -n -d /dev/"$2"
 fi
 
+if [[ "$1" = "get_block_model" ]]
+then
+        cat /sys/class/block/"$2"/device/model
+fi
+
 if [[ "$1" = "has_encryption" ]]
 then
 	if blkid -o value -s TYPE $(lsblk -sJp | jq -r --arg dsk /dev/"$2" '.blockdevices | .[] | select(.name == $dsk) | .children | .[0] | .name') | grep -i luks > /dev/null 2>&1

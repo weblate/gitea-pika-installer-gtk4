@@ -377,8 +377,8 @@ pub fn automatic_partitioning_page(
         device_button.set_group(Some(&null_checkbutton));
         let device_row = adw::ActionRow::builder()
             .activatable_widget(&device_button)
-            .title(&device.block_name)
-            .subtitle(&device.block_size_pretty)
+            .title(&device.block_model)
+            .subtitle(device.clone().block_name + " " + &device.block_size_pretty)
             .build();
         device_row.add_prefix(&device_button);
         devices_selection_expander_row_viewport_box.append(&device_row);

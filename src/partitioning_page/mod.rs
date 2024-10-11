@@ -196,8 +196,10 @@ pub fn get_block_devices() -> Vec<BlockDevice> {
                 match blockdev {
                     Ok(r) => {
                         let block_size = get_block_size(&r);
+                        let block_model = get_block_model(&r);
                         block_devices.push(BlockDevice {
                             block_name: r,
+                            block_model,
                             block_size,
                             block_size_pretty: pretty_bytes::converter::convert(block_size),
                         })
@@ -228,6 +230,24 @@ fn get_block_size(block_dev: &str) -> f64 {
     };
 
     size
+}
+
+fn get_block_model(block_dev: &str) -> String {
+    let command = match std::process::Command::new("sudo")
+        .arg("/usr/lib/pika/pika-installer-gtk4/scripts/partition-utility.sh")
+        .arg("get_block_model")
+        .arg(block_dev)
+        .output()
+    {
+        Ok(t) => t,
+        Err(_) => return "Unknown".to_owned(),
+    };
+    let model = match String::from_utf8(command.stdout) {
+        Ok(t) => t.trim().to_owned(),
+        Err(_) => "Unknown".to_owned(),
+    };
+
+    model
 }
 
 pub fn get_partitions() -> Vec<Partition> {
