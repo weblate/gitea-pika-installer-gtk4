@@ -120,7 +120,7 @@ pub fn keyboard_page(
             layout: "us".to_string(),
             variant: "".to_string(),
         },
-        KBDMap {
+        /*KBDMap {
             console: "ko".to_string(),
             layout: "kr".to_string(),
             variant: "".to_string(),
@@ -130,6 +130,7 @@ pub fn keyboard_page(
             layout: "ro".to_string(),
             variant: "std".to_string(),
         },
+        */
         KBDMap {
             console: "slovene".to_string(),
             layout: "si".to_string(),
@@ -156,7 +157,7 @@ pub fn keyboard_page(
             variant: "qwerty".to_string(),
         },
         KBDMap {
-            console: "sr-latin".to_string(),
+            console: "sr".to_string(),
             layout: "rs".to_string(),
             variant: "latin".to_string(),
         },
@@ -206,7 +207,7 @@ pub fn keyboard_page(
             variant: "".to_string(),
         },
         KBDMap {
-            console: "bg_pho-utf8".to_string(),
+            console: "bg-cp1251".to_string(),
             layout: "bg".to_string(),
             variant: "phonetic".to_string(),
         },
@@ -220,13 +221,13 @@ pub fn keyboard_page(
             layout: "cz".to_string(),
             variant: "".to_string(),
         },
-        KBDMap {
-            console: "cz-qwerty".to_string(),
+        /*KBDMap {
+            console: "cz-us-qwerty".to_string(),
             layout: "cz".to_string(),
             variant: "qwerty".to_string(),
-        },
+        },*/
         KBDMap {
-            console: "br".to_string(),
+            console: "br-abnt2".to_string(),
             layout: "br".to_string(),
             variant: "".to_string(),
         },
@@ -236,7 +237,7 @@ pub fn keyboard_page(
             variant: "".to_string(),
         },
         KBDMap {
-            console: "us-acentos".to_string(),
+            console: "us-intl.iso15".to_string(),
             layout: "us".to_string(),
             variant: "intl".to_string(),
         },
@@ -245,11 +246,11 @@ pub fn keyboard_page(
             layout: "pt".to_string(),
             variant: "".to_string(),
         },
-        KBDMap {
+        /*KBDMap {
             console: "tj_alt-UTF8".to_string(),
             layout: "tj".to_string(),
             variant: "".to_string(),
-        },
+        },*/
         KBDMap {
             console: "de-latin1-nodeadkeys".to_string(),
             layout: "de".to_string(),
@@ -261,7 +262,7 @@ pub fn keyboard_page(
             variant: "".to_string(),
         },
         KBDMap {
-            console: "bg_bds-utf8".to_string(),
+            console: "bg".to_string(),
             layout: "bg".to_string(),
             variant: "".to_string(),
         },
@@ -290,11 +291,11 @@ pub fn keyboard_page(
             layout: "es".to_string(),
             variant: "".to_string(),
         },
-        KBDMap {
+        /*KBDMap {
             console: "ie".to_string(),
             layout: "ie".to_string(),
             variant: "".to_string(),
-        },
+        },*/
         KBDMap {
             console: "et".to_string(),
             layout: "ee".to_string(),
@@ -311,11 +312,6 @@ pub fn keyboard_page(
             variant: "".to_string(),
         },
         KBDMap {
-            console: "fr-latin9".to_string(),
-            layout: "fr".to_string(),
-            variant: "latin9".to_string(),
-        },
-        KBDMap {
             console: "fr_CH-latin1".to_string(),
             layout: "ch".to_string(),
             variant: "fr".to_string(),
@@ -326,7 +322,7 @@ pub fn keyboard_page(
             variant: "".to_string(),
         },
         KBDMap {
-            console: "sv-latin1".to_string(),
+            console: "se-latin1".to_string(),
             layout: "se".to_string(),
             variant: "".to_string(),
         },
@@ -350,17 +346,17 @@ pub fn keyboard_page(
             layout: "il".to_string(),
             variant: "".to_string(),
         },
-        KBDMap {
+        /*KBDMap {
             console: "kazakh".to_string(),
             layout: "kz".to_string(),
             variant: "".to_string(),
-        },
+        },*/
         KBDMap {
             console: "lt".to_string(),
             layout: "lt".to_string(),
             variant: "".to_string(),
         },
-        KBDMap {
+        /*KBDMap {
             console: "khmer".to_string(),
             layout: "kh".to_string(),
             variant: "".to_string(),
@@ -370,13 +366,14 @@ pub fn keyboard_page(
             layout: "es".to_string(),
             variant: "dvorak".to_string(),
         },
+        */
         KBDMap {
-            console: "lv".to_string(),
+            console: "lv-latin4".to_string(),
             layout: "lv".to_string(),
             variant: "apostrophe".to_string(),
         },
         KBDMap {
-            console: "lv-tilde".to_string(),
+            console: "lv-latin7".to_string(),
             layout: "lv".to_string(),
             variant: "tilde".to_string(),
         },
