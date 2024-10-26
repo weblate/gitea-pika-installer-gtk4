@@ -54,7 +54,6 @@ pub fn keyboard_page(
     keyboard_search_bar.add_css_class("rounded-all-25");
 
     let keyboard_test_entry_boxed_list = gtk::ListBox::builder()
-        .margin_top(5)
         .margin_bottom(5)
         .build();
 

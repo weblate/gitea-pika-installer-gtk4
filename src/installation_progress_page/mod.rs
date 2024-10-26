@@ -63,6 +63,26 @@ pub fn installation_progress_page(
         .margin_end(5)
         .build();
 
+    {
+        let settings = gtk::Settings::default().unwrap();
+        if settings.is_gtk_application_prefer_dark_theme() {
+            placeholder_icon.set_icon_name(Some("pika-logo-text-dark"));
+        } else {
+            placeholder_icon.set_icon_name(Some("pika-logo-text"));
+        };
+        settings.connect_gtk_application_prefer_dark_theme_notify(clone!(
+            #[weak]
+            placeholder_icon,
+            move |settings| {
+                if settings.is_gtk_application_prefer_dark_theme() {
+                    placeholder_icon.set_icon_name(Some("pika-logo-text-dark"));
+                } else {
+                    placeholder_icon.set_icon_name(Some("pika-logo-text"));
+                };
+            }
+        ));
+    }
+
     let progress_bar_box = gtk::Box::builder()
         .orientation(gtk::Orientation::Horizontal)
         .margin_start(10)

@@ -60,16 +60,17 @@ pub fn manual_partitioning_page(
         .selection_mode(gtk::SelectionMode::None)
         .build();
     drive_mounts_adw_listbox.add_css_class("boxed-list");
-    drive_mounts_adw_listbox.add_css_class("round-all-scroll");
+    drive_mounts_adw_listbox.add_css_class("no-round-borders");
 
     let drive_mounts_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
         .child(&drive_mounts_adw_listbox)
         .build();
 
-    drive_mounts_viewport.add_css_class("round-all-scroll");
+    drive_mounts_viewport.add_css_class("round-all-scroll-no-padding");
 
     create_hardcoded_rows(
         &drive_mounts_adw_listbox,

@@ -228,7 +228,7 @@ impl ObjectImpl for DriveMountRow {
 
         partition_button_row_dialog.add_response(
             "devices_selection_button_row_dialog_ok",
-            "devices_selection_button_row_dialog_ok_label",
+            &t!("devices_selection_button_row_dialog_ok_label"),
         );
 
         partition_button.connect_clicked(clone!(

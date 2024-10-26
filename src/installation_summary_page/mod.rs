@@ -99,16 +99,17 @@ pub fn installation_summary_page(
         .selection_mode(gtk::SelectionMode::None)
         .build();
     installation_summary_row_viewport_listbox.add_css_class("boxed-list");
-    installation_summary_row_viewport_listbox.add_css_class("round-all-scroll");
+    installation_summary_row_viewport_listbox.add_css_class("no-round-borders");
 
     let installation_summary_row_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
         .child(&installation_summary_row_viewport_listbox)
         .build();
 
-    installation_summary_row_viewport.add_css_class("round-all-scroll");
+    installation_summary_row_viewport.add_css_class("round-all-scroll-no-padding");
 
     let install_confirm_button = gtk::Button::builder()
         .margin_top(15)
