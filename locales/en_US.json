@@ -47,7 +47,7 @@
     "partition_method_automatic_luks_empty_error_label_label": "LUKS Encryption Enabled but no password provided.",
     "partition_method_automatic_luks_checkbutton_label": "Enable LUKS2 Disk Encryption",
     "partition_method_automatic_luks_password_entry_label": "LUKS Password",
-    "partition_method_automatic_disk_small_error_label_label": "Disk Size too small, PikaOS needs 40GB Disk",
+    "partition_method_automatic_disk_small_error_label_label": "Disk Size too small, PikaOS needs 30GB Disk",
     "installation": "Installation",
     "partitioning_page_title": "Partitioning",
     "partition_method_automatic_luks_password_entry_label_confirm": "Confirm LUKS Password",

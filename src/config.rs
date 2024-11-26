@@ -7,5 +7,5 @@ pub const APP_ID: &str = "com.github.pikaos-linux.pikainstallergtk4";
 pub const DISTRO_ICON: &str = "pika-logo";
 pub const MINIMUM_EFI_BYTE_SIZE: f64 = 500000000.0;
 pub const MINIMUM_BOOT_BYTE_SIZE: f64 = 1000000000.0;
-pub const MINIMUM_ROOT_BYTE_SIZE: f64 = 39000000000.0;
+pub const MINIMUM_ROOT_BYTE_SIZE: f64 = 26000000000.0;
 pub const LOG_FILE_PATH: &str = "/tmp/pika-installer-gtk4.log";
