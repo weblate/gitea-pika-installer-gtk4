@@ -56,24 +56,99 @@ pub fn manual_partitioning_page(
         .vexpand(true)
         .build();
 
-    let drive_mounts_adw_listbox = gtk::ListBox::builder()
+    let system_drive_mounts_adw_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
-    drive_mounts_adw_listbox.add_css_class("boxed-list");
-    drive_mounts_adw_listbox.add_css_class("no-round-borders");
+    system_drive_mounts_adw_listbox.add_css_class("boxed-list");
+    system_drive_mounts_adw_listbox.add_css_class("no-round-borders");
 
-    let drive_mounts_viewport = gtk::ScrolledWindow::builder()
+    let custom_drive_mounts_adw_listbox = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+    custom_drive_mounts_adw_listbox.add_css_class("boxed-list");
+    custom_drive_mounts_adw_listbox.add_css_class("no-round-borders");
+
+    let system_drive_mounts_viewport = gtk::ScrolledWindow::builder()
         .vexpand(true)
         .hexpand(true)
         .has_frame(true)
         .overflow(gtk::Overflow::Hidden)
-        .child(&drive_mounts_adw_listbox)
+        .child(&system_drive_mounts_adw_listbox)
         .build();
 
-    drive_mounts_viewport.add_css_class("round-all-scroll-no-padding");
+    system_drive_mounts_viewport.add_css_class("round-all-scroll-no-padding");
+
+    let custom_drive_mounts_viewport = gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
+        .child(&custom_drive_mounts_adw_listbox)
+        .build();
+
+    custom_drive_mounts_viewport.add_css_class("round-all-scroll-no-padding");
+
+    let drive_mount_add_button_icon = gtk::Image::builder()
+        .icon_name("list-add")
+        .halign(gtk::Align::Start)
+        .build();
+
+    let drive_mount_add_button_label = gtk::Label::builder()
+        .label(t!("drive_mount_add_button_label"))
+        .halign(gtk::Align::Center)
+        .hexpand(true)
+        .build();
+
+    let drive_mount_add_button_child_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+
+    drive_mount_add_button_child_box.append(&drive_mount_add_button_icon);
+    drive_mount_add_button_child_box.append(&drive_mount_add_button_label);
+
+    let drive_mount_add_button = gtk::Button::builder()
+        .child(&drive_mount_add_button_child_box)
+        .hexpand(true)
+        .margin_top(10)
+        .margin_bottom(10)
+        //.margin_start(10)
+        //.margin_end(10)
+        .build();
+
+        drive_mount_add_button.connect_clicked(clone!(
+            #[weak]
+            custom_drive_mounts_adw_listbox,
+            #[strong]
+            drive_rows_size_group,
+            #[strong]
+            window,
+            #[strong]
+            partition_array_refcell,
+            #[strong]
+            partition_changed_action,
+            #[strong]
+            language_changed_action,
+            #[strong]
+            used_partition_array_refcell,
+            #[strong]
+            subvol_partition_array_refcell,
+            #[strong]
+            extra_mount_id_refcell,
+            move |_| {
+                func::create_mount_row(
+                    &custom_drive_mounts_adw_listbox,
+                    window.clone(),
+                    &drive_rows_size_group,
+                    &partition_array_refcell.borrow(),
+                    &partition_changed_action,
+                    &language_changed_action,
+                    &used_partition_array_refcell,
+                    &subvol_partition_array_refcell,
+                    &extra_mount_id_refcell,
+                );
+            }
+        ));
 
     create_hardcoded_rows(
-        &drive_mounts_adw_listbox,
+        &system_drive_mounts_adw_listbox,
         window.clone(),
         &drive_rows_size_group,
         &partition_array_refcell,
@@ -81,7 +156,6 @@ pub fn manual_partitioning_page(
         language_changed_action,
         &used_partition_array_refcell,
         &subvol_partition_array_refcell,
-        &extra_mount_id_refcell,
     );
 
     let open_disk_utility_button = gtk::Button::builder()
@@ -161,7 +235,9 @@ pub fn manual_partitioning_page(
 
     filesystem_table_refresh_button.connect_clicked(clone!(
         #[weak]
-        drive_mounts_adw_listbox,
+        system_drive_mounts_adw_listbox,
+        #[weak]
+        custom_drive_mounts_adw_listbox,
         #[weak]
         drive_rows_size_group,
         #[strong]
@@ -199,10 +275,12 @@ pub fn manual_partitioning_page(
         #[strong]
         window,
         move |_| {
-            while let Some(row) = drive_mounts_adw_listbox.last_child() {
-                drive_mounts_adw_listbox.remove(&row);
+            while let Some(row) = system_drive_mounts_adw_listbox.last_child() {
+                system_drive_mounts_adw_listbox.remove(&row);
             }
-
+            while let Some(row) = custom_drive_mounts_adw_listbox.last_child() {
+                custom_drive_mounts_adw_listbox.remove(&row);
+            }
             (*partition_method_manual_fstab_entry_array_refcell.borrow_mut()) = Vec::new();
             (*partition_method_manual_luks_enabled_refcell.borrow_mut()) = false;
             (*partition_method_manual_crypttab_entry_array_refcell.borrow_mut()) = Vec::new();
@@ -217,7 +295,7 @@ pub fn manual_partitioning_page(
             partition_method_manual_valid_label.set_visible(false);
             manual_partitioning_page.set_next_sensitive(false);
             create_hardcoded_rows(
-                &drive_mounts_adw_listbox,
+                &system_drive_mounts_adw_listbox,
                 window.clone(),
                 &drive_rows_size_group,
                 &partition_array_refcell,
@@ -225,14 +303,13 @@ pub fn manual_partitioning_page(
                 &language_changed_action,
                 &used_partition_array_refcell,
                 &subvol_partition_array_refcell,
-                &extra_mount_id_refcell,
             );
         }
     ));
 
     filesystem_table_validate_button.connect_clicked(clone!(
         #[weak]
-        drive_mounts_adw_listbox,
+        system_drive_mounts_adw_listbox,
         #[strong]
         window,
         #[strong]
@@ -272,7 +349,7 @@ pub fn manual_partitioning_page(
             partition_method_manual_valid_label.set_visible(false);
             manual_partitioning_page.set_next_sensitive(false);
 
-            for fs_entry in generate_filesystem_table_array(&drive_mounts_adw_listbox) {
+            for fs_entry in generate_filesystem_table_array(&system_drive_mounts_adw_listbox, &custom_drive_mounts_adw_listbox) {
                 let fs_entry_clone0 = fs_entry.clone();
                 if subvol_partition_array_refcell.borrow().is_empty()
                     && !seen_partitions.insert(fs_entry.clone().partition.part_name)
@@ -358,7 +435,9 @@ pub fn manual_partitioning_page(
         }
     ));
 
-    content_box.append(&drive_mounts_viewport);
+    content_box.append(&system_drive_mounts_viewport);
+    content_box.append(&drive_mount_add_button);
+    content_box.append(&custom_drive_mounts_viewport);
     content_box.append(&utility_buttons_box);
     content_box.append(&partition_method_manual_mountpoint_empty_error_label);
     content_box.append(&partition_method_manual_mountpoint_invalid_error_label);
@@ -458,7 +537,7 @@ pub fn manual_partitioning_page(
 }
 
 fn create_hardcoded_rows(
-    drive_mounts_adw_listbox: &gtk::ListBox,
+    system_drive_mounts_adw_listbox: &gtk::ListBox,
     window: adw::ApplicationWindow,
     drive_rows_size_group: &gtk::SizeGroup,
     partition_array_refcell: &Rc<RefCell<Vec<Partition>>>,
@@ -466,32 +545,9 @@ fn create_hardcoded_rows(
     language_changed_action: &gio::SimpleAction,
     used_partition_array_refcell: &Rc<RefCell<Vec<FstabEntry>>>,
     subvol_partition_array_refcell: &Rc<RefCell<Vec<SubvolDeclaration>>>,
-    extra_mount_id_refcell: &Rc<RefCell<i32>>,
 ) {
-    let drive_mount_add_button_icon = gtk::Image::builder()
-        .icon_name("list-add")
-        .halign(gtk::Align::Start)
-        .build();
-
-    let drive_mount_add_button_label = gtk::Label::builder()
-        .label(t!("drive_mount_add_button_label"))
-        .halign(gtk::Align::Center)
-        .hexpand(true)
-        .build();
-
-    let drive_mount_add_button_child_box = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-
-    drive_mount_add_button_child_box.append(&drive_mount_add_button_icon);
-    drive_mount_add_button_child_box.append(&drive_mount_add_button_label);
-
-    let drive_mount_add_button = gtk::Button::builder()
-        .child(&drive_mount_add_button_child_box)
-        .vexpand(true)
-        .hexpand(true)
-        .build();
-
     func::create_efi_row(
-        drive_mounts_adw_listbox,
+        system_drive_mounts_adw_listbox,
         window.clone(),
         drive_rows_size_group,
         &partition_array_refcell.borrow(),
@@ -501,7 +557,7 @@ fn create_hardcoded_rows(
         subvol_partition_array_refcell,
     );
     func::create_boot_row(
-        drive_mounts_adw_listbox,
+        system_drive_mounts_adw_listbox,
         window.clone(),
         drive_rows_size_group,
         &partition_array_refcell.borrow(),
@@ -511,7 +567,7 @@ fn create_hardcoded_rows(
         subvol_partition_array_refcell,
     );
     func::create_root_row(
-        drive_mounts_adw_listbox,
+        system_drive_mounts_adw_listbox,
         window.clone(),
         drive_rows_size_group,
         &partition_array_refcell.borrow(),
@@ -520,45 +576,18 @@ fn create_hardcoded_rows(
         used_partition_array_refcell,
         subvol_partition_array_refcell,
     );
-
-    drive_mounts_adw_listbox.append(&drive_mount_add_button);
-
-    drive_mount_add_button.connect_clicked(clone!(
-        #[weak]
-        drive_mounts_adw_listbox,
-        #[strong]
-        drive_rows_size_group,
-        #[strong]
-        partition_array_refcell,
-        #[strong]
-        partition_changed_action,
-        #[strong]
-        language_changed_action,
-        #[strong]
-        used_partition_array_refcell,
-        #[strong]
-        subvol_partition_array_refcell,
-        #[strong]
-        extra_mount_id_refcell,
-        move |_| {
-            func::create_mount_row(
-                &drive_mounts_adw_listbox,
-                window.clone(),
-                &drive_rows_size_group,
-                &partition_array_refcell.borrow(),
-                &partition_changed_action,
-                &language_changed_action,
-                &used_partition_array_refcell,
-                &subvol_partition_array_refcell,
-                &extra_mount_id_refcell,
-            );
-        }
-    ));
 }
 
-fn generate_filesystem_table_array(drive_mounts_adw_listbox: &gtk::ListBox) -> Vec<FstabEntry> {
+fn generate_filesystem_table_array(system_drive_mounts_adw_listbox: &gtk::ListBox, custom_drive_mounts_adw_listbox: &gtk::ListBox) -> Vec<FstabEntry> {
     let mut fstab_array: Vec<FstabEntry> = Vec::new();
-    let mut widget_counter = drive_mounts_adw_listbox.first_child();
+    let mut widget_counter = system_drive_mounts_adw_listbox.first_child();
+    while let Some(ref child) = widget_counter {
+        if let Ok(t) = child.clone().downcast::<DriveMountRow>() {
+            fstab_array.push(DriveMountRow::get_fstab_entry(&t));
+        }
+        widget_counter = child.next_sibling();
+    }
+    let mut widget_counter = custom_drive_mounts_adw_listbox.first_child();
     while let Some(ref child) = widget_counter {
         if let Ok(t) = child.clone().downcast::<DriveMountRow>() {
             fstab_array.push(DriveMountRow::get_fstab_entry(&t));
