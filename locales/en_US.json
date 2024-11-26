@@ -131,5 +131,7 @@
     "devices_selection_button_row_dialog_auto_body": "Please Select A Disk for PikaOS to *Erase* And Install on.",
     "devices_selection_button_row_dialog_manual_title": "Manual Partition Disk Selection",
     "devices_selection_button_row_dialog_manual_body": "Please Select a Partition for This Filesystem Mount",
-    "devices_selection_button_row_dialog_ok_label": "Done"
+    "devices_selection_button_row_dialog_ok_label": "Done",
+    "system_drive_mounts_adw_listbox_label_label" : "System Filesystem Entries (Required)",
+    "custom_drive_mounts_adw_listbox_label_label" : "Custom User Filesystem Entries (Optional)"
 }

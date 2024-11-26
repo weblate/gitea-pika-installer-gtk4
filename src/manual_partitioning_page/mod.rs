@@ -56,12 +56,30 @@ pub fn manual_partitioning_page(
         .vexpand(true)
         .build();
 
+    let system_drive_mounts_adw_listbox_label = gtk::Label::builder()
+        .hexpand(true)
+        .halign(gtk::Align::Start)
+        .margin_top(10)
+        .margin_bottom(10)
+        .build();
+    system_drive_mounts_adw_listbox_label.add_css_class("title-3");
+
     let system_drive_mounts_adw_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
     system_drive_mounts_adw_listbox.add_css_class("boxed-list");
     system_drive_mounts_adw_listbox.add_css_class("no-round-borders");
 
+    //
+
+    let custom_drive_mounts_adw_listbox_label = gtk::Label::builder()
+        .hexpand(true)
+        .halign(gtk::Align::Start)
+        .margin_top(10)
+        .margin_bottom(10)
+        .build();
+    custom_drive_mounts_adw_listbox_label.add_css_class("title-3");
+    
     let custom_drive_mounts_adw_listbox = gtk::ListBox::builder()
         .selection_mode(gtk::SelectionMode::None)
         .build();
@@ -112,6 +130,7 @@ pub fn manual_partitioning_page(
         //.margin_start(10)
         //.margin_end(10)
         .build();
+    drive_mount_add_button.add_css_class("pill");
 
         drive_mount_add_button.connect_clicked(clone!(
             #[weak]
@@ -435,9 +454,11 @@ pub fn manual_partitioning_page(
         }
     ));
 
+    content_box.append(&system_drive_mounts_adw_listbox_label);
     content_box.append(&system_drive_mounts_viewport);
-    content_box.append(&drive_mount_add_button);
+    content_box.append(&custom_drive_mounts_adw_listbox_label);
     content_box.append(&custom_drive_mounts_viewport);
+    content_box.append(&drive_mount_add_button);
     content_box.append(&utility_buttons_box);
     content_box.append(&partition_method_manual_mountpoint_empty_error_label);
     content_box.append(&partition_method_manual_mountpoint_invalid_error_label);
@@ -506,11 +527,22 @@ pub fn manual_partitioning_page(
         filesystem_table_refresh_button,
         #[weak]
         filesystem_table_validate_button,
+        #[weak]
+        system_drive_mounts_adw_listbox_label,
+        #[weak]
+        custom_drive_mounts_adw_listbox_label,
         move |_, _| {
             manual_partitioning_page.set_page_title(t!("manual_partitioning_page_title"));
             manual_partitioning_page.set_page_subtitle(t!("manual_partitioning_page_subtitle"));
             manual_partitioning_page.set_back_tooltip_label(t!("back"));
             manual_partitioning_page.set_next_tooltip_label(t!("next"));
+            //
+            system_drive_mounts_adw_listbox_label.set_label(&t!(
+                "system_drive_mounts_adw_listbox_label_label"
+            ));
+            custom_drive_mounts_adw_listbox_label.set_label(&t!(
+                "custom_drive_mounts_adw_listbox_label_label"
+            ));
             //
             partition_method_manual_mountpoint_empty_error_label.set_label(&t!(
                 "partition_method_manual_mountpoint_empty_error_label_label"
