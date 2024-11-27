@@ -133,5 +133,13 @@
     "devices_selection_button_row_dialog_manual_body": "Please Select a Partition for This Filesystem Mount",
     "devices_selection_button_row_dialog_ok_label": "Done",
     "system_drive_mounts_adw_listbox_label_label" : "System Filesystem Entries (Required)",
-    "custom_drive_mounts_adw_listbox_label_label" : "Custom User Filesystem Entries (Optional)"
+    "custom_drive_mounts_adw_listbox_label_label" : "Custom User Filesystem Entries (Optional)",
+    "drive_mount_row_title_efi": "EFI Filesystem Entry",
+    "drive_mount_row_subtitle_efi": "This Entry's Partition Mounted at (/boot/efi) Will Store The Files Of The UEFI Bootloader.",
+    "drive_mount_row_title_boot": "Boot Filesystem Entry",
+    "drive_mount_row_subtitle_boot": "This Entry's Partition Mounted at (/boot) Will Store The Kernel and Other Important Boot Files. (Must Be Formatted)",
+    "drive_mount_row_title_root": "Root Filesystem Entry",
+    "drive_mount_row_subtitle_root": "This Entry's Partition Mounted at (/) Will Store The All The System Files and Applications. (Must Be Formatted)",
+    "drive_mount_row_title_custom": "Custom User Filesystem Entry (ID: {ID})",
+    "drive_mount_row_subtitle_custom": "A Custom Filesystem Entry Added by You"
 }

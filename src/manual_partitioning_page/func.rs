@@ -61,6 +61,8 @@ pub fn create_efi_row(
 
     row.set_mountpoint("/boot/efi");
 
+    row.set_expanded(true);
+
     row.set_id(0);
 
     let null_checkbutton = gtk::CheckButton::builder().build();
@@ -299,6 +301,8 @@ pub fn create_boot_row(
 
     row.set_id(1);
 
+    row.set_expanded(true);
+
     let null_checkbutton = gtk::CheckButton::builder().build();
 
     for partition in partition_array {
@@ -534,6 +538,8 @@ pub fn create_root_row(
     row.set_mountpoint("/");
 
     row.set_id(2);
+
+    row.set_expanded(true);
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 
@@ -786,6 +792,8 @@ pub fn create_mount_row(
     row.set_id(*extra_mount_id_refcell.borrow());
 
     (*extra_mount_id_refcell.borrow_mut()) += 1;
+
+    row.set_expanded(true);
 
     let null_checkbutton = gtk::CheckButton::builder().build();
 
