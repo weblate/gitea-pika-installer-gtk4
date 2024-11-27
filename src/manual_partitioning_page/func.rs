@@ -3,7 +3,7 @@ use crate::{
     config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, MINIMUM_ROOT_BYTE_SIZE},
     drive_mount_row::DriveMountRow,
 };
-use adw::{prelude::*};
+use adw::prelude::*;
 use glib::{clone, closure_local};
 use gtk::{gio, glib};
 use std::{cell::RefCell, rc::Rc};

@@ -144,5 +144,6 @@
     "drive_mount_row_title_custom": "Custom User Filesystem Entry (ID: {ID})",
     "drive_mount_row_subtitle_custom": "A Custom Filesystem Entry Added by You",
     "manual_partitioning_help_dialog_label": "OK",
-    "manual_partitioning_help_button_label": "Need Help?"
+    "manual_partitioning_help_button_label": "Need Help?",
+    "partition_row_delete_button_label": "Delete Filesystem Entry"
 }

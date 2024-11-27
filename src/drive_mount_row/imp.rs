@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
-use gtk::{glib};
+use gtk::glib;
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -139,12 +139,13 @@ impl ObjectImpl for DriveMountRow {
             .margin_top(5)
             .margin_start(5)
             .margin_end(5)
-            .halign(gtk::Align::Center)
-            .valign(gtk::Align::Center)
-            .icon_name("user-trash")
+            .halign(gtk::Align::End)
+            //.valign(gtk::Align::Center)
+            .label(t!("partition_row_delete_button_label"))
             .build();
+        partition_row_delete_button.add_css_class("destructive-action");
 
-        obj.bind_property("deletable", &partition_row_delete_button, "visible")
+        obj.bind_property("deletable", &partition_row_delete_button, "sensitive")
             .sync_create()
             .bidirectional()
             .build();
@@ -284,6 +285,8 @@ impl ObjectImpl for DriveMountRow {
             mountopts_entry_row,
             #[weak]
             partition_button_row_dialog,
+            #[weak]
+            partition_row_delete_button,
             #[strong]
             is_selected,
             move |_| {
@@ -316,6 +319,7 @@ impl ObjectImpl for DriveMountRow {
                                 "devices_selection_button_row_dialog_ok",
                                 &t!("devices_selection_button_row_dialog_ok_label"),
                             );
+                            partition_row_delete_button.set_label(&t!("partition_row_delete_button_label"));
                         }
                     ));
                 }
