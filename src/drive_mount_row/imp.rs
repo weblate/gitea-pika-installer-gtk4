@@ -220,8 +220,8 @@ impl ObjectImpl for DriveMountRow {
 
         let partition_button_row_dialog = adw::AlertDialog::builder()
             .extra_child(&partition_button_row_dialog_extra_child)
-            .width_request(400)
-            .height_request(400)
+            .width_request(600)
+            .height_request(600)
             .title(t!("devices_selection_button_row_dialog_manual_title"))
             .body(t!("devices_selection_button_row_dialog_manual_body"))
             .build();

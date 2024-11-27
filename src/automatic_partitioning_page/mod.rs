@@ -289,8 +289,8 @@ pub fn automatic_partitioning_page(
 
     let devices_selection_button_row_dialog = adw::AlertDialog::builder()
         .extra_child(&devices_selection_button_row_viewport)
-        .width_request(400)
-        .height_request(400)
+        .width_request(600)
+        .height_request(600)
         .build();
 
     devices_selection_button_row_dialog.add_response(

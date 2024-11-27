@@ -56,6 +56,70 @@ pub fn manual_partitioning_page(
         .vexpand(true)
         .build();
 
+    //
+
+    let manual_partitioning_help_dialog_button_listbox = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .hexpand(true)
+        .halign(gtk::Align::End)
+        .margin_top(15)
+        .margin_bottom(15)
+        .margin_start(15)
+        .margin_end(15)
+        .build();
+
+    manual_partitioning_help_dialog_button_listbox.add_css_class("boxed-list");
+
+    let manual_partitioning_help_dialog_button = adw::ButtonRow::builder()
+        .start_icon_name("dialog-question-symbolic")
+        .build();
+
+    manual_partitioning_help_dialog_button_listbox.append(&manual_partitioning_help_dialog_button);
+    manual_partitioning_help_dialog_button_listbox.add_css_class("accent-blink");
+
+    let manual_partitioning_help_dialog_textview_buffer = gtk::TextBuffer::builder().build();
+
+    let manual_partitioning_help_dialog_textview = gtk::TextView::with_buffer(&manual_partitioning_help_dialog_textview_buffer);
+
+    /*let manual_partitioning_help_dialog_viewport_box = gtk::ListBox::builder()
+        .selection_mode(gtk::SelectionMode::None)
+        .build();
+    manual_partitioning_help_dialog_viewport_box.add_css_class("boxed-list");
+    manual_partitioning_help_dialog_viewport_box.add_css_class("no-round-borders");
+
+    manual_partitioning_help_dialog_viewport_box.append(&manual_partitioning_help_dialog_textview);*/
+
+    let manual_partitioning_help_dialog_viewport = gtk::ScrolledWindow::builder()
+        .vexpand(true)
+        .hexpand(true)
+        .has_frame(true)
+        .overflow(gtk::Overflow::Hidden)
+        .child(&manual_partitioning_help_dialog_textview)
+        .build();
+
+    let manual_partitioning_help_dialog = adw::AlertDialog::builder()
+        .extra_child(&manual_partitioning_help_dialog_viewport)
+        .width_request(600)
+        .height_request(500)
+        .build();
+
+    manual_partitioning_help_dialog.add_response(
+        "manual_partitioning_help_dialog",
+        "manual_partitioning_help_dialog_label",
+    );
+
+    manual_partitioning_help_dialog_button.connect_activated(clone!(
+        #[strong]
+        window,
+        #[strong]
+        manual_partitioning_help_dialog,
+        move |_| {
+            manual_partitioning_help_dialog.present(Some(&window));
+        }
+    ));
+
+    //
+
     let system_drive_mounts_adw_listbox_label = gtk::Label::builder()
         .hexpand(true)
         .halign(gtk::Align::Start)
@@ -66,6 +130,7 @@ pub fn manual_partitioning_page(
 
     let system_drive_mounts_adw_listbox = gtk::ListBox::builder()
         //.selection_mode(gtk::SelectionMode::None)
+        .show_separators(true)
         .build();
     system_drive_mounts_adw_listbox.add_css_class("boxed-list");
     system_drive_mounts_adw_listbox.add_css_class("no-round-borders");
@@ -82,6 +147,7 @@ pub fn manual_partitioning_page(
     
     let custom_drive_mounts_adw_listbox = gtk::ListBox::builder()
         //.selection_mode(gtk::SelectionMode::None)
+        .show_separators(true)
         .build();
     custom_drive_mounts_adw_listbox.add_css_class("boxed-list");
     custom_drive_mounts_adw_listbox.add_css_class("no-round-borders");
@@ -454,6 +520,7 @@ pub fn manual_partitioning_page(
         }
     ));
 
+    content_box.append(&manual_partitioning_help_dialog_button_listbox);
     content_box.append(&system_drive_mounts_adw_listbox_label);
     content_box.append(&system_drive_mounts_viewport);
     content_box.append(&custom_drive_mounts_adw_listbox_label);
@@ -531,11 +598,24 @@ pub fn manual_partitioning_page(
         system_drive_mounts_adw_listbox_label,
         #[weak]
         custom_drive_mounts_adw_listbox_label,
+        #[weak]
+        manual_partitioning_help_dialog,
+        #[weak]
+        manual_partitioning_help_dialog_button,
+        #[strong]
+        manual_partitioning_help_dialog_textview_buffer,
         move |_, _| {
             manual_partitioning_page.set_page_title(t!("manual_partitioning_page_title"));
             manual_partitioning_page.set_page_subtitle(t!("manual_partitioning_page_subtitle"));
             manual_partitioning_page.set_back_tooltip_label(t!("back"));
             manual_partitioning_page.set_next_tooltip_label(t!("next"));
+            //
+            manual_partitioning_help_dialog.set_response_label(
+                "manual_partitioning_help_dialog",
+                &t!("manual_partitioning_help_dialog_label"),
+            );
+            manual_partitioning_help_dialog_textview_buffer.set_text(&t!("manual_partitioning_help_dialog_textview_buffer_text"));
+            manual_partitioning_help_dialog_button.set_title(&t!("manual_partitioning_help_button_label"));
             //
             system_drive_mounts_adw_listbox_label.set_label(&t!(
                 "system_drive_mounts_adw_listbox_label_label"
@@ -671,7 +751,7 @@ fn set_crypttab_entries(
             //.transient_for(&window)
             //.hide_on_close(true)
             .extra_child(&crypttab_password_child_box)
-            .width_request(400)
+            .width_request(600)
             .height_request(200)
             .heading(
                 strfmt::strfmt(
