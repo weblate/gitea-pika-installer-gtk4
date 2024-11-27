@@ -1,3 +1,9 @@
+pika-installer-gtk4 (2.0.2-101pika2) pika; urgency=low
+
+  * Refine UI Moar
+
+ -- Ward Nakchbandi <hotrod.master@hotmail.com>  Thu, 20 Sep 2022 22:01:00 +0000
+
 pika-installer-gtk4 (2.0.1-101pika2) pika; urgency=low
 
   * Refine UI
