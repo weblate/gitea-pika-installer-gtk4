@@ -14,7 +14,7 @@
     "manual_method_button_label": "Manually Partition The Drive",
     "automatic_method_button_label": "Automatically Partition\nThe Drive",
     "manual_partitioning_page_title": "Manual Disk Partitioning",
-    "manual_partitioning_page_subtitle": "Use This Page to Create a Custom Filesystem Table for PikaOS to install into.\nNotes:\n - This Installer Doesn't Erase Any Data Automatically, Format Your Drives MANUALLY Via The Disk Utility.\n - To Add a linux-swap Partition Set Mountpoint to [SWAP]",
+    "manual_partitioning_page_subtitle": "Use This Page to Create a Custom Filesystem Table for PikaOS to install into.\nInstructions:\n - Use The Partitioning Utility to Create New Partitions or Reformat and Reuse Existing Ones. \n - The Required Partitons are:\n\t* 512MB+ Fat32/vfat Partition for /boot/efi (An Existing EFI Partition Can be Left Unformated and Used for /boot/efi in Order to Achieve Dual-Boot)\n\t* 1000MB+ EXT4 Partition for /boot (Can NOT Be Shared... Format MANDATORY!)\n - This Installer Doesn't Erase Any Data Automatically, Format Your Drives MANUALLY Via The Partitioning Utility.\n - To Add a linux-swap Partition Set Mountpoint to [SWAP]\n - To Add LUKS Encrypted Partitions or Any Kind of Partition That Uses Mapper\n\tUse The Partitioning Utility to Map/Unlock Them, Then Their Mapping Will be Shown as Partition Selections.",
     "partition_row_subtitle_needs_mapper": "This partition needs a mapper!",
     "language_page_title": "Select a Language",
     "language_page_subtitle": "Please Select a Locale for The System to Use",

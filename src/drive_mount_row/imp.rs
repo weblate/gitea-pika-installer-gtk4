@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc, sync::OnceLock};
 
 use adw::{prelude::*, subclass::prelude::*, *};
 use glib::{clone, subclass::Signal, Properties};
-use gtk::{glib, Orientation::Horizontal};
+use gtk::{glib};
 
 // ANCHOR: custom_button
 // Object holding the state
@@ -35,7 +35,7 @@ pub struct DriveMountRow {
 impl ObjectSubclass for DriveMountRow {
     const NAME: &'static str = "DriveMountRow";
     type Type = super::DriveMountRow;
-    type ParentType = gtk::ListBoxRow;
+    type ParentType = adw::ExpanderRow;
 }
 
 // ANCHOR: object_impl
@@ -56,7 +56,7 @@ impl ObjectImpl for DriveMountRow {
         let is_selected = Rc::new(RefCell::new(false));
 
         let action_row_content_box = gtk::Box::builder()
-            .orientation(Horizontal)
+            .orientation(gtk::Orientation::Vertical)
             .spacing(0)
             .vexpand(true)
             .hexpand(true)
@@ -322,10 +322,14 @@ impl ObjectImpl for DriveMountRow {
             }
         ));
 
-        obj.set_child(Some(&action_row_content_box));
+        obj.add_row(&action_row_content_box);
     }
 }
 // Trait shared by all widgets
 impl WidgetImpl for DriveMountRow {}
+
+impl ExpanderRowImpl for DriveMountRow {}
+
+impl PreferencesRowImpl for DriveMountRow {}
 
 impl ListBoxRowImpl for DriveMountRow {}

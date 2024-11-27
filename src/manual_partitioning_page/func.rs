@@ -3,7 +3,7 @@ use crate::{
     config::{MINIMUM_BOOT_BYTE_SIZE, MINIMUM_EFI_BYTE_SIZE, MINIMUM_ROOT_BYTE_SIZE},
     drive_mount_row::DriveMountRow,
 };
-use adw::prelude::*;
+use adw::{prelude::*, ExpanderRow};
 use glib::{clone, closure_local};
 use gtk::{gio, glib};
 use std::{cell::RefCell, rc::Rc};
@@ -44,6 +44,14 @@ pub fn create_efi_row(
 
     // Create row
     let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
+
+    row.set_property("title", &t!("drive_mount_row_title_efi").to_string());
+    row.set_subtitle(&t!("drive_mount_row_subtitle_efi"));
+
+    language_changed_action.connect_activate(clone!(#[strong] row, move |_, _| {
+        row.set_property("title", &t!("drive_mount_row_title_efi").to_string());
+        row.set_subtitle(&t!("drive_mount_row_subtitle_efi"));
+    }));
 
     row.set_deletable(false);
 
@@ -273,6 +281,14 @@ pub fn create_boot_row(
     // Create row
     let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
 
+    row.set_property("title", &t!("drive_mount_row_title_boot").to_string());
+    row.set_subtitle(&t!("drive_mount_row_subtitle_boot"));
+
+    language_changed_action.connect_activate(clone!(#[strong] row, move |_, _| {
+        row.set_property("title", &t!("drive_mount_row_title_boot").to_string());
+        row.set_subtitle(&t!("drive_mount_row_subtitle_boot"));
+    }));
+
     row.set_deletable(false);
 
     row.set_sizegroup(drive_rows_size_group);
@@ -500,6 +516,14 @@ pub fn create_root_row(
 
     // Create row
     let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
+
+    row.set_property("title", &t!("drive_mount_row_title_root").to_string());
+    row.set_subtitle(&t!("drive_mount_row_subtitle_root"));
+
+    language_changed_action.connect_activate(clone!(#[strong] row, move |_, _| {
+        row.set_property("title", &t!("drive_mount_row_title_root").to_string());
+        row.set_subtitle(&t!("drive_mount_row_subtitle_root"));
+    }));
 
     row.set_deletable(false);
 
@@ -734,6 +758,24 @@ pub fn create_mount_row(
 
     // Create row
     let row = DriveMountRow::new_with_widgets(&partitions_scroll, &window);
+
+    row.set_property("title", strfmt::strfmt(
+        &t!("drive_mount_row_title_custom"),
+        &std::collections::HashMap::from([
+            ("ID".to_string(), *extra_mount_id_refcell.borrow()),
+        ])
+    ).unwrap());
+    row.set_subtitle(&t!("drive_mount_row_subtitle_custom"));
+
+    language_changed_action.connect_activate(clone!(#[strong] row, #[strong] extra_mount_id_refcell, move |_, _| {
+        row.set_property("title", strfmt::strfmt(
+            &t!("drive_mount_row_title_custom"),
+            &std::collections::HashMap::from([
+                ("ID".to_string(), *extra_mount_id_refcell.borrow()),
+            ])
+        ).unwrap());
+        row.set_subtitle(&t!("drive_mount_row_subtitle_custom"));
+    }));
 
     row.set_deletable(true);
 

@@ -65,7 +65,7 @@ pub fn manual_partitioning_page(
     system_drive_mounts_adw_listbox_label.add_css_class("title-3");
 
     let system_drive_mounts_adw_listbox = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
+        //.selection_mode(gtk::SelectionMode::None)
         .build();
     system_drive_mounts_adw_listbox.add_css_class("boxed-list");
     system_drive_mounts_adw_listbox.add_css_class("no-round-borders");
@@ -81,7 +81,7 @@ pub fn manual_partitioning_page(
     custom_drive_mounts_adw_listbox_label.add_css_class("title-3");
     
     let custom_drive_mounts_adw_listbox = gtk::ListBox::builder()
-        .selection_mode(gtk::SelectionMode::None)
+        //.selection_mode(gtk::SelectionMode::None)
         .build();
     custom_drive_mounts_adw_listbox.add_css_class("boxed-list");
     custom_drive_mounts_adw_listbox.add_css_class("no-round-borders");

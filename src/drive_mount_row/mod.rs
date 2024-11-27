@@ -7,7 +7,7 @@ use crate::{build_ui::FstabEntry, partitioning_page::create_parition_struct};
 
 glib::wrapper! {
     pub struct DriveMountRow(ObjectSubclass<imp::DriveMountRow>)
-        @extends gtk::Widget, gtk::ListBoxRow,
+        @extends gtk::Widget, adw::ExpanderRow,
         @implements gtk::Accessible, gtk::Actionable, gtk::Buildable, gtk::ConstraintTarget;
 }
 
