@@ -17,6 +17,17 @@ jobs:
       options: --privileged -it
 
     steps:
+
+    - name: Runner Origin Check
+      run: |
+        if [ "${{ secrets.RUNNER_ORIGIN }}" = "github" ]; then
+          exit 1
+        else
+          true
+        fi
+      env:
+        RUNNER_ORIGIN: ${{ secrets.RUNNER_ORIGIN }}
+
     - uses: actions/checkout@v3
 
     - name: Install SSH key

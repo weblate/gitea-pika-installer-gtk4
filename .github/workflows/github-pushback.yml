@@ -1,14 +1,12 @@
-name: PikaOS Package Build & Release (amd64-v3)
+name: Github Push back to gitea
 
 on:
   push:
     branches:
       - main
-    paths:
-      - '.github/release-nest-v3'
 
 jobs:
-  build:
+  Push:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/pikaos-linux/pikaos-builder:nestv3
@@ -21,31 +19,23 @@ jobs:
     - name: Runner Origin Check
       run: |
         if [ "${{ secrets.RUNNER_ORIGIN }}" = "github" ]; then
-          exit 1
-        else
           true
+        else
+          exit 1
         fi
       env:
         RUNNER_ORIGIN: ${{ secrets.RUNNER_ORIGIN }}
 
-    - uses: actions/checkout@v3
-
     - name: Install SSH key
       uses: shimataro/ssh-key-action@v2
       with:
-        key: ${{ secrets.SSH_KEY }}
+        key: ${{ secrets.GITEA_SSH_KEY }}
         name: id_rsa
         known_hosts: ${{ secrets.KNOWN_HOSTS }}
         if_key_exists: replace
-    
-    - name: Update APT Cache
-      run: apt-get update -y
 
-    - name: Set Build Config
-      run: cp -vf ./pika-build-config/amd64-v3.sh ./pika-build-config.sh
+    - name: Run
+      run: git clone https://github.com/PikaOS-Linux/gitea-pika-installer-gtk4
 
-    - name: Build Package
-      run: ./main.sh
-
-    - name: Release Package
-      run: ./release.sh
+    - name: Run
+      run: ./gitea-pika-installer-gtk4/.github/github_pushback.sh
